@@ -1,4 +1,4 @@
-﻿using Fanex.NAP.SPU.DCS.JobService.Service;
+﻿using Fanex.NAP.SPU.DCS.JobService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Sentry;
 using System;
@@ -11,20 +11,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
     public class JobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
-        private readonly IJobService jobService;
+        private readonly IUserAgentJobService userAgentJobService;
 
-        public JobController(ISentryClient sentryClient, IJobService jobService)
+        public JobController(ISentryClient sentryClient, IUserAgentJobService userAgentJobService)
         {
             this.sentryClient = sentryClient;
-            this.jobService = jobService;
+            this.userAgentJobService = userAgentJobService;
         }
 
-        [HttpPost("execute")]
-        public async Task<bool> Execute(string jobName)
+        [HttpPost("useragent")]
+        public async Task<bool> UserAgent(int size, string jobName)
         {
             sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
 
-            return await this.jobService.Execute(jobName);
+            return await this.userAgentJobService.Execute(size);
 
         }
     }

@@ -1,6 +1,6 @@
 using Fanex.Data;
 using Fanex.Data.MySql;
-using Fanex.NAP.SPU.DCS.JobService.Service;
+using Fanex.NAP.SPU.DCS.JobService.Services;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Fanex.NAP.SPU.DCS.JobService
 {
@@ -40,8 +39,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fanex.NAP.SPU.DCS.JobService", Version = "v1" });
             });
 
-            services.AddSingleton<IJobService, Service.JobService>();
-            services.AddSingleton<IDataService, DataService>();
+            services.AddSingleton<IUserAgentJobService, UserAgentJobService>();            
 
             FanexDataConfig();
         }
