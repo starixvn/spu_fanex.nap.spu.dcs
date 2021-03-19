@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Fanex.NAP.SPU.DCS.Features.UserAgent;
+using Newtonsoft.Json;
 using Sentry;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,18 +14,18 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public class UserAgentJobService : IUserAgentJobService
     {
         private readonly ISentryClient sentryClient;
-        
-        public UserAgentJobService(ISentryClient sentryClient)
+        private readonly IUserAgentServices userAgentService;
+
+        public UserAgentJobService(ISentryClient sentryClient, UserAgentServices userAgentService)
         {
-            this.sentryClient = sentryClient;            
+            this.sentryClient = sentryClient;
+            this.userAgentService = userAgentService;
         }
 
         public Task<bool> Execute(int size)
         {
             try
-            {
-                var userAgentService = new Features.UserAgent.Services();
-
+            {                
                 var userAgents = userAgentService.GetUserAgent(size);
 
                 if (userAgents != null && userAgents.Any())

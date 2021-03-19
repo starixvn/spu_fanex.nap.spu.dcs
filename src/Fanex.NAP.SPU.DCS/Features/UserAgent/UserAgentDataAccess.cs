@@ -7,14 +7,14 @@ using System.Collections.Generic;
 
 namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
-    public interface IDataAccess
+    public interface IUserAgentDataAccess
     {
         IEnumerable<UserAgentEntity> GetUserAgent(int size);
 
         DataResult UpdateUserAgent(string userAgentJson);
     }
 
-    public class DataAccess : IDataAccess
+    public class UserAgentDataAccess : IUserAgentDataAccess
     {
         public IEnumerable<UserAgentEntity> GetUserAgent(int size)
         {

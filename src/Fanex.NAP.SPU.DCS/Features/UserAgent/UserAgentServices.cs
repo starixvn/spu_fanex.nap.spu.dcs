@@ -7,7 +7,7 @@ using UAParser;
 
 namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
-    public interface IService
+    public interface IUserAgentServices
     {
         List<UserAgentEntity> GetUserAgent(int size);
 
@@ -18,13 +18,13 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
         List<UserAgentModel> TransformUserAgent(List<UserAgentEntity> userAgents);
     }
 
-    public class Services : IService
+    public class UserAgentServices : IUserAgentServices
     {
-        private readonly DataAccess dataAccess;
+        private readonly IUserAgentDataAccess dataAccess;
 
-        public Services()
+        public UserAgentServices(IUserAgentDataAccess dataAccess)
         {
-            dataAccess = new DataAccess();
+            this.dataAccess = dataAccess;
         }
 
         public List<UserAgentEntity> GetUserAgent(int size)
@@ -34,7 +34,16 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 
         public DataResult UpdateUserAgent(string userAgentJson)
         {
-            return dataAccess.UpdateUserAgent(userAgentJson);
+            if(!string.IsNullOrWhiteSpace(userAgentJson))
+            {
+                return dataAccess.UpdateUserAgent(userAgentJson);
+            }
+
+            return new DataResult
+            {
+                ErrorCode = -1,
+                ErrorMessage = "Parameter is empty"
+            };
         }
 
         public List<UserAgentModel> TransformUserAgent(List<UserAgentEntity> userAgents)

@@ -39,6 +39,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fanex.NAP.SPU.DCS.JobService", Version = "v1" });
             });
 
+            services.RegisterService();
             services.AddSingleton<IUserAgentJobService, UserAgentJobService>();            
 
             FanexDataConfig();
