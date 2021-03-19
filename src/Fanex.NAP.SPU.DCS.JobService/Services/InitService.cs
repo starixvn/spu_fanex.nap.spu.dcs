@@ -1,4 +1,5 @@
-﻿using Fanex.NAP.SPU.DCS.Features.UserAgent;
+﻿using Fanex.NAP.SPU.DCS.Features.Devices;
+using Fanex.NAP.SPU.DCS.Features.UserAgent;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
@@ -7,8 +8,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         public static void RegisterService(this IServiceCollection services)
         {
+            RegisterUserAgentService(services);
+            RegisterTransformDevice(services);
+        }
+
+        private static void RegisterUserAgentService(this IServiceCollection services)
+        {
             services.AddSingleton<IUserAgentDataAccess, UserAgentDataAccess>();
             services.AddSingleton<IUserAgentServices, UserAgentServices>();
+            services.AddSingleton<IUserAgentJobService, UserAgentJobService>();
+        }
+
+        private static void RegisterTransformDevice(this IServiceCollection services)
+        {
+            services.AddSingleton<IDeviceDataAccess, DeviceDataAccess>();
+            services.AddSingleton<IDeviceServices, DeviceServices>();
+            services.AddSingleton<IDeviceJobService, DeviceJobService>();
         }
     }
 }

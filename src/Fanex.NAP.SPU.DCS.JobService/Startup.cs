@@ -40,7 +40,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             });
 
             services.RegisterService();
-            services.AddSingleton<IUserAgentJobService, UserAgentJobService>();            
+            
 
             FanexDataConfig();
         }

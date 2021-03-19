@@ -16,7 +16,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly ISentryClient sentryClient;
         private readonly IUserAgentServices userAgentService;
 
-        public UserAgentJobService(ISentryClient sentryClient, UserAgentServices userAgentService)
+        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService)
         {
             this.sentryClient = sentryClient;
             this.userAgentService = userAgentService;
