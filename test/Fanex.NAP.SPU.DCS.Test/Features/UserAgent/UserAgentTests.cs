@@ -16,32 +16,33 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
     public class UserAgentTests
     {
         private readonly IUserAgentDataAccess userAgentDataAccess;
-        private readonly IUserAgentServices userAgentService;            
+        private readonly IUserAgentServices userAgentService;
 
         public UserAgentTests()
         {
             userAgentDataAccess = Substitute.For<IUserAgentDataAccess>();
 
             userAgentService = new UserAgentServices(userAgentDataAccess);
-        }        
+        }
 
         [Fact]
         public void GetUserAgent_WhenCalled_ReturnUserAgentList()
         {
-            var userAgentEntities = new List<UserAgentEntity>();
-            userAgentEntities.Add(new UserAgentEntity
-            {
-                CreatedDate = new DateTime(2020, 01, 09, 00, 00, 00),
-                UserAgent = "00140dfba5212b0f74c2114ebe01d719",
-                UserAgentKey = "Mozilla/5.0 (Linux; Android 10; SM-N770F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Mobile Safari/537.36"
-            });
+            var userAgentEntities = new List<UserAgentEntity> {
+                new UserAgentEntity
+                {
+                    CreatedDate = new DateTime(2020, 01, 09, 00, 00, 00),
+                    UserAgent = "00140dfba5212b0f74c2114ebe01d719",
+                    UserAgentKey = "Mozilla/5.0 (Linux; Android 10; SM-N770F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Mobile Safari/537.36"
+                },
+                new UserAgentEntity
+                {
+                    CreatedDate = new DateTime(2020, 02, 09, 00, 00, 00),
+                    UserAgent = "002a30d8a4e32ff1a501ea52875bff6c",
+                    UserAgentKey = "Mozilla/5.0 (Linux; Android 9; ASK-AL00x) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.101 Mobile Safari/537.36"
+                }            
+            };
 
-            userAgentEntities.Add(new UserAgentEntity
-            {
-                CreatedDate = new DateTime(2020, 02, 09, 00, 00, 00),
-                UserAgent = "002a30d8a4e32ff1a501ea52875bff6c",
-                UserAgentKey = "Mozilla/5.0 (Linux; Android 9; ASK-AL00x) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.101 Mobile Safari/537.36"
-            });
 
             userAgentDataAccess.GetUserAgent(100).Returns(userAgentEntities);
             var result = userAgentService.GetUserAgent(100);
@@ -53,7 +54,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [InlineData("xyz")]
         public void UpdateUserAgent_WhenSuccess_ReturnDataResult(string userAgentJson)
         {
-            var expectedResut = new DataResult()
+            var expectedResut = new DataResult
             {
                 ErrorCode = 0,
                 ErrorMessage = string.Empty
@@ -70,7 +71,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [InlineData(null)]
         public void UpdateUserAgent_WhenFail_ReturnDataResult(string userAgentJson)
         {
-            var expectedResut = new DataResult()
+            var expectedResut = new DataResult
             {
                 ErrorCode = -1,
                 ErrorMessage = "Parameter is empty"
@@ -85,20 +86,20 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [Fact]
         public void TransformUserAgent_WhenSuccess_ReturnUserAgentModel()
         {
-            var userAgentEntities = new List<UserAgentEntity>();
-            userAgentEntities.Add(new UserAgentEntity
+            var userAgentEntities = new List<UserAgentEntity> {
+            new UserAgentEntity
             {
                 CreatedDate = new DateTime(2020, 01, 09, 00, 00, 00),
                 UserAgent = "Mozilla/5.0 (Linux; Android 10; SM-N770F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Mobile Safari/537.36",
                 UserAgentKey = "00140dfba5212b0f74c2114ebe01d719"
-            });
-
-            userAgentEntities.Add(new UserAgentEntity
+            },
+            new UserAgentEntity
             {
                 CreatedDate = new DateTime(2020, 02, 09, 00, 00, 00),
                 UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/17.3b15323 Mobile/16D57 Safari/605.1.15",
                 UserAgentKey = "0031fadec5836ee87da7c28f72a6bd1e"
-            });
+            }
+            };
 
             var expectedResult = new List<UserAgentModel>
             {
@@ -126,9 +127,9 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [Fact]
         public void TransformUserAgent_WhenFailed_ReturnUserAgentModel()
         {
-            var userAgentEntities = new List<UserAgentEntity>();           
+            var userAgentEntities = new List<UserAgentEntity>();
 
-            var expectedResult = new List<UserAgentModel>();            
+            var expectedResult = new List<UserAgentModel>();
 
             var result = userAgentService.TransformUserAgent(userAgentEntities);
 
@@ -153,11 +154,11 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [InlineData("")]
         [InlineData(null)]
         public void CovertUserAgent_WhenFailed_ReturnNull(string userAgent)
-        {                       
+        {
 
             var result = userAgentService.ConvertUserAgent(userAgent);
 
-            result.Should().BeNull();            
+            result.Should().BeNull();
         }
     }
 }

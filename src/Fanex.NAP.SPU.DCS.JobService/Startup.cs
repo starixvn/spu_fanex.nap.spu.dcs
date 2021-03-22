@@ -29,8 +29,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             services.AddControllers();
             services
-               .AddHealthChecks()
-               .AddCheck<RandomHealthCheck>("random")
+               .AddHealthChecks()               
                .AddDiskStorageHealthCheck(setup => { DriveInfo.GetDrives(); });
 
 
@@ -58,7 +57,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             app.UseRouting();
 
-            app.UseHealthChecks("/healthz", new HealthCheckOptions()
+            app.UseHealthChecks("/healthz", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

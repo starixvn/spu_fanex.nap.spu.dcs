@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Fanex.NAP.SPU.DCS.JobService
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
