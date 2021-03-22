@@ -25,29 +25,42 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         public Task<bool> Execute(int size)
         {
             try
-            {                
-                var userAgents = userAgentService.GetUserAgent(size);
-
-                if (userAgents != null && userAgents.Any())
+            {
+                if(size > 0)
                 {
-                    var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
-
-                    if (transformUserAgent.Any())
-                    {
-                        var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
-
-                        userAgentService.UpdateUserAgent(userAgentJson);
-                    }
-                }
-
-                return Task.FromResult(true);
+                    JobRun(size);
+                }                                
             }
             catch (System.Exception ex)
             {
                 sentryClient.CaptureException(ex);
+
+                return Task.FromResult(false);
             }
 
-            return Task.FromResult(false);
+            return Task.FromResult(true);            
+        }
+
+        private void JobRun(int size)
+        {
+            var userAgents = userAgentService.GetUserAgent(size);
+
+            if (userAgents != null && userAgents.Any())
+            {
+                var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
+
+                if (transformUserAgent.Any())
+                {
+                    var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+
+                    var result = userAgentService.UpdateUserAgent(userAgentJson);
+
+                    if (result.ErrorCode != 0)
+                    {
+                        sentryClient.CaptureMessage(result.ErrorMessage, Sentry.Protocol.SentryLevel.Error);
+                    }
+                }
+            }
         }
     }
 }

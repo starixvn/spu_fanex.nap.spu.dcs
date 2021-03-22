@@ -6,9 +6,6 @@ using FluentAssertions;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using UAParser;
 using Xunit;
 
 namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
@@ -40,9 +37,8 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
                     CreatedDate = new DateTime(2020, 02, 09, 00, 00, 00),
                     UserAgent = "002a30d8a4e32ff1a501ea52875bff6c",
                     UserAgentKey = "Mozilla/5.0 (Linux; Android 9; ASK-AL00x) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.101 Mobile Safari/537.36"
-                }            
+                }
             };
-
 
             userAgentDataAccess.GetUserAgent(100).Returns(userAgentEntities);
             var result = userAgentService.GetUserAgent(100);
@@ -124,16 +120,16 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Fact]
-        public void TransformUserAgent_WhenFailed_ReturnUserAgentModel()
+        [Theory]
+        [InlineData(null)]
+        public void TransformUserAgent_WhenFailed_ReturnUserAgentModel(List<UserAgentEntity> userAgentEntities)
         {
-            var userAgentEntities = new List<UserAgentEntity>();
-
             var expectedResult = new List<UserAgentModel>();
 
             var result = userAgentService.TransformUserAgent(userAgentEntities);
 
             result.Should().BeEquivalentTo(expectedResult);
+
             result.Count.Should().Be(0);
         }
 

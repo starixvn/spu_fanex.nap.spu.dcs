@@ -24,7 +24,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("useragent")]
-        public async Task<bool> UserAgent(int size, string jobName)
+        public async Task<bool> UserAgent(string jobName, int size)
         {
             sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
 
@@ -33,7 +33,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice(int size, int numberOfBatch ,string jobName)
+        public async Task<bool> TransformDevice(string jobName, int size, int numberOfBatch)
         {
             sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
 

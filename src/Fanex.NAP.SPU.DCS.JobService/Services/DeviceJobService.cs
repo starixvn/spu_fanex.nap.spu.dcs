@@ -28,35 +28,44 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
-
-                if (stagingTransIds != null && stagingTransIds.Any())
+                if(size > 0 && numberOfBatch > 0)
                 {
-                    var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
-                    var tasks = new List<Task>();
-
-                    groupTrans.ToList().ForEach(x => {
-
-                        var task = Task.Run(() => {
-                            deviceService.UpdateDevices(x);
-                        });
-                                                
-                        tasks.Add(task);
-
-                        Task.Delay(delayTime);
-                    });
-
-                    Task.WhenAll(tasks.ToArray());                   
-                }
-
-                return Task.FromResult(true);
+                    JobRun(size, numberOfBatch);
+                }                               
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
+
+                return Task.FromResult(false);
             }
 
-            return Task.FromResult(false);
+            return Task.FromResult(true);
+        }
+
+        private void JobRun(int size, int numberOfBatch)
+        {
+            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
+
+            if (stagingTransIds != null && stagingTransIds.Any())
+            {
+                var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
+                var tasks = new List<Task>();
+
+                groupTrans.ToList().ForEach(x =>
+                {
+                    var task = Task.Run(() =>
+                    {
+                        deviceService.UpdateDevices(x);
+                    });
+
+                    tasks.Add(task);
+
+                    Task.Delay(delayTime);
+                });
+
+                Task.WhenAll(tasks.ToArray());
+            }
         }
     }
 }
