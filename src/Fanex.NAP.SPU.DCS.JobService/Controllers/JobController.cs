@@ -13,18 +13,21 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         private readonly ISentryClient sentryClient;
         private readonly IUserAgentJobService userAgentJobService;
         private readonly IDeviceJobService deviceJobService;
+        private readonly ITransactionJobService transactionJobService;
 
         public JobController(ISentryClient sentryClient, 
             IUserAgentJobService userAgentJobService, 
-            IDeviceJobService deviceJobService)
+            IDeviceJobService deviceJobService,
+            ITransactionJobService transactionJobService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
+            this.transactionJobService = transactionJobService;
         }
 
         [HttpPost("useragent")]
-        public async Task<bool> UserAgent(string jobName, int size)
+        public async Task<bool> UserAgent(string jobName, [FromForm] int size)
         {
             sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
 
@@ -33,11 +36,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice(string jobName, int size, int numberOfBatch)
+        public async Task<bool> TransformDevice(string jobName, [FromForm] int size, [FromForm] int numberOfBatch)
         {
             sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
 
             return await this.deviceJobService.Execute(size, numberOfBatch);
+
+        }
+
+        [HttpPost("transformtransaction")]
+        public async Task<bool> TransformTransaction(string jobName, [FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
+
+            return await this.transactionJobService.Execute(size, numberOfBatch);
 
         }
     }

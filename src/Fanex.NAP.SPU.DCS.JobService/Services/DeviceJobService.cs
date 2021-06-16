@@ -56,7 +56,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     var task = Task.Run(() =>
                     {
-                        deviceService.UpdateDevices(x);
+                        try
+                        {
+                            deviceService.UpdateDevices(x);
+                        }
+                        catch (Exception ex)
+                        {
+                            sentryClient.CaptureException(ex);
+                        }
                     });
 
                     tasks.Add(task);
