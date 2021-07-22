@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_TransformData_Device_Transaction_GetPackage";
+            return "DCS_DC_Transform_Device_GetPackage";
         }
 
         public override bool IsValid()

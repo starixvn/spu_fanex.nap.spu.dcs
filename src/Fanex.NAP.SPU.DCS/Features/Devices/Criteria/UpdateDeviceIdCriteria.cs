@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_TransformData_Device_Insert";
+            return "DCS_DC_Transform_Device_Insert";
         }
 
         public override bool IsValid()

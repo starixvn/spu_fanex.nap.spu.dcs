@@ -16,7 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_ST_TransformData_GetPackage";
+            return "DCS_DC_Transform_RawTrans_GetPackage";
         }
 
         public override bool IsValid()

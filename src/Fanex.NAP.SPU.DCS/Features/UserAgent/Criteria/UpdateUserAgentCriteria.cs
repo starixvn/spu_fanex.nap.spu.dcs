@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_TransformData_UserAgent_UpdateOSBrowser";
+            return "DCS_DC_Transform_UserAgent_UpdateOSBrowser";
         }
 
         public override bool IsValid()

@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_TransformData_UserAgent_Insert";
+            return "DCS_DC_Transform_UserAgent_Insert";
         }
 
         public override bool IsValid()
