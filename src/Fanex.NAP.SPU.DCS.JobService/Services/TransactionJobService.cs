@@ -53,11 +53,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 var task = Task.Run(() =>
                 {
-                    this.transactionService
-                    .Init(trans.MinTransId, trans.MaxTransId)
-                    .UnhandleSubscriberAccountProcessing()
-                    .UserAgentProcessing()
-                    .TransactionProcessing();
+                    this.transactionService                    
+                    .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId)
+                    .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
+                    .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
 
                 });
 

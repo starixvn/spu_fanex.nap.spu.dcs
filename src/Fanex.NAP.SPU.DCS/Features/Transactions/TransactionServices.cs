@@ -8,22 +8,16 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions
         
         IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch);
 
-        ITransactionServices Init(long fromId, long toId);
+        ITransactionServices UserAgentProcessing(long fromId, long toId);
 
-        ITransactionServices UserAgentProcessing();
+        ITransactionServices TransactionProcessing(long fromId, long toId);
 
-        ITransactionServices TransactionProcessing();
-
-        ITransactionServices UnhandleSubscriberAccountProcessing();
+        ITransactionServices UnhandleSubscriberAccountProcessing(long fromId, long toId);
     }
 
     public class TransactionServices : ITransactionServices
     {
         private readonly ITransactionDataAccess transactionDataAccess;
-
-        private long fromId;
-
-        private long toId;
 
         public TransactionServices(ITransactionDataAccess transactionDataAccess)
         {
@@ -35,29 +29,23 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions
             return this.transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch);
         }
 
-        public ITransactionServices Init(long fromId, long toId)
-        {
-            this.fromId = fromId;
-            this.toId = toId;
+       
 
-            return this;
-        }
-
-        public ITransactionServices TransactionProcessing()
+        public ITransactionServices TransactionProcessing(long fromId, long toId)
         {
             this.transactionDataAccess.InsertTransaction(fromId, toId);
 
             return this;
         }
 
-        public ITransactionServices UnhandleSubscriberAccountProcessing()
+        public ITransactionServices UnhandleSubscriberAccountProcessing(long fromId, long toId)
         {
             this.transactionDataAccess.UnhandleSubscriberActionProcess(fromId, toId);
 
             return this;
         }
 
-        public ITransactionServices UserAgentProcessing()
+        public ITransactionServices UserAgentProcessing(long fromId, long toId)
         {
             this.transactionDataAccess.InserUserAgent(fromId, toId);
 
