@@ -27,30 +27,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("useragent")]
-        public async Task<bool> UserAgent(string jobName, [FromForm] int size)
-        {
-            sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
-
+        public async Task<bool> UserAgent([FromForm] int size)
+        {            
             return await this.userAgentJobService.Execute(size);
 
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice(string jobName, [FromForm] int size, [FromForm] int numberOfBatch)
-        {
-            sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
-
+        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        {         
             return await this.deviceJobService.Execute(size, numberOfBatch);
-
         }
 
         [HttpPost("transformtransaction")]
-        public async Task<bool> TransformTransaction(string jobName, [FromForm] int size, [FromForm] int numberOfBatch)
-        {
-            sentryClient.CaptureMessage($"{jobName} is running at {DateTime.Now}");
-
+        public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
+        {            
             return await this.transactionJobService.Execute(size, numberOfBatch);
-
         }
     }
 }
