@@ -8,7 +8,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IUserAgentJobService
     {
-        Task<bool> Execute(int size);
+        bool Execute(int size);
 
     }
     public class UserAgentJobService : IUserAgentJobService
@@ -22,7 +22,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.userAgentService = userAgentService;
         }
 
-        public Task<bool> Execute(int size)
+        public bool Execute(int size)
         {
             try
             {
@@ -35,10 +35,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 sentryClient.CaptureException(ex);
 
-                return Task.FromResult(false);
+                return false;
             }
 
-            return Task.FromResult(true);            
+            return true;            
         }
 
         private void JobRun(int size)

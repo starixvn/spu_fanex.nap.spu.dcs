@@ -9,7 +9,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ITransactionJobService
     {
-        Task<bool> Execute(int numberOfTrans, int numberOfBatch);
+        bool Execute(int numberOfTrans, int numberOfBatch);
     }
 
     public class TransactionJobService : ITransactionJobService
@@ -25,7 +25,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.transactionService = transactionService;
         }
 
-        public Task<bool> Execute(int numberOfTrans, int numberOfBatch)
+        public bool Execute(int numberOfTrans, int numberOfBatch)
         {
             try
             {
@@ -38,10 +38,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 sentryClient.CaptureException(ex);
 
-                return Task.FromResult(false);
+                return false;
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private void JobRun(int numberOfTrans, int numberOfBatch)

@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.Devices;
+using Newtonsoft.Json;
 using Sentry;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public class DeviceJobService : IDeviceJobService
     {
         private readonly ISentryClient sentryClient;
-        private readonly IDeviceServices deviceService;
-        private const int delayTime = 100; // milliseconds
+        private readonly IDeviceServices deviceService;        
 
         public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService)
         {
@@ -28,10 +28,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                if(size > 0 && numberOfBatch > 0)
+                if (size > 0 && numberOfBatch > 0)
                 {
                     JobRun(size, numberOfBatch);
-                }                               
+                }
             }
             catch (Exception ex)
             {
@@ -43,22 +43,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return Task.FromResult(true);
         }
 
-        private void JobRun(int size, int numberOfBatch)
+        private async void JobRun(int size, int numberOfBatch)
         {
-            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
+            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);                        
 
             if (stagingTransIds != null && stagingTransIds.Any())
             {
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
                 var tasks = new List<Task>();
 
-                foreach(var trans in groupTrans)
+                foreach (var trans in groupTrans)
                 {
                     var task = Task.Run(() =>
                     {
                         try
                         {
                             deviceService.UpdateDevices(trans);
+
+                            sentryClient.CaptureMessage($"Param: {JsonConvert.SerializeObject(trans)}");
                         }
                         catch (Exception ex)
                         {
@@ -66,12 +68,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         }
                     });
 
-                    Task.Delay(delayTime);
-
                     tasks.Add(task);
-                }               
+                }
 
-                Task.WhenAll(tasks.ToArray());
+               var taskCompleted = Task.WhenAll(tasks.ToArray());
+
+                await taskCompleted;
             }
         }
     }
