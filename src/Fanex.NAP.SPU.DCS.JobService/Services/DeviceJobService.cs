@@ -52,13 +52,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
                 var tasks = new List<Task>();
 
-                groupTrans.ToList().ForEach(x =>
+                foreach(var trans in groupTrans)
                 {
                     var task = Task.Run(() =>
                     {
                         try
                         {
-                            deviceService.UpdateDevices(x);
+                            deviceService.UpdateDevices(trans);
                         }
                         catch (Exception ex)
                         {
@@ -66,10 +66,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         }
                     });
 
-                    tasks.Add(task);
-
                     Task.Delay(delayTime);
-                });
+
+                    tasks.Add(task);
+                }               
 
                 Task.WhenAll(tasks.ToArray());
             }
