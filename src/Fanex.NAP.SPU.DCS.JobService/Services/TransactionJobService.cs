@@ -9,7 +9,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ITransactionJobService
     {
-        bool Execute(int numberOfTrans, int numberOfBatch);
+        Task<bool> Execute(int numberOfTrans, int numberOfBatch);
     }
 
     public class TransactionJobService : ITransactionJobService
@@ -17,6 +17,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private readonly ISentryClient sentryClient;
         private readonly ITransactionServices transactionService;
+
         private const int delayTime = 100; // milliseconds
 
         public TransactionJobService(ISentryClient sentryClient, ITransactionServices transactionService)
@@ -25,13 +26,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.transactionService = transactionService;
         }
 
-        public bool Execute(int numberOfTrans, int numberOfBatch)
+        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
         {
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                    JobRun(numberOfTrans, numberOfBatch);
+                   var task = JobRun(numberOfTrans, numberOfBatch);
+
+                    await task;
                 }
             }
             catch (Exception ex)
@@ -44,7 +47,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return true;
         }
 
-        private void JobRun(int numberOfTrans, int numberOfBatch)
+        private async Task JobRun(int numberOfTrans, int numberOfBatch)
         {
             var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch);
             var tasks = new List<Task>();
@@ -60,12 +63,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 });
 
-                Task.Delay(delayTime);
+                await Task.Delay(delayTime);
 
                 tasks.Add(task);
             }
 
-            Task.WhenAll(tasks.ToArray());
+            var taskCompleted = Task.WhenAll(tasks.ToArray());
+
+            await taskCompleted;
         }
     }
 }

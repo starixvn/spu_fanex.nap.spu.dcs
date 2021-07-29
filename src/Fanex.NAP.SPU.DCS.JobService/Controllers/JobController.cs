@@ -27,14 +27,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("useragent")]
-        public bool UserAgent(int size)
+        public Task<bool> UserAgent([FromForm] int size)
         {
-            return this.userAgentJobService.Execute(size);
+            var result = this.userAgentJobService.Execute(size);
+
+            return Task.FromResult(result);
 
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice(int size, int numberOfBatch)
+        public async Task<bool> TransformDevice([FromForm]int size, [FromForm] int numberOfBatch)
         {
             sentryClient.CaptureMessage($"Transform Device {DateTime.Now}");
 
@@ -42,9 +44,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("transformtransaction")]
-        public bool TransformTransaction(int size, int numberOfBatch)
+        public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return this.transactionJobService.Execute(size, numberOfBatch);
+            return await this.transactionJobService.Execute(size, numberOfBatch);
         }
     }
 }

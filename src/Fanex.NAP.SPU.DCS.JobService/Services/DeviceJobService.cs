@@ -16,7 +16,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public class DeviceJobService : IDeviceJobService
     {
         private readonly ISentryClient sentryClient;
-        private readonly IDeviceServices deviceService;        
+        private readonly IDeviceServices deviceService;
+        private const int delayTime = 100; // milliseconds
 
         public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService)
         {
@@ -24,28 +25,30 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.deviceService = deviceService;
         }
 
-        public Task<bool> Execute(int size, int numberOfBatch)
+        public async Task<bool> Execute(int size, int numberOfBatch)
         {
             try
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
-                    JobRun(size, numberOfBatch);
+                    var task = JobRun(size, numberOfBatch);
+
+                    await task;
                 }
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
-                return Task.FromResult(false);
+                return false;
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
-        private async void JobRun(int size, int numberOfBatch)
+        private async Task JobRun(int size, int numberOfBatch)
         {
-            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);                        
+            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
 
             if (stagingTransIds != null && stagingTransIds.Any())
             {
@@ -68,10 +71,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         }
                     });
 
-                    tasks.Add(task);
+                    await Task.Delay(delayTime);
+
+                    tasks.Add(task);                                        
                 }
 
-               var taskCompleted = Task.WhenAll(tasks.ToArray());
+                var taskCompleted = Task.WhenAll(tasks.ToArray());
 
                 await taskCompleted;
             }
