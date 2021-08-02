@@ -18,12 +18,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly ISentryClient sentryClient;
         private readonly ITransactionServices transactionService;
 
-        private const int delayTime = 100; // milliseconds
+        private readonly IList<string> IgnoreMessages;
+        private const int delayTime = 200; // milliseconds
 
         public TransactionJobService(ISentryClient sentryClient, ITransactionServices transactionService)
         {
             this.sentryClient = sentryClient;
             this.transactionService = transactionService;
+            IgnoreMessages = new List<string> {
+                "Deadlock found when trying to get lock; try restarting transaction"
+            };
         }
 
         public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
@@ -39,7 +43,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                if (!this.IgnoreMessages.Contains(ex.Message))
+                {
+                    sentryClient.CaptureException(ex);
+
+                    return true;
+                }                
 
                 return false;
             }
