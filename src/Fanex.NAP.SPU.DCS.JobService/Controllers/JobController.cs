@@ -37,9 +37,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm]int size, [FromForm] int numberOfBatch)
-        {
-            sentryClient.CaptureMessage($"Transform Device {DateTime.Now}");
-
+        {            
             return await this.deviceJobService.Execute(size, numberOfBatch);
         }
 

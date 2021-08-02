@@ -61,9 +61,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     {
                         try
                         {
-                            deviceService.UpdateDevices(trans);
-
-                            sentryClient.CaptureMessage($"Param: {JsonConvert.SerializeObject(trans)}");
+                            deviceService.UpdateDevices(trans);                                                        
                         }
                         catch (Exception ex)
                         {
