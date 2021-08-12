@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sentry;
 using System;
 using System.Threading.Tasks;
+using UAParser;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
@@ -33,6 +34,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 
             return Task.FromResult(result);
 
+        }
+
+        [HttpGet("ConvertUserAgent")]
+        public ClientInfo ConvertUserAgent(string userAgent)
+        {
+            return this.userAgentJobService.ConvertUserAgent(userAgent);
         }
 
         [HttpPost("transformdevice")]

@@ -3,12 +3,15 @@ using Newtonsoft.Json;
 using Sentry;
 using System.Linq;
 using System.Threading.Tasks;
+using UAParser;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IUserAgentJobService
     {
         bool Execute(int size);
+
+        ClientInfo ConvertUserAgent(string userAgent);
 
     }
     public class UserAgentJobService : IUserAgentJobService
@@ -20,6 +23,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             this.sentryClient = sentryClient;
             this.userAgentService = userAgentService;
+        }
+
+        public ClientInfo ConvertUserAgent(string userAgent)
+        {
+            return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
         public bool Execute(int size)
