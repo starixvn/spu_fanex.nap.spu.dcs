@@ -63,18 +63,27 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             foreach (var trans in rawTrans)
             {
-                var task = Task.Run(() =>
+                try
                 {
-                    this.transactionService                    
-                    .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId)
-                    .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
-                    .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
+                    var task = Task.Run(() =>
+                            {
+                                this.transactionService
+                                .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId)
+                                .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
+                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
 
-                });
+                            });
 
-                await Task.Delay(delayTime);
+                    await Task.Delay(delayTime);
 
-                tasks.Add(task);
+                    tasks.Add(task);
+                }
+                catch (Exception ex)
+                {
+                    sentryClient.CaptureException(ex);
+
+                    throw;
+                }
             }
 
             var taskCompleted = Task.WhenAll(tasks.ToArray());

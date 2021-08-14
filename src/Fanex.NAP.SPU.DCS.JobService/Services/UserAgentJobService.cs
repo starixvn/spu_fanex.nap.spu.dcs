@@ -61,12 +61,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
 
-                    var result = userAgentService.UpdateUserAgent(userAgentJson);
-
-                    if (result.ErrorCode != 0)
-                    {
-                        sentryClient.CaptureMessage(result.ErrorMessage, Sentry.Protocol.SentryLevel.Error);
-                    }
+                    userAgentService.UpdateUserAgent(userAgentJson);                                        
                 }
             }
         }
