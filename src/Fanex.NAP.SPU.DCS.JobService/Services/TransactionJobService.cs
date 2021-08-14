@@ -39,7 +39,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                    var task = JobRun(numberOfTrans, numberOfBatch);
 
                     await task;
+
+                    return true;
                 }
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -47,13 +51,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     sentryClient.CaptureException(ex);
 
+                    return false;
+                }
+                else
+                {
                     return true;
                 }                
-
-                return false;
             }
-
-            return true;
         }
 
         private async Task JobRun(int numberOfTrans, int numberOfBatch)
