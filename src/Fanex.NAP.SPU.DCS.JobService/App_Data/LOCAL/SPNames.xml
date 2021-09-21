@@ -14,5 +14,7 @@
 		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>				
 		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" />
 		<Setting Key="DCS_DC_Transform_UnhandleSubscriberAction" SpName="DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+
+		<Setting Key="DCS_DC_Transform_RawTrans_Monitoring_Daily_Insert" SpName="DCS_DC_Transform_RawTrans_Monitoring_Daily_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 	</Function>
 </Functions>

@@ -15,16 +15,19 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         private readonly IUserAgentJobService userAgentJobService;
         private readonly IDeviceJobService deviceJobService;
         private readonly ITransactionJobService transactionJobService;
+        private readonly IMonitoringJobService monitoringJobService;
 
         public JobController(ISentryClient sentryClient,
             IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
-            ITransactionJobService transactionJobService)
+            ITransactionJobService transactionJobService,
+            IMonitoringJobService monitoringJobService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
             this.transactionJobService = transactionJobService;
+            this.monitoringJobService = monitoringJobService;
         }
 
         [HttpPost("useragent")]
@@ -52,6 +55,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
             return await this.transactionJobService.Execute(size, numberOfBatch);
+        }
+
+        [HttpPost("rawtransdailysum")]
+        public Task<bool> RawTransDailySum()
+        {
+            var result = this.monitoringJobService.Execute();
+
+            return Task.FromResult(result);
         }
     }
 }
