@@ -1,12 +1,12 @@
-﻿using Fanex.NAP.SPU.DCS.JobService.Services;
-using Microsoft.AspNetCore.Mvc;
-using Sentry;
-using System;
-using System.Threading.Tasks;
-using UAParser;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Controllers
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.JobService.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Sentry;
+    using System;
+    using System.Threading.Tasks;
+    using UAParser;
+
     [ApiController]
     [Route("api/job")]
     public class JobController : ControllerBase
@@ -15,19 +15,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         private readonly IUserAgentJobService userAgentJobService;
         private readonly IDeviceJobService deviceJobService;
         private readonly ITransactionJobService transactionJobService;
-        private readonly IMonitoringJobService monitoringJobService;
+        private readonly ISumTransactionJobService sumTransactionJobService;
+        private readonly INotifyTransactionJobService notifyTransactionJobService;
 
         public JobController(ISentryClient sentryClient,
             IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
             ITransactionJobService transactionJobService,
-            IMonitoringJobService monitoringJobService)
+            ISumTransactionJobService sumTransactionJobService,
+            INotifyTransactionJobService notifyTransactionJobService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
             this.transactionJobService = transactionJobService;
-            this.monitoringJobService = monitoringJobService;
+            this.sumTransactionJobService = sumTransactionJobService;
+            this.notifyTransactionJobService = notifyTransactionJobService;
         }
 
         [HttpPost("useragent")]
@@ -57,12 +60,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             return await this.transactionJobService.Execute(size, numberOfBatch);
         }
 
-        [HttpPost("rawtransdailysum")]
-        public Task<bool> RawTransDailySum()
+        [HttpPost("sumtransaction")]
+        public async Task<bool> SumTransaction()
         {
-            var result = this.monitoringJobService.Execute();
+            return await this.sumTransactionJobService.Execute();
+        }
 
-            return Task.FromResult(result);
+        [HttpPost("notifytransaction")]
+        public async Task<bool> NotifyTransaction()
+        {
+            return await this.notifyTransactionJobService.Execute();
         }
     }
 }

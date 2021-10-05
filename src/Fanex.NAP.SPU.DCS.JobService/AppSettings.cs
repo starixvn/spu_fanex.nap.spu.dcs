@@ -1,21 +1,27 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.ComponentModel;
-
-namespace Fanex.NAP.SPU.DCS.JobService
+﻿namespace Fanex.NAP.SPU.DCS.JobService
 {
+    using Microsoft.Extensions.Configuration;
+    using System;
+    using System.ComponentModel;
+
     public interface IAppSettings
     {
-        int Environment { get; }                
+        int Environment { get; }
+
+        string EnvironmentString { get; }        
 
         string SPName { get; }
+
+        string SentryDsn { get; }
     }
+
     public class AppSettings : IAppSettings
     {
         private readonly IConfiguration configuration;
 
         private readonly string environment;        
         private readonly string spName;
+        private readonly string sentryDsn;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -24,6 +30,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
             environment = GetValue<string>(nameof(Environment));                       
 
             spName = GetValue<string>(nameof(SPName));
+
+            sentryDsn = GetValue<string>("Sentry:Dsn");
         }
 
         public int Environment
@@ -40,9 +48,19 @@ namespace Fanex.NAP.SPU.DCS.JobService
                         return 3;
                 }
             }
-        }                
+        }
 
-        public string SPName => spName;                
+        public string EnvironmentString
+        {
+            get
+            {
+                return environment;
+            }
+        }
+
+        public string SPName => spName;
+
+        public string SentryDsn => sentryDsn;
 
         public T GetValue<T>(string key)
         {

@@ -1,11 +1,11 @@
-﻿using Fanex.NAP.SPU.DCS.Features.Devices;
-using Fanex.NAP.SPU.DCS.Features.Monitoring;
-using Fanex.NAP.SPU.DCS.Features.Transactions;
-using Fanex.NAP.SPU.DCS.Features.UserAgent;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.Devices;
+    using Fanex.NAP.SPU.DCS.Features.Monitoring;
+    using Fanex.NAP.SPU.DCS.Features.Transactions;
+    using Fanex.NAP.SPU.DCS.Features.UserAgent;
+    using Microsoft.Extensions.DependencyInjection;
+
     public static class InitService
     {
         public static void RegisterService(this IServiceCollection services)
@@ -34,7 +34,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             services.AddSingleton<IMonitoringDataAccess, MonitoringDataAccess>();
             services.AddSingleton<IMonitoringServices, MonitoringServices>();
-            services.AddSingleton<IMonitoringJobService, MonitoringJobService>();
+            services.AddSingleton<ISumTransactionJobService, SumTransactionJobService>();
+            services.AddSingleton<INotifyTransactionJobService, NotifyTransactionJobService>();
         }
 
         private static void RegisterTransformTransaction(this IServiceCollection services)
