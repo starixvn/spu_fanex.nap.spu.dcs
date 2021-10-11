@@ -69,19 +69,13 @@
             {
                 using (var result = db.QueryMultiple(criteria))
                 {
-                    var yesterdayLess50Percents = result.Read<string>();
-                    var yesterdayZeros = result.Read<string>();
+                    var yesterdayLess50Percents = result.Read<string>();                    
                     var validLess50Percents = result.Read<string>();
 
                     if (yesterdayLess50Percents != null && yesterdayLess50Percents.Any())
                     {
                         notifyTransList.YesterdayLess50Percent = string.Join(',', yesterdayLess50Percents.Select(x=>x));
-                    }
-
-                    if (yesterdayZeros != null && yesterdayZeros.Any())
-                    {
-                        notifyTransList.YesterdayZero = string.Join(',', yesterdayZeros.Select(x => x));
-                    }
+                    }                   
 
                     if (validLess50Percents != null && validLess50Percents.Any())
                     {

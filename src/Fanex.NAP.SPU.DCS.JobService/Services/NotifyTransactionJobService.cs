@@ -57,7 +57,6 @@
         private void NotifyMessage(NotifyTransactionModel data)
         {
             var isNotify = !string.IsNullOrWhiteSpace(data.YesterdayLess50Percent)
-                        || !string.IsNullOrWhiteSpace(data.YesterdayZero)
                         || !string.IsNullOrWhiteSpace(data.ValidLess50Percent);                                               
 
             if (isNotify)
@@ -65,13 +64,10 @@
                 var message = $"Monitoring Transaction job run COMPLETED.";
 
                 if (!string.IsNullOrWhiteSpace(data.YesterdayLess50Percent))
-                    message += $"\n\r - Total Trans < 50%: {data.YesterdayLess50Percent}";
-
-                if (!string.IsNullOrWhiteSpace(data.YesterdayZero))
-                    message += $"\n\r - 0 New Tran: {data.YesterdayZero}";
+                    message += $"\n\r - Total Trans Today < 50% Yesterday: {data.YesterdayLess50Percent}";             
 
                 if (!string.IsNullOrWhiteSpace(data.ValidLess50Percent))
-                    message += $"\n\r - Valid Trans < 50%: {data.ValidLess50Percent}";
+                    message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
 
                 var telegramService = new NotificationService();
                 telegramService
