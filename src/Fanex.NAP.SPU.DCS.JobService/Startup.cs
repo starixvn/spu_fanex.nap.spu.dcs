@@ -1,5 +1,7 @@
 using Fanex.Data;
 using Fanex.Data.MySql;
+using Fanex.Logging;
+using Fanex.Logging.Sentry;
 using Fanex.NAP.SPU.DCS.JobService.Services;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Sentry;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -31,9 +35,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             services.AddSingleton<IAppSettings>(appSettings);
 
             services.AddControllers();
-            services
-               .AddHealthChecks();
-
+            services.AddHealthChecks();
 
             services.AddSwaggerGen(c =>
             {
@@ -43,6 +45,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
             services.RegisterService();
             
             FanexDataConfig(appSettings);
+
+            RegisterLogging(appSettings);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +93,19 @@ namespace Fanex.NAP.SPU.DCS.JobService
               .WithMySql()
               .UseDefaultDbSettingProvider(resourcePath: appSettings.SPName)
               .Run();
+        }
+
+        private void RegisterLogging(IAppSettings appSettings)
+        {
+            LogManager
+                .SetDefaultLogCategory("")
+                .Use(new List<ILogEngine>
+                {
+                     new SentryLogging(new SentryEngineOptions {
+                        Dsn = new Dsn(appSettings.SentryDsn),
+                        Environment = "DEV"
+                     })
+                });
         }
     }
 }
