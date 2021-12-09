@@ -8,6 +8,8 @@ namespace Fanex.NAP.SPU.DCS.Shares.Models
 
         public string BrowserName { get; set; }
 
+        public string DeviceFormFactor { get; set; }
+
         public string UserAgentKey { get; set; }
 
         public DateTime CreatedDate { get; set; }

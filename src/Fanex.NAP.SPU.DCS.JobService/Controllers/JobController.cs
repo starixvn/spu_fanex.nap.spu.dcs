@@ -5,7 +5,7 @@
     using Sentry;
     using System;
     using System.Threading.Tasks;
-    using UAParser;
+    using UAParser.FormFactor.Models;
 
     [ApiController]
     [Route("api/job")]

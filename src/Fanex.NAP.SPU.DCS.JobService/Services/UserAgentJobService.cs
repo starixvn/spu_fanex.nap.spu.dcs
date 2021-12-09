@@ -1,12 +1,11 @@
-﻿using Fanex.NAP.SPU.DCS.Features.UserAgent;
-using Newtonsoft.Json;
-using Sentry;
-using System.Linq;
-using System.Threading.Tasks;
-using UAParser;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.UserAgent;
+    using Newtonsoft.Json;
+    using Sentry;
+    using System.Linq;
+    using UAParser.FormFactor.Models;
+
     public interface IUserAgentJobService
     {
         bool Execute(int size);

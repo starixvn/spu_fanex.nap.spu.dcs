@@ -1,12 +1,14 @@
-﻿using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
-using Fanex.NAP.SPU.DCS.Shares;
-using Fanex.NAP.SPU.DCS.Shares.Models;
-using System.Collections.Generic;
-using System.Linq;
-using UAParser;
-
-namespace Fanex.NAP.SPU.DCS.Features.UserAgent
+﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
+    using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+    using Fanex.NAP.SPU.DCS.Shares;
+    using Fanex.NAP.SPU.DCS.Shares.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using UAParser.FormFactor;
+    using UAParser.FormFactor.Models;
+
     public interface IUserAgentServices
     {
         List<UserAgentEntity> GetUserAgent(int size);
@@ -58,6 +60,7 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
                     {
                         OSName = clientInfo.OS.Family,
                         BrowserName = clientInfo.UA.Family,
+                        DeviceFormFactor = Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor),
                         UserAgentKey = x.UserAgentKey,
                         CreatedDate = x.CreatedDate
                     };
