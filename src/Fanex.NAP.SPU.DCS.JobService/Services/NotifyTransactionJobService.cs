@@ -15,6 +15,8 @@
     public interface INotifyTransactionJobService
     {
         Task<bool> Execute();
+
+        Task<bool> TestTelegramNotifyMessage();
     }
 
     public class NotifyTransactionJobService : INotifyTransactionJobService
@@ -73,8 +75,19 @@
                 telegramService
                    .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
                    .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, message))
-                   .SendWithDelay(300);
+                   .SendWithDelay(300, true);
             }
+        }
+
+        public Task<bool> TestTelegramNotifyMessage()
+        {
+            var telegramService = new NotificationService();
+            telegramService
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+               .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, "Test"))
+               .SendWithDelay(300, true);
+
+            return Task.FromResult(true);
         }
 
     }
