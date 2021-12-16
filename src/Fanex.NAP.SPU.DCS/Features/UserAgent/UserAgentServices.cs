@@ -60,7 +60,7 @@
                     {
                         OSName = clientInfo.OS.Family,
                         BrowserName = clientInfo.UA.Family,
-                        DeviceFormFactor = Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor),
+                        DeviceTypeName = Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor),
                         UserAgentKey = x.UserAgentKey,
                         CreatedDate = x.CreatedDate
                     };

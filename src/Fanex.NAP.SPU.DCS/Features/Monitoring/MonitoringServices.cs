@@ -32,11 +32,20 @@
 
         public int UpdateSumRawTransaction(SumTransactionModel sumTransaction)
         {
-            if (sumTransaction.MaxTransID != 0 && sumTransaction != null && sumTransaction.SumTransactionList.Any())
-            {               
-                var sumTransJson = JsonConvert.SerializeObject(sumTransaction.SumTransactionList);
+            if (sumTransaction != null && sumTransaction.MaxTransID != 0)
+            {
+                if (sumTransaction.SumSubscriberList.Any()
+                    || sumTransaction.SumDeviceTypeList.Any()
+                    || sumTransaction.AccountIPList.Any()
+                    || sumTransaction.AccountDeviceList.Any())
+                {
+                    var sumSubsJson = JsonConvert.SerializeObject(sumTransaction.SumSubscriberList);
+                    var sumDeviceTypeJson = JsonConvert.SerializeObject(sumTransaction.SumDeviceTypeList);
+                    var accountIPJson = JsonConvert.SerializeObject(sumTransaction.AccountIPList);
+                    var accountDeviceJson = JsonConvert.SerializeObject(sumTransaction.AccountDeviceList);
 
-                return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction.MaxTransID, sumTransJson);
+                    return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction.MaxTransID, sumSubsJson, sumDeviceTypeJson, accountIPJson, accountDeviceJson);
+                }
             }
 
             return 1;

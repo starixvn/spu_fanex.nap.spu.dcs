@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class SumTransactionEntity
+    public class SumSubscriberEntity
     {
         public DateTime TransDate { get; set; }
 

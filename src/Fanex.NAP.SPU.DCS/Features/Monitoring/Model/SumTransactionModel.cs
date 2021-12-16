@@ -7,11 +7,20 @@
     {
         public SumTransactionModel()
         {
-            SumTransactionList = new List<SumTransactionEntity>();
+            SumSubscriberList = new List<SumSubscriberEntity>();
+            SumDeviceTypeList = new List<SumDeviceTypeEntity>();
+            AccountIPList = new List<AccountIPEntity>();
+            AccountDeviceList = new List<AccountDeviceEntity>();
         }
 
         public long MaxTransID { get; set; }
 
-        public IEnumerable<SumTransactionEntity> SumTransactionList { get; set; }
+        public IEnumerable<SumSubscriberEntity> SumSubscriberList { get; set; }
+
+        public IEnumerable<SumDeviceTypeEntity> SumDeviceTypeList { get; set; }
+
+        public IEnumerable<AccountIPEntity> AccountIPList { get; set; }
+
+        public IEnumerable<AccountDeviceEntity> AccountDeviceList { get; set; }
     }
 }
