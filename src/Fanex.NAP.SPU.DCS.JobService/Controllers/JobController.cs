@@ -71,5 +71,11 @@
         {
             return await this.notifyTransactionJobService.Execute();
         }
+
+        [HttpPost("testtelegramnotifymessage")]
+        public async Task<bool> TestTelegramNotifyMessage()
+        {
+            return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
+        }
     }
 }
