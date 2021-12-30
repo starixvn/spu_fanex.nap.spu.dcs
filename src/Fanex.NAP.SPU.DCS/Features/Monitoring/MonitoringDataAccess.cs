@@ -13,7 +13,7 @@
     {
         SumTransactionModel GetSumTransaction();
 
-        int UpdateSumRawTransaction(long maxTransID, string sumTransJson);
+        int UpdateSumRawTransaction(long maxTransID, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson);
 
         NotifyTransactionModel GetNotificationTransaction();
     }
@@ -37,11 +37,14 @@
                 {
                     var maxTransIDs = result.Read<long>();
 
-                    sumTransaction.SumTransactionList = result.Read<SumTransactionEntity>();
+                    sumTransaction.SumSubscriberList = result.Read<SumSubscriberEntity>();
+                    sumTransaction.SumDeviceTypeList = result.Read<SumDeviceTypeEntity>();
+                    sumTransaction.AccountIPList = result.Read<AccountIPEntity>();
+                    sumTransaction.AccountDeviceList = result.Read<AccountDeviceEntity>();
 
                     if (maxTransIDs != null && maxTransIDs.Any())
                     {
-                        sumTransaction.MaxTransID = maxTransIDs.ToList()[0];
+                        sumTransaction.MaxTransID = maxTransIDs.First();
                     }
 
                     return sumTransaction;
@@ -49,12 +52,15 @@
             }
         }
 
-        public int UpdateSumRawTransaction(long maxTransID, string sumTransJson)
+        public int UpdateSumRawTransaction(long maxTransID, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson)
         {
             var criteria = new UpdateSumTransactionCriteria
             {
                 MaxTransID = maxTransID,
-                SumTransJson = sumTransJson
+                SumSubscriberJson = sumSubsJson,
+                SumDeviceTypeJson = sumDeviceTypeJson,
+                AccountIPJson = accountIPJson,
+                AccountDeviceJson = accountDeviceJson
             };
 
            return repository.Execute(criteria);

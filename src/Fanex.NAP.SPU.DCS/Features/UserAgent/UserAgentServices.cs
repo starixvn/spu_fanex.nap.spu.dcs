@@ -1,12 +1,18 @@
-﻿using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
-using Fanex.NAP.SPU.DCS.Shares;
-using Fanex.NAP.SPU.DCS.Shares.Models;
-using System.Collections.Generic;
-using System.Linq;
-using UAParser;
-
-namespace Fanex.NAP.SPU.DCS.Features.UserAgent
+﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+    using Fanex.NAP.SPU.DCS.Shares;
+    using Fanex.NAP.SPU.DCS.Shares.Models;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using UAParser.FormFactor;
+    using UAParser.FormFactor.Models;
+
     public interface IUserAgentServices
     {
         List<UserAgentEntity> GetUserAgent(int size);
@@ -21,6 +27,7 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
     public class UserAgentServices : IUserAgentServices
     {
         private readonly IUserAgentDataAccess dataAccess;
+        private const string Unknown = "Unknown";
 
         public UserAgentServices(IUserAgentDataAccess dataAccess)
         {
@@ -52,16 +59,33 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
             {
                 return userAgents.Select(x =>
                 {
-                    var clientInfo = ConvertUserAgent(x.UserAgent);                                        
+                    var clientInfo = ConvertUserAgent(x.UserAgent);
 
-                    return new UserAgentModel
+                    if (clientInfo == null)
                     {
-                        OSName = clientInfo.OS.Family,
-                        BrowserName = clientInfo.UA.Family,
-                        UserAgentKey = x.UserAgentKey,
-                        CreatedDate = x.CreatedDate
-                    };
-
+                        return new UserAgentModel
+                        {
+                            OSName = Unknown,
+                            BrowserName = Unknown,
+                            DeviceTypeName = Enum.GetName(typeof(DeviceFormFactor), DeviceFormFactor.Unknown),
+                            UserAgentKey = x.UserAgentKey,
+                            CreatedDate = x.CreatedDate
+                        };
+                    }
+                    else
+                    {
+                        return new UserAgentModel
+                        {
+                            OSName = clientInfo.OS != null ? clientInfo.OS.Family : string.Empty,
+                            BrowserName = clientInfo.UA != null ? clientInfo.UA.Family : string.Empty,
+                            DeviceTypeName = clientInfo.Device != null
+                                    ? Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor)
+                                    : Enum.GetName(typeof(DeviceFormFactor), DeviceFormFactor.Unknown),
+                            UserAgentKey = x.UserAgentKey,
+                            CreatedDate = x.CreatedDate
+                        };
+                    }
+                   
                 }).ToList();
             }
 
@@ -72,10 +96,25 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
         {
             if (!string.IsNullOrWhiteSpace(userAgent))
             {
-                var uaParser = Parser.GetDefault();
+                try
+                {
+                    var uaParser = Parser.GetDefault();
 
-                return uaParser.Parse(userAgent);
+                    return uaParser.Parse(userAgent);
+                }
+                catch (Exception ex)
+                {
+                    var logMessage = new LogMessage(ex.Message)
+                          .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                          .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                    LogService.Error($"DCS - Parse User Agent { userAgent } exception message:  { logMessage }");
+
+                    return null;
+                }
             }
+
+            LogService.Info($"DCS - Parse User Agent null:");
 
             return null;
         }
