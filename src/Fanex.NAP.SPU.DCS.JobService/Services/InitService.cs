@@ -1,6 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.Devices;
+    using Fanex.NAP.SPU.DCS.Features.FPDevices;
+    using Fanex.NAP.SPU.DCS.Features.FPTransactions;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
@@ -13,6 +15,8 @@
             RegisterUserAgentService(services);
             RegisterTransformDevice(services);
             RegisterTransformTransaction(services);
+            RegisterFPTransformDevice(services);
+            RegisterFPTransformTransaction(services);
             RegisterMonitoring(services);
         }
 
@@ -43,6 +47,20 @@
             services.AddSingleton<ITransactionDataAccess, TransactionDataAccess>();
             services.AddSingleton<ITransactionServices, TransactionServices>();
             services.AddSingleton<ITransactionJobService, TransactionJobService>();
+        }
+
+        private static void RegisterFPTransformDevice(this IServiceCollection services)
+        {
+            services.AddSingleton<IFPDeviceDataAccess, FPDeviceDataAccess>();
+            services.AddSingleton<IFPDeviceServices, FPDeviceServices>();
+            services.AddSingleton<IFPDeviceJobService, FPDeviceJobService>();
+        }
+
+        private static void RegisterFPTransformTransaction(this IServiceCollection services)
+        {
+            services.AddSingleton<IFPTransactionDataAccess, FPTransactionDataAccess>();
+            services.AddSingleton<IFPTransactionServices, FPTransactionServices>();
+            services.AddSingleton<IFPTransactionJobService, FPTransactionJobService>();
         }
     }
 }
