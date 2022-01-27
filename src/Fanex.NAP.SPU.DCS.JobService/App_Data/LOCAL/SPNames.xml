@@ -19,12 +19,12 @@
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 
-		<Setting Key="FP_DCS_DC_Transform_UserAgent_Insert" SpName="FP_DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-		<Setting Key="FP_DCS_DC_Transform_RawTrans_GetPackage" SpName="FP_DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="FP_DCS_DC_Transform_Transaction_Insert" SpName="FP_DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="FP_DCS_DC_Transform_UnhandleSubscriberAction" SpName="FP_DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="FP_DCS_DC_Transform_UserAgent_Insert" SpName="FP_DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.FPTesting.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="FP_DCS_DC_Transform_RawTrans_GetPackage" SpName="FP_DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Transaction_Insert" SpName="FP_DCS_DC_Transform_Transaction_Insert" DbName="MySQL.FPTesting.ctsServiceAdmin" />
+		<Setting Key="FP_DCS_DC_Transform_UnhandleSubscriberAction" SpName="FP_DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.FPTesting.ctsServiceAdmin" Timeout="600" />
 
-		<Setting Key="FP_DCS_DC_Transform_Device_GetPackage" SpName="FP_DCS_DC_Transform_Device_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="FP_DCS_DC_Transform_Device_Insert" SpName="FP_DCS_DC_Transform_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Device_GetPackage" SpName="FP_DCS_DC_Transform_Device_GetPackage" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Device_Insert" SpName="FP_DCS_DC_Transform_Device_Insert" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
 	</Function>
 </Functions>
