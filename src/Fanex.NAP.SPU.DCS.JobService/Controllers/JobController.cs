@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.Logging;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;    
@@ -60,7 +61,7 @@
 
         [HttpPost("transformfpdevice")]
         public async Task<bool> TransformFPDevice([FromForm] int size, [FromForm] int numberOfBatch)
-        {
+        {           
             return await this.fPDeviceJobService.Execute(size, numberOfBatch);
         }
 
@@ -72,7 +73,7 @@
 
         [HttpPost("transformfptransaction")]
         public async Task<bool> TransformFPTransaction([FromForm] int size, [FromForm] int numberOfBatch)
-        {
+        {            
             return await this.fPTransactionJobService.Execute(size, numberOfBatch);
         }
 
