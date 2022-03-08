@@ -19,12 +19,12 @@
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 
-		<Setting Key="FP_DCS_DC_Transform_UserAgent_Insert" SpName="FP_DCS_DC_Transform_UserAgent_Insert_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin" Timeout="600" />
-		<Setting Key="FP_DCS_DC_Transform_RawTrans_GetPackage" SpName="FP_DCS_DC_Transform_RawTrans_GetPackage_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
-		<Setting Key="FP_DCS_DC_Transform_Transaction_Insert" SpName="FP_DCS_DC_Transform_Transaction_Insert_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin" />
-		<Setting Key="FP_DCS_DC_Transform_UnhandleSubscriberAction" SpName="FP_DCS_DC_Transform_UnhandleSubscriberAction_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="FP_DCS_DC_Transform_UserAgent_Insert" SpName="FP_DCS_DC_Transform_UserAgent_Insert_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin" Timeout="600" />
+		<Setting Key="FP_DCS_DC_Transform_RawTrans_GetPackage" SpName="FP_DCS_DC_Transform_RawTrans_GetPackage_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Transaction_Insert" SpName="FP_DCS_DC_Transform_Transaction_Insert_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin" />
+		<Setting Key="FP_DCS_DC_Transform_UnhandleSubscriberAction" SpName="FP_DCS_DC_Transform_UnhandleSubscriberAction_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin" Timeout="600" />
 
-		<Setting Key="FP_DCS_DC_Transform_Device_GetPackage" SpName="FP_DCS_DC_Transform_Device_GetPackage_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
-		<Setting Key="FP_DCS_DC_Transform_Device_Insert" SpName="FP_DCS_DC_Transform_Device_Insert_xtest" DbName="MySQL.FPTesting.ctsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Device_GetPackage" SpName="FP_DCS_DC_Transform_Device_GetPackage_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin"/>
+		<Setting Key="FP_DCS_DC_Transform_Device_Insert" SpName="FP_DCS_DC_Transform_Device_Insert_xtest" DbName="MySQL.FPSTesting.fpsServiceAdmin"/>
 	</Function>
 </Functions>

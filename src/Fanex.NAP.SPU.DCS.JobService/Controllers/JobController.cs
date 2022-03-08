@@ -61,7 +61,9 @@
 
         [HttpPost("transformfpdevice")]
         public async Task<bool> TransformFPDevice([FromForm] int size, [FromForm] int numberOfBatch)
-        {           
+        {
+            //LogService.Info($"TransformFPDevice called");
+
             return await this.fPDeviceJobService.Execute(size, numberOfBatch);
         }
 
@@ -73,7 +75,9 @@
 
         [HttpPost("transformfptransaction")]
         public async Task<bool> TransformFPTransaction([FromForm] int size, [FromForm] int numberOfBatch)
-        {            
+        {
+            //LogService.Info($"TransformFPTransaction called");
+
             return await this.fPTransactionJobService.Execute(size, numberOfBatch);
         }
 
