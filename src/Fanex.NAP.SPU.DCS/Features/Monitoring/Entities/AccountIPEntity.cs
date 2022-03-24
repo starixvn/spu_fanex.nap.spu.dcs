@@ -4,12 +4,12 @@
   
     public class AccountIPEntity
     {
-        public long AccountID { get; set; }
+        public UInt64 AccountID { get; set; }
 
         public DateTime TransDate { get; set; }
 
         public string IP { get; set; }
 
-        
+        public UInt64 MaxTransID { get; set; }
     }
 }

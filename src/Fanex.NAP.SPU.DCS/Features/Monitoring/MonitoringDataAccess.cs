@@ -13,7 +13,7 @@
     {
         SumTransactionModel GetSumTransaction();
 
-        int UpdateSumRawTransaction(long maxTransID, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson);
+        int UpdateSumRawTransaction(SumTransactionModel sumTrans, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson);
 
         NotifyTransactionModel GetNotificationTransaction();
     }
@@ -35,28 +35,27 @@
             {
                 using (var result = db.QueryMultiple(criteria))
                 {
-                    var maxTransIDs = result.Read<long>();
-
                     sumTransaction.SumSubscriberList = result.Read<SumSubscriberEntity>();
                     sumTransaction.SumDeviceTypeList = result.Read<SumDeviceTypeEntity>();
                     sumTransaction.AccountIPList = result.Read<AccountIPEntity>();
                     sumTransaction.AccountDeviceList = result.Read<AccountDeviceEntity>();
 
-                    if (maxTransIDs != null && maxTransIDs.Any())
-                    {
-                        sumTransaction.MaxTransID = maxTransIDs.First();
-                    }
+                    sumTransaction.MaxTransID = criteria.MaxTransID;
+                    sumTransaction.DateScan = criteria.DateScan;
+                    sumTransaction.AccountID = criteria.AccountID;
 
                     return sumTransaction;
                 }
             }
         }
 
-        public int UpdateSumRawTransaction(long maxTransID, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson)
+        public int UpdateSumRawTransaction(SumTransactionModel sumTrans, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson)
         {
             var criteria = new UpdateSumTransactionCriteria
             {
-                MaxTransID = maxTransID,
+                MaxTransID = sumTrans.MaxTransID,
+                DateScan = sumTrans.DateScan,
+                AccountID = sumTrans.AccountID,
                 SumSubscriberJson = sumSubsJson,
                 SumDeviceTypeJson = sumDeviceTypeJson,
                 AccountIPJson = accountIPJson,
