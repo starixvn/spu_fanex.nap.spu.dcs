@@ -1,6 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.FPTransactions
 {
-    using Fanex.NAP.SPU.DCS.Features.FPTransactions.Entities;    
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.FPTransactions.Entities;
+    using System;
     using System.Collections.Generic;
 
     public interface IFPTransactionServices
@@ -24,8 +28,8 @@
         }
 
         public IEnumerable<FPRawTransactionEntity> GetFPRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch)
-        {
-            return this._dataAccess.GetFPRawTransaction(isProcessed, numberOfTrans, numberOfBatch);
+        {            
+            return this._dataAccess.GetFPRawTransaction(isProcessed, numberOfTrans, numberOfBatch);         
         }
 
         public IFPTransactionServices TransactionProcessing(long fromId, long toId)
@@ -37,7 +41,7 @@
 
         public IFPTransactionServices UnhandleFPSubscriberActionProcessing(long fromId, long toId)
         {
-            this._dataAccess.UnhandleSubscriberActionProcess(fromId, toId);
+            this._dataAccess.UnhandleSubscriberActionProcess(fromId, toId);            
 
             return this;
         }

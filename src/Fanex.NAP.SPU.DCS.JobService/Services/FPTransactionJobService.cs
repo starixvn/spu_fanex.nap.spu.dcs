@@ -1,5 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.FPTransactions;
     using Sentry;
     using System;
@@ -44,44 +47,48 @@
             }
             catch (Exception ex)
             {
-                if (!this.IgnoreMessages.Contains(ex.Message))
-                {
-                    sentryClient.CaptureException(ex);
+                sentryClient.CaptureException(ex);
 
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                var logMessage = new LogMessage(ex.Message)
+                  .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                  .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - FP Transaction Job Service Execute exception message:  {logMessage}");
+
+                return false;
             }
         }
 
         private async Task JobRun(int numberOfTrans, int numberOfBatch)
         {
             var rawTrans = this.transactionService.GetFPRawTransaction(0, numberOfTrans, numberOfBatch);
+
             var tasks = new List<Task>();
 
             foreach (var trans in rawTrans)
             {
-                try
+                var task = Task.Run(() =>
                 {
-                    var task = Task.Run(() =>
+                    try
                     {
                         this.transactionService
-                               .UnhandleFPSubscriberActionProcessing(trans.MinTransId, trans.MaxTransId)
-                               .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
-                               .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
-                    });
+                           .UnhandleFPSubscriberActionProcessing(trans.MinTransId, trans.MaxTransId)
+                           .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
+                           .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
+                    }
+                    catch (Exception ex)
+                    {
+                        var logMessage = new LogMessage(ex.Message)
+                             .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                             .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                    await Task.Delay(delayTime);
-                }
-                catch (Exception ex)
-                {
-                    sentryClient.CaptureException(ex);
+                        LogService.Error($"DCS - FP Transaction Job Service JobRun exception message:  {logMessage}");
+                    }
+                });
 
-                    throw;
-                }
+                tasks.Add(task);
+
+                await Task.Delay(delayTime);
             }
 
             var taskCompleted = Task.WhenAll(tasks.ToArray());

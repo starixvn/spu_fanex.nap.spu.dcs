@@ -1,5 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.FPDevices;
     using Sentry;
     using System;
@@ -38,6 +41,12 @@
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
+
+                var logMessage = new LogMessage(ex.Message)
+                   .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                   .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - FP Device Job Service Execute exception message:  {logMessage}");
 
                 return false;
             }
