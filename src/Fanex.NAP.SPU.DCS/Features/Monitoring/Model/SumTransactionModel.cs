@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Model
 {
-    using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;    
+    using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
+    using System;
     using System.Collections.Generic;
 
     public class SumTransactionModel
@@ -13,7 +14,11 @@
             AccountDeviceList = new List<AccountDeviceEntity>();
         }
 
-        public long MaxTransID { get; set; }
+        public UInt64 MaxTransID { get; set; }
+
+        public DateTime DateScan { get; set; }
+
+        public UInt64 AccountID { get; set; }
 
         public IEnumerable<SumSubscriberEntity> SumSubscriberList { get; set; }
 

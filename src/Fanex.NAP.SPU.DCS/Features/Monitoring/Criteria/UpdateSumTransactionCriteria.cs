@@ -1,12 +1,19 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
     using Fanex.Data;
-    using Fanex.Data.Repository;    
+    using Fanex.Data.Repository;
+    using System;
 
     public class UpdateSumTransactionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_MaxTransID")]
-        public long MaxTransID { get; set; }
+        public UInt64 MaxTransID { get; set; }
+
+        [SpParam(SqlParamName = "ip_DateScan")]
+        public DateTime DateScan { get; set; }
+
+        [SpParam(SqlParamName = "ip_AccountID")]
+        public UInt64 AccountID { get; set; }
 
         [SpParam(SqlParamName = "ip_SumSubscriber")]
         public string SumSubscriberJson { get; set; }

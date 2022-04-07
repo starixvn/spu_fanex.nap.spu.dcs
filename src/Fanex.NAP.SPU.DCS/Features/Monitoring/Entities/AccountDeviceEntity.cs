@@ -4,11 +4,12 @@
 
     public class AccountDeviceEntity
     {
-        public long AccountID { get; set; }
+        public UInt64 AccountID { get; set; }
 
         public DateTime TransDate { get; set; }
 
         public long DeviceID { get; set; }
 
+        public UInt64 MaxTransID { get; set; }
     }
 }

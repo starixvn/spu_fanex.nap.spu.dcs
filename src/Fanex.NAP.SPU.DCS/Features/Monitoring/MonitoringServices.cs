@@ -44,7 +44,7 @@
                     var accountIPJson = JsonConvert.SerializeObject(sumTransaction.AccountIPList);
                     var accountDeviceJson = JsonConvert.SerializeObject(sumTransaction.AccountDeviceList);
 
-                    return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction.MaxTransID, sumSubsJson, sumDeviceTypeJson, accountIPJson, accountDeviceJson);
+                    return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction, sumSubsJson, sumDeviceTypeJson, accountIPJson, accountDeviceJson);
                 }
             }
 
