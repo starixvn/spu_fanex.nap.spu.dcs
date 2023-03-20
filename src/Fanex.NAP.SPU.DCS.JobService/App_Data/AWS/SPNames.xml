@@ -18,5 +18,7 @@
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
+
+    <Setting Key="DCS_DC_Abnormal_Transasction_Get" SpName="DCS_DC_Abnormal_Transasction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
 	</Function>
 </Functions>

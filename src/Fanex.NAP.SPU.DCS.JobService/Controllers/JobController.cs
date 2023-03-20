@@ -17,13 +17,15 @@
         private readonly ITransactionJobService transactionJobService;
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly INotifyTransactionJobService notifyTransactionJobService;
+        private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
 
         public JobController(ISentryClient sentryClient,
             IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
-            INotifyTransactionJobService notifyTransactionJobService)
+            INotifyTransactionJobService notifyTransactionJobService,
+            IAbnormalTransactionJobService abnormalTransactionJobService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
@@ -31,6 +33,7 @@
             this.transactionJobService = transactionJobService;
             this.sumTransactionJobService = sumTransactionJobService;
             this.notifyTransactionJobService = notifyTransactionJobService;
+            this.abnormalTransactionJobService = abnormalTransactionJobService;
         }
 
         [HttpPost("useragent")]
@@ -76,6 +79,12 @@
         public async Task<bool> TestTelegramNotifyMessage()
         {
             return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
+        }
+
+        [HttpPost("abnormaltransaction")]
+        public Task<bool> AbnormalTransaction([FromForm] int size)
+        {
+            return abnormalTransactionJobService.Execute(size);
         }
 
         [HttpPost("monitortransactionlevelaccount")]

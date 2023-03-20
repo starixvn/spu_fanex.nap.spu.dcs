@@ -20,6 +20,7 @@
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 
 		<Setting Key="DCS_DC_Monitor_GetCustByDate" SpName="DCS_DC_Monitor_GetCustByDate" DbName="MySQL.DCS_DataCenter.ctsService"/>
+    <Setting Key="DCS_DC_Abnormal_Transasction_Get" SpName="DCS_DC_Abnormal_Transasction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
 	</Function>
 </Functions>
