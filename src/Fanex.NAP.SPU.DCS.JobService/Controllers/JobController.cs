@@ -83,7 +83,7 @@
         [HttpPost("transformabnormaltransaction")]
         public Task<bool> TransformAbnormalTransaction([FromForm] int size)
         {
-            return abnormalTransactionJobService.Transform(size);
+            return Task.FromResult(abnormalTransactionJobService.Transform(size));
         }
 
         [HttpPost("postabnormaltransaction")]

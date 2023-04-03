@@ -1,7 +1,6 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.JobService.Models;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using Sentry;
 using System;
@@ -14,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IAbnormalTransactionJobService
     {
-        Task<bool> Transform(int size);
+        bool Transform(int size);
 
         Task<bool> PostAbnormalTransaction(int size);
     }
@@ -24,6 +23,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly ISentryClient sentryClient;
         private readonly IAbnormalTransactionJobServices abnormalTransactionJobServices;
 
+        private IEnumerable<AbnormalTransactionEntity> _abnormalTransasction;
+        private IEnumerable<AbnormalTransactionEntity> _abnormalTransasctionFiltered;
+        private IEnumerable<AbnormalTransactionModel> _abnormalTransasctionModel;
         private readonly string abnormalTransactionUrl;
 
         public AbnormalTransactionJobService(ISentryClient sentryClient, IAppSettings appSettings, IAbnormalTransactionJobServices abnormalTransactionJobServices)
@@ -34,133 +36,113 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
         }
 
-        public async Task<bool> PostAbnormalTransaction(int size)
+
+        public bool Transform(int size)
         {
+            if (size <= 0)
+            {
+                return false;
+            }
+
             try
             {
-                if (size > 0)
-                {
-                    var abnormalTransasction = abnormalTransactionJobServices.GetAbnormalTransasction(size);
-
-                    var listEntities = FilterCountDevice(abnormalTransasction);
-
-                    var listModel = TransformEntityToModel(listEntities);
-
-                    if (await PostData(listModel))
-                    {
-                        UpdateAbnormalTransasction(abnormalTransasction, listModel);
-
-                        return true;
-                    }
-                }
+                abnormalTransactionJobServices.TransformAbnormalTransasction(size);
+                return true;
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> PostAbnormalTransaction(int size)
+        {
+            if (size <= 0)
+            {
+                return false;
             }
 
+            try
+            {
+                _abnormalTransasction = abnormalTransactionJobServices.GetAbnormalTransasction(size);
+
+                var isSuccessed = await FilterCountDevice()
+                                          .TransformEntityToModel()
+                                          .PostData();
+
+                if (isSuccessed)
+                {
+                    UpdateAbnormalTransasction(_abnormalTransasction, _abnormalTransasctionFiltered);
+                }
+
+                return isSuccessed;
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                return false;
+            }
+        }
+
+        private AbnormalTransactionJobService FilterCountDevice()
+        {
+            if (_abnormalTransasction != null && _abnormalTransasction.Any())
+            {
+                _abnormalTransasctionFiltered = _abnormalTransasction.Where(x => x.CountDevice > 1).ToList();
+            }
+
+            return this;
+        }
+
+        private AbnormalTransactionJobService TransformEntityToModel()
+        {
+            if (_abnormalTransasctionFiltered == null || !_abnormalTransasctionFiltered.Any())
+            {
+                return this;
+            }
+
+            var listModel = _abnormalTransasctionFiltered
+                .Select(entity => new AbnormalTransactionModel
+                {
+                    Browser = entity.Browser,
+                    Device = entity.DeviceTypeName,
+                    IP = entity.IP,
+                    LoginName = entity.LoginName,
+                    OS = entity.OS,
+                    TransID = entity.TransID,
+                    TransTime = entity.TransTime,
+                    UserAgent = entity.UserAgent
+                })
+                .ToList();
+
+            _abnormalTransasctionModel = listModel;
+            return this;
+        }
+
+        private async Task<bool> PostData()
+        {
+            if (_abnormalTransasctionModel == null || !_abnormalTransasctionModel.Any() || string.IsNullOrEmpty(abnormalTransactionUrl))
+            {
+                return false;
+            }
+
+            using var httpClient = new HttpClient();
+            var jsonContent = JsonConvert.SerializeObject(_abnormalTransasctionModel);
+            var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            sentryClient.CaptureException(new Exception($"Invalid response! Status code: {response.StatusCode}\nUrl: {abnormalTransactionUrl}\nContent: {jsonContent}"));
             return false;
         }
 
-        private IEnumerable<AbnormalTransactionEntity> FilterCountDevice(IEnumerable<AbnormalTransactionEntity> entities)
+        private void UpdateAbnormalTransasction(IEnumerable<AbnormalTransactionEntity> entities, IEnumerable<AbnormalTransactionEntity> filteredEntities)
         {
-            if (entities != null && entities.Any())
-            {
-                return entities.Where(x => x.CountDevice > 1).ToList();
-            }
-
-            return null;
-        }
-
-        private IEnumerable<AbnormalTransactionModel> TransformEntityToModel(IEnumerable<AbnormalTransactionEntity> entities)
-        {
-            if (entities != null && entities.Any())
-            {
-                var listModel = new List<AbnormalTransactionModel>();
-
-                foreach (var entity in entities)
-                {
-                    var model = new AbnormalTransactionModel
-                    {
-                        Browser = entity.Browser,
-                        Device = entity.DeviceTypeName,
-                        IP = entity.IP,
-                        LoginName = entity.LoginName,
-                        OS = entity.OS,
-                        TransID = entity.TransID,
-                        TransTime = entity.TransTime,
-                        UserAgent = entity.UserAgent
-                    };
-                    listModel.Add(model);
-                }
-
-                return listModel;
-            }
-
-            return null;
-        }
-
-        private async Task<bool> PostData(IEnumerable<AbnormalTransactionModel> models)
-        {
-            if (models != null && models.Any() && !string.IsNullOrEmpty(abnormalTransactionUrl))
-            {
-                try
-                {
-                    var httpClient = new HttpClient();
-                    var jsonContent = JsonConvert.SerializeObject(models);
-                    var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
-
-                    if (!ValidateResponse(response))
-                    {
-                        sentryClient.CaptureException(new Exception(string.Format("Invalid response! Status code: {0} \nUrl: {1} \nContent: {2}", response.StatusCode, abnormalTransactionUrl, jsonContent)));
-                        return false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    sentryClient.CaptureException(ex);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static async Task<TResult> Post<TParam, TResult>(string url, TParam param)
-        {
-            using (var web = new HttpClient())
-            {
-                var response = await web.PostAsJsonAsync(url, param).ConfigureAwait(false);
-
-                return await response.Content.ReadAsAsync<TResult>().ConfigureAwait(false);
-            }
-        }
-
-        static bool ValidateResponse(HttpResponseMessage response)
-        {
-            return response.IsSuccessStatusCode;
-        }
-
-        public Task<bool> Transform(int size)
-        {
-            try
-            {
-                if (size > 0)
-                {
-                    abnormalTransactionJobServices.TransformAbnormalTransasction(size);
-                    return Task.FromResult(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                sentryClient.CaptureException(ex);
-            }
-
-            return Task.FromResult(false);
-        }
-
-        private void UpdateAbnormalTransasction(IEnumerable<AbnormalTransactionEntity> entities, IEnumerable<AbnormalTransactionModel> models)
-        {
-            var modelsUpdate = TransformEntityToUpdateModel(entities, models);
+            var modelsUpdate = TransformEntityToUpdateModel(entities, filteredEntities);
             if (modelsUpdate != null && modelsUpdate.Any())
             {
                 var transJson = JsonConvert.SerializeObject(modelsUpdate);
@@ -168,21 +150,21 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private IEnumerable<AbnormalTransactionUpdateModel> TransformEntityToUpdateModel(IEnumerable<AbnormalTransactionEntity> entities, IEnumerable<AbnormalTransactionModel> models)
+        private IEnumerable<AbnormalTransactionUpdateModel> TransformEntityToUpdateModel(IEnumerable<AbnormalTransactionEntity> entities, IEnumerable<AbnormalTransactionEntity> filteredEntities)
         {
-            entities = entities ?? Enumerable.Empty<AbnormalTransactionEntity>();
-            models = models ?? Enumerable.Empty<AbnormalTransactionModel>();
+            var entityDict = filteredEntities.ToDictionary(x => x.TransID);
 
             return entities.Select(entity =>
             {
                 var updateModel = new AbnormalTransactionUpdateModel
                 {
                     ID = entity.ID,
-                    Status = models.FirstOrDefault(x => x.TransID == entity.TransID) != null ? 1 : 0
+                    Status = entityDict.ContainsKey(entity.TransID) ? 1 : 0
                 };
 
                 return updateModel;
             });
         }
+
     }
 }
