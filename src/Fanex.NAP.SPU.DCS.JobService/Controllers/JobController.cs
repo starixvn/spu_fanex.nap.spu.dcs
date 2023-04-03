@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System;
     using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
@@ -52,8 +51,8 @@
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice([FromForm]int size, [FromForm] int numberOfBatch)
-        {            
+        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        {
             return await this.deviceJobService.Execute(size, numberOfBatch);
         }
 
@@ -81,10 +80,16 @@
             return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
         }
 
-        [HttpPost("abnormaltransaction")]
-        public Task<bool> AbnormalTransaction([FromForm] int size)
+        [HttpPost("transformabnormaltransaction")]
+        public Task<bool> TransformAbnormalTransaction([FromForm] int size)
         {
-            return abnormalTransactionJobService.Execute(size);
+            return abnormalTransactionJobService.Transform(size);
+        }
+
+        [HttpPost("postabnormaltransaction")]
+        public async Task<bool> PostAbnormalTransaction([FromForm] int size)
+        {
+            return await abnormalTransactionJobService.PostAbnormalTransaction(size);
         }
 
         [HttpPost("monitortransactionlevelaccount")]
