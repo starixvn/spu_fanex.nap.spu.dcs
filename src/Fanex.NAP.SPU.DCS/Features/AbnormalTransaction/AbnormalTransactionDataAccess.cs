@@ -3,46 +3,22 @@ using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionDataAccess
     {
-        void UpdateAbnormalTransasction(string transJson);
+        Task TransformTrans07ToAbnormalTransaction(int size);
 
-        IEnumerable<AbnormalTransactionEntity> GetAbnormalTransasction(int size);
+        Task UpdateAbnormalTransactionsAsync(string transJson);
 
-        void TransformAbnormalTransasction(int size);
+        Task<IEnumerable<AbnormalTransactionEntity>> GetAbnormalTransactionsAsync(int size);
     }
 
     public class AbnormalTransactionDataAccess : IAbnormalTransactionDataAccess
     {
-        public void UpdateAbnormalTransasction(string transJson)
-        {
-            var repository = new DynamicRepository();
-
-            var criteria = new AbnormalTransasctionUpdateCriteria
-            {
-                TransJson = transJson
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public IEnumerable<AbnormalTransactionEntity> GetAbnormalTransasction(int size)
-        {
-            var criteria = new AbnormalTransasctionGetCriteria
-            {
-                Size = size
-            };
-
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                return db.Query<AbnormalTransactionEntity>(criteria);
-            }
-        }
-
-        public void TransformAbnormalTransasction(int size)
+        public async Task TransformTrans07ToAbnormalTransaction(int size)
         {
             var repository = new DynamicRepository();
 
@@ -51,7 +27,32 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 Size = size
             };
 
-            repository.Execute(criteria);
+            await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task UpdateAbnormalTransactionsAsync(string transJson)
+        {
+            var repository = new DynamicRepository();
+
+            var criteria = new AbnormalTransasctionUpdateCriteria
+            {
+                TransJson = transJson
+            };
+
+            await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<IEnumerable<AbnormalTransactionEntity>> GetAbnormalTransactionsAsync(int size)
+        {
+            var criteria = new AbnormalTransasctionGetCriteria
+            {
+                Size = size
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return await db.QueryAsync<AbnormalTransactionEntity>(criteria);
+            }
         }
     }
 }

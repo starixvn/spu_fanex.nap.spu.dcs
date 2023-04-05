@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Fanex.NAP.SPU.DCS.JobService.Models
+namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model
 {
-    public class AbnormalTransactionModel
+    internal class AbnormalTransactionModel
     {
         public ulong TransID { get; set; }
 

@@ -50,7 +50,7 @@
         private static void RegisterAbnormalTransaction(this IServiceCollection services)
         {
             services.AddSingleton<IAbnormalTransactionDataAccess, AbnormalTransactionDataAccess>();
-            services.AddSingleton<IAbnormalTransactionJobServices, AbnormalTransactionJobServices>();
+            services.AddSingleton<IAbnormalTransactionServices, AbnormalTransactionServices>();
             services.AddSingleton<IAbnormalTransactionJobService, AbnormalTransactionJobService>();
         }
     }

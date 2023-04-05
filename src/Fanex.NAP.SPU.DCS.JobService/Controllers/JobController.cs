@@ -83,13 +83,13 @@
         [HttpPost("transformabnormaltransaction")]
         public Task<bool> TransformAbnormalTransaction([FromForm] int size)
         {
-            return Task.FromResult(abnormalTransactionJobService.Transform(size));
+            return abnormalTransactionJobService.TransformTrans07ToAbnormalTransasction(size);
         }
 
         [HttpPost("postabnormaltransaction")]
         public async Task<bool> PostAbnormalTransaction([FromForm] int size)
         {
-            return await abnormalTransactionJobService.PostAbnormalTransaction(size);
+            return await abnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
         [HttpPost("monitortransactionlevelaccount")]
