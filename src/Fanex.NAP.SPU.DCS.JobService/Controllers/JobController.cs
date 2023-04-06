@@ -87,9 +87,9 @@
         }
 
         [HttpPost("postabnormaltransaction")]
-        public async Task<bool> PostAbnormalTransaction([FromForm] int size)
+        public Task<bool> PostAbnormalTransaction([FromForm] int size)
         {
-            return await abnormalTransactionJobService.PushAbnormalTransaction(size);
+            return abnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
         [HttpPost("monitortransactionlevelaccount")]

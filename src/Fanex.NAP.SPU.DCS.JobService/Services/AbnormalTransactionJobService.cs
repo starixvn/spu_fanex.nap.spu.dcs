@@ -28,42 +28,42 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         }
 
 
-        public async Task<bool> TransformTrans07ToAbnormalTransasction(int size)
+        public Task<bool> TransformTrans07ToAbnormalTransasction(int size)
         {
-            if (size <= 0)
+            if (size > 0)
             {
-                return false;
+                try
+                {
+                    _abnormalTransactionServices.TransformTrans07ToAbnormalTransaction(size);
+
+                    return Task.FromResult(true);
+                }
+                catch (Exception ex)
+                {
+                    _sentryClient.CaptureException(ex);            
+                }                
             }
 
-            try
-            {
-                await _abnormalTransactionServices.TransformTrans07ToAbnormalTransaction(size);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _sentryClient.CaptureException(ex);
-                return false;
-            }
+            return Task.FromResult(false);
         }
 
-        public async Task<bool> PushAbnormalTransaction(int size)
+        public Task<bool> PushAbnormalTransaction(int size)
         {
-            if (size <= 0)
+            if (size > 0)
             {
-                return false;
+                try
+                {
+                    _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl);
+
+                    return Task.FromResult(true);
+                }
+                catch (Exception ex)
+                {
+                    _sentryClient.CaptureException(ex);                    
+                }                
             }
 
-            try
-            {
-                await _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _sentryClient.CaptureException(ex);
-                return false;
-            }
+            return Task.FromResult(false);
         }
     }
 }

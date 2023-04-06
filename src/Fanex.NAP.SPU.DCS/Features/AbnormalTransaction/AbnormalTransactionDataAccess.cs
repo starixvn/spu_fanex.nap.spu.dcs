@@ -9,16 +9,16 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionDataAccess
     {
-        Task TransformTrans07ToAbnormalTransaction(int size);
+        void TransformTrans07ToAbnormalTransaction(int size);
 
-        Task UpdateAbnormalTransactionsAsync(string transJson);
+        void UpdateAbnormalTransactionsAsync(string transJson);
 
-        Task<IEnumerable<AbnormalTransactionEntity>> GetAbnormalTransactionsAsync(int size);
+        IEnumerable<AbnormalTransactionEntity> GetAbnormalTransactionsAsync(int size);
     }
 
     public class AbnormalTransactionDataAccess : IAbnormalTransactionDataAccess
     {
-        public async Task TransformTrans07ToAbnormalTransaction(int size)
+        public void TransformTrans07ToAbnormalTransaction(int size)
         {
             var repository = new DynamicRepository();
 
@@ -27,10 +27,10 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 Size = size
             };
 
-            await repository.ExecuteAsync(criteria);
+            repository.ExecuteAsync(criteria);
         }
 
-        public async Task UpdateAbnormalTransactionsAsync(string transJson)
+        public void UpdateAbnormalTransactionsAsync(string transJson)
         {
             var repository = new DynamicRepository();
 
@@ -39,10 +39,10 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 TransJson = transJson
             };
 
-            await repository.ExecuteAsync(criteria);
+            repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<AbnormalTransactionEntity>> GetAbnormalTransactionsAsync(int size)
+        public IEnumerable<AbnormalTransactionEntity> GetAbnormalTransactionsAsync(int size)
         {
             var criteria = new AbnormalTransasctionGetCriteria
             {
@@ -51,7 +51,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
-                return await db.QueryAsync<AbnormalTransactionEntity>(criteria);
+                return db.Query<AbnormalTransactionEntity>(criteria);
             }
         }
     }
