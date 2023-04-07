@@ -11,17 +11,22 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
     {
         void TransformTrans07ToAbnormalTransaction(int size);
 
-        void UpdateAbnormalTransactionsAsync(string transJson);
+        void UpdateAbnormalTransactionsAsync(string transJson, decimal maxId);
 
-        IEnumerable<AbnormalTransactionEntity> GetAbnormalTransactionsAsync(int size);
+        (IEnumerable<AbnormalTransactionEntity>, IEnumerable<decimal>) GetAbnormalTransactionsAsync(int size);
     }
 
     public class AbnormalTransactionDataAccess : IAbnormalTransactionDataAccess
     {
+        private readonly IDynamicRepository repository;
+
+        public AbnormalTransactionDataAccess()
+        {
+            repository = new DynamicRepository();
+        }
+
         public void TransformTrans07ToAbnormalTransaction(int size)
         {
-            var repository = new DynamicRepository();
-
             var criteria = new AbnormalTransasctionTransformCriteria
             {
                 Size = size
@@ -30,29 +35,25 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             repository.ExecuteAsync(criteria);
         }
 
-        public void UpdateAbnormalTransactionsAsync(string transJson)
+        public void UpdateAbnormalTransactionsAsync(string transJson, decimal maxID)
         {
-            var repository = new DynamicRepository();
-
             var criteria = new AbnormalTransasctionUpdateCriteria
             {
-                TransJson = transJson
+                TransJson = transJson,
+                MaxID = maxID
             };
 
             repository.ExecuteAsync(criteria);
         }
 
-        public IEnumerable<AbnormalTransactionEntity> GetAbnormalTransactionsAsync(int size)
+        public (IEnumerable<AbnormalTransactionEntity>, IEnumerable<decimal>) GetAbnormalTransactionsAsync(int size)
         {
             var criteria = new AbnormalTransasctionGetCriteria
             {
                 Size = size
             };
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                return db.Query<AbnormalTransactionEntity>(criteria);
-            }
+            return repository.FetchMultiple<AbnormalTransactionEntity, decimal>(criteria);
         }
     }
 }

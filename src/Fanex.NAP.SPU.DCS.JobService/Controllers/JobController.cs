@@ -86,8 +86,8 @@
             return abnormalTransactionJobService.TransformTrans07ToAbnormalTransasction(size);
         }
 
-        [HttpPost("postabnormaltransaction")]
-        public Task<bool> PostAbnormalTransaction([FromForm] int size)
+        [HttpPost("pushabnormaltransaction")]
+        public Task<bool> PushAbnormalTransaction([FromForm] int size)
         {
             return abnormalTransactionJobService.PushAbnormalTransaction(size);
         }

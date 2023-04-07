@@ -21,7 +21,5 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities
         public string Browser { get; set; }
 
         public string DeviceTypeName { get; set; }
-
-        public int CountDevice { get; set; }
     }
 }
