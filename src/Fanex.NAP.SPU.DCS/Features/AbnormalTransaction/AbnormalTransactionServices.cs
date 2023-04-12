@@ -35,13 +35,10 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
         public void PushAbnormalTransaction(int size, string abnormalTransactionUrl)
         {
-            var (abnormalTransactions, maxIDResult) = _dataAccess.GetAbnormalTransactionsAsync(size);
+            var (abnormalTransactions, transIDMinMax) = _dataAccess.GetAbnormalTransactionsAsync(size);
 
-            decimal maxID = 0;
-            if (maxIDResult != null && maxIDResult.Any())
-            {
-                maxID = maxIDResult.First();
-            }
+            ulong minID = transIDMinMax?.FirstOrDefault()?.MinID ?? 0;
+            ulong maxID = transIDMinMax?.FirstOrDefault()?.MaxID ?? 0;
 
             if (abnormalTransactions.Any())
             {
@@ -51,18 +48,17 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
                 if(isResult)
                 {
-                    var updateStatus = abnormalTransactions
-                                                .Select(t => new AbnormalTransactionUpdateModel { ID = t.ID, Status = 1 });
+                    var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });
                     var jsonTrans = JsonConvert.SerializeObject(updateStatus);
 
-                    _dataAccess.UpdateAbnormalTransactionsAsync(jsonTrans, maxID);
+                    _dataAccess.UpdateAbnormalTransactionsAsync(jsonTrans, minID, maxID);
                 }
             }
             else
             {
                 //Update MaxId
                 if(maxID > 0)
-                    _dataAccess.UpdateAbnormalTransactionsAsync(string.Empty, maxID);
+                    _dataAccess.UpdateAbnormalTransactionsAsync(string.Empty, minID, maxID);
             }
         }
 

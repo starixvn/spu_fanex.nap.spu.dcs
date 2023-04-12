@@ -8,8 +8,11 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria
         [SpParam(SqlParamName = "ip_TransJson")]
         public string TransJson { get; set; }
 
+        [SpParam(SqlParamName = "ip_MinID")]
+        public ulong MinID { get; set; }
+
         [SpParam(SqlParamName = "ip_MaxID")]
-        public decimal MaxID { get; set; }
+        public ulong MaxID { get; set; }
 
         public override string GetSettingKey()
         {

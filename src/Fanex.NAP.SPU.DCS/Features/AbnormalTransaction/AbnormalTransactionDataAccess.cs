@@ -1,9 +1,8 @@
-﻿using Fanex.Data;
-using Fanex.Data.Repository;
+﻿using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
+using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
@@ -11,9 +10,9 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
     {
         void TransformTrans07ToAbnormalTransaction(int size);
 
-        void UpdateAbnormalTransactionsAsync(string transJson, decimal maxId);
+        void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId);
 
-        (IEnumerable<AbnormalTransactionEntity>, IEnumerable<decimal>) GetAbnormalTransactionsAsync(int size);
+        (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size);
     }
 
     public class AbnormalTransactionDataAccess : IAbnormalTransactionDataAccess
@@ -35,25 +34,26 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             repository.ExecuteAsync(criteria);
         }
 
-        public void UpdateAbnormalTransactionsAsync(string transJson, decimal maxID)
+        public void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId)
         {
             var criteria = new AbnormalTransasctionUpdateCriteria
             {
                 TransJson = transJson,
-                MaxID = maxID
+                MinID = minId,
+                MaxID = maxId
             };
 
             repository.ExecuteAsync(criteria);
         }
 
-        public (IEnumerable<AbnormalTransactionEntity>, IEnumerable<decimal>) GetAbnormalTransactionsAsync(int size)
+        public (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size)
         {
             var criteria = new AbnormalTransasctionGetCriteria
             {
                 Size = size
             };
 
-            return repository.FetchMultiple<AbnormalTransactionEntity, decimal>(criteria);
+            return repository.FetchMultiple<AbnormalTransactionEntity, TransIDMinMaxModel>(criteria);
         }
     }
 }
