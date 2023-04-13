@@ -1,20 +1,15 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionServices
     {
-        void TransformTrans07ToAbnormalTransaction(int size);
-
         void PushAbnormalTransaction(int size, string abnormalTransactionUrl);
     }
 
@@ -25,12 +20,6 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
         public AbnormalTransactionServices(IAbnormalTransactionDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-        }
-
-        public void TransformTrans07ToAbnormalTransaction(int size)
-        {
-            if (size > 0)
-                _dataAccess.TransformTrans07ToAbnormalTransaction(size);
         }
 
         public void PushAbnormalTransaction(int size, string abnormalTransactionUrl)
@@ -46,7 +35,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
                 var isResult = PushData(dataTransformed, abnormalTransactionUrl);
 
-                if(isResult)
+                if (isResult)
                 {
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });
                     var jsonTrans = JsonConvert.SerializeObject(updateStatus);
@@ -57,7 +46,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             else
             {
                 //Update MaxId
-                if(maxID > 0)
+                if (maxID > 0)
                     _dataAccess.UpdateAbnormalTransactionsAsync(string.Empty, minID, maxID);
             }
         }
@@ -90,6 +79,6 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             var response = httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent).Result;
 
             return response.IsSuccessStatusCode;
-        }    
+        }
     }
 }

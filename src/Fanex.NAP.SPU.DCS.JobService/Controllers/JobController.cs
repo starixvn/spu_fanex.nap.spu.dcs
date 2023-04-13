@@ -80,12 +80,6 @@
             return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
         }
 
-        [HttpPost("transformabnormaltransaction")]
-        public Task<bool> TransformAbnormalTransaction([FromForm] int size)
-        {
-            return abnormalTransactionJobService.TransformTrans07ToAbnormalTransasction(size);
-        }
-
         [HttpPost("pushabnormaltransaction")]
         public Task<bool> PushAbnormalTransaction([FromForm] int size)
         {

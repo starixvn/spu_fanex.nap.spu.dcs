@@ -8,8 +8,6 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionDataAccess
     {
-        void TransformTrans07ToAbnormalTransaction(int size);
-
         void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId);
 
         (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size);
@@ -22,16 +20,6 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
         public AbnormalTransactionDataAccess()
         {
             repository = new DynamicRepository();
-        }
-
-        public void TransformTrans07ToAbnormalTransaction(int size)
-        {
-            var criteria = new AbnormalTransasctionTransformCriteria
-            {
-                Size = size
-            };
-
-            repository.ExecuteAsync(criteria);
         }
 
         public void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId)
