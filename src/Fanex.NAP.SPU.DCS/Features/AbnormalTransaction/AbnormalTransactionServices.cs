@@ -9,7 +9,9 @@ using System.Net.Http.Json;
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionServices
-    {
+    {        
+        void ArchiveAbnormalTransactions();
+
         void PushAbnormalTransaction(int size, string abnormalTransactionUrl);
     }
 
@@ -20,6 +22,11 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
         public AbnormalTransactionServices(IAbnormalTransactionDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
+        }
+
+        public void ArchiveAbnormalTransactions()
+        {
+            _dataAccess.ArchiveAbnormalTransactionsAsync();
         }
 
         public void PushAbnormalTransaction(int size, string abnormalTransactionUrl)
