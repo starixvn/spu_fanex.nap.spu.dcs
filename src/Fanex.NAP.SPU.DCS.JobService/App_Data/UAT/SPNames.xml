@@ -24,6 +24,5 @@
     <Setting Key="DCS_DC_Abnormal_Transasction_Get" SpName="DCS_DC_Abnormal_Transasction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
     <Setting Key="DCS_DC_Abnormal_Transasction_Update" SpName="DCS_DC_Abnormal_Transasction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-    <Setting Key="DCS_DC_ArchiveData_NewAccountDevice" SpName="DCS_DC_ArchiveData_NewAccountDevice" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 	</Function>
 </Functions>

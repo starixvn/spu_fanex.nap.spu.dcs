@@ -7,8 +7,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IAbnormalTransactionJobService
     {
-        Task<bool> ArchiveNewAccountDevice();
-
         Task<bool> PushAbnormalTransaction(int size);
     }
 
@@ -25,22 +23,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             _abnormalTransactionServices = abnormalTransactionJobServices;
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
-        }
-
-        public Task<bool> ArchiveNewAccountDevice()
-        {
-            try
-            {
-                _abnormalTransactionServices.ArchiveAbnormalTransactions();
-
-                return Task.FromResult(true);
-            }
-            catch (Exception ex)
-            {
-                _sentryClient.CaptureException(ex);
-            }
-
-            return Task.FromResult(false);
         }
 
         public Task<bool> PushAbnormalTransaction(int size)
