@@ -38,6 +38,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 catch (Exception ex)
                 {
                     _sentryClient.CaptureException(ex);
+                    return Task.FromResult(false);
                 }
             }
 
