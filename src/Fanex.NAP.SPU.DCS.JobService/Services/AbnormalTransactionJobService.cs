@@ -1,7 +1,7 @@
-﻿using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
-using Sentry;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+using Sentry;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
@@ -25,24 +25,25 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
         }
 
-        public Task<bool> PushAbnormalTransaction(int size)
+        public async Task<bool> PushAbnormalTransaction(int size)
         {
             if (size > 0)
             {
                 try
                 {
-                    _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl);
+                    var result = await _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl);
 
-                    return Task.FromResult(true);
+                    return result;
                 }
                 catch (Exception ex)
                 {
                     _sentryClient.CaptureException(ex);
-                    return Task.FromResult(false);
+                    return false;
                 }
             }
 
-            return Task.FromResult(false);
+            _sentryClient.CaptureMessage("PushAbnormalTransaction size = 0");
+            return false;
         }
     }
 }
