@@ -81,9 +81,10 @@
         }
 
         [HttpPost("pushabnormaltransaction")]
-        public Task<bool> PushAbnormalTransaction([FromForm] int size)
+        public async Task<bool> PushAbnormalTransaction([FromForm] int size)
         {
-            return abnormalTransactionJobService.PushAbnormalTransaction(size);
+            return await Task.FromResult(false);
+            // return await abnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
         [HttpPost("archivenewaccountdevice")]
