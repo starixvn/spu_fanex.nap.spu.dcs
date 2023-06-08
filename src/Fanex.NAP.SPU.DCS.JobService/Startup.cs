@@ -1,5 +1,6 @@
 using Fanex.Data;
 using Fanex.Data.MySql;
+using Fanex.Data.SqlServer;
 using Fanex.Logging;
 using Fanex.Logging.Sentry;
 using Fanex.NAP.SPU.DCS.JobService.Services;
@@ -91,6 +92,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
               .StartNewSession()
               .Use(connections)
               .WithMySql()
+              .WithSqlServer()
               .UseDefaultDbSettingProvider(resourcePath: appSettings.SPName)
               .Run();
         }

@@ -77,5 +77,11 @@
         {
             return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
         }
+
+        [HttpPost("monitortransactionlevelaccount")]
+        public async Task<bool> MonitorTransactionLevelAccount()
+        {
+            return await notifyTransactionJobService.MonitorTransactionLevelAccount();
+        }
     }
 }

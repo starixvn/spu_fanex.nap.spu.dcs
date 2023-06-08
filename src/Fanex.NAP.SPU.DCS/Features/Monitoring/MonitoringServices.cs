@@ -1,11 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring
 {
-    using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
-    using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
+    using Newtonsoft.Json;
 
     public interface IMonitoringServices
     {
@@ -14,6 +13,10 @@
         int UpdateSumRawTransaction(SumTransactionModel sumTransaction);
 
         NotifyTransactionModel GetNotificationTransaction();
+
+        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+
+        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -24,7 +27,7 @@
         {
             this.monitoringDataAccess = monitoringDataAccess;
         }
-       
+
         public SumTransactionModel GetSumTransaction()
         {
             return this.monitoringDataAccess.GetSumTransaction();
@@ -50,10 +53,20 @@
 
             return 1;
         }
-       
+
         public NotifyTransactionModel GetNotificationTransaction()
         {
             return this.monitoringDataAccess.GetNotificationTransaction();
+        }
+
+        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        {
+            return monitoringDataAccess.GetCTSCustByDate(rptDate);
+        }
+
+        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
+        {
+            return monitoringDataAccess.GetDCSCustByDate(transDate);
         }
 
     }
