@@ -99,6 +99,8 @@
                 var date = DateTime.Today;
                 var rptDate = date.AddDays(-1);
 
+                sentryClient.CaptureMessage($"MonitorTransactionLevelAccount on date: {date:dd/MM/yyyy} for date: {rptDate:dd/MM/yyyy}");
+
                 var ctsCust = monitoringServices.GetCTSCustByDate(rptDate);
                 if (ctsCust != null && ctsCust.Any())
                 {
