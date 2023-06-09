@@ -9,6 +9,7 @@
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using Fanex.NAP.SPU.Notification.Services;
+    using Microsoft.Extensions.Hosting;
     using Sentry;
 
     public interface INotifyTransactionJobService
@@ -26,11 +27,15 @@
         private readonly IMonitoringServices monitoringServices;
         private readonly IAppSettings appSettings;
 
+        private readonly string proxy;
+
         public NotifyTransactionJobService(IMonitoringServices monitoringServices, ISentryClient sentryClient, IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.monitoringServices = monitoringServices;
             this.appSettings = appSettings;
+
+            proxy = appSettings.EnvironmentString == "PROD" ? "10.2.252.100:8801" : null;
         }
 
         public Task<bool> Execute()
@@ -74,7 +79,7 @@
 
                 var telegramService = new NotificationService();
                 telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                    .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, message))
                    .SendWithDelay(300, true);
             }
@@ -84,7 +89,7 @@
         {
             var telegramService = new NotificationService();
             telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, "Test"))
                .SendWithDelay(300, true);
 
@@ -99,7 +104,7 @@
                 var date = DateTime.Today;
                 var rptDate = date.AddDays(-1);
 
-                sentryClient.CaptureMessage($"MonitorTransactionLevelAccount on date: {date:dd/MM/yyyy} for date: {rptDate:dd/MM/yyyy}");
+                sentryClient.CaptureMessage($"MonitorTransactionLevelAccount on date: {rptDate:dd/MM/yyyy}");
 
                 var ctsCust = monitoringServices.GetCTSCustByDate(rptDate);
                 if (ctsCust != null && ctsCust.Any())
@@ -120,6 +125,7 @@
                             message += ", ...";
                         }
 
+                        sentryClient.CaptureMessage($"List Cust on date: {message}");
                         NotifyMessageMonitorTransaction("FPS-Cust-MissedTrans " + rptDate.ToString("MM/dd/yyyy"), message, string.Empty);
                     }
                 }
@@ -142,9 +148,9 @@
         {
             var telegramService = new NotificationService();
             telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-506613866", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken")
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001586405982", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(jobName, DateTime.Now, appSettings.EnvironmentString, message, moreInfo))
-               .SendWithDelay(300, true);
+               .SendWithoutDelay(true);
         }
     }
 }
