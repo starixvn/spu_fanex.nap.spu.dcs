@@ -41,6 +41,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
                 var isResult = await PushData(dataTransformed, abnormalTransactionUrl);
 
+                _sentryClient.CaptureMessage($"PushAbnormalTransaction data (${isResult}): ${JsonConvert.SerializeObject(dataTransformed)}");
                 if (isResult)
                 {
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });

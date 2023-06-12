@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+using Newtonsoft.Json;
 using Sentry;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
