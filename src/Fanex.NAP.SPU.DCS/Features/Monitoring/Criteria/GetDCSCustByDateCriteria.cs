@@ -11,7 +11,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_Monitor_GetCustByDate";
+            return "DCS_DC_Monitor_Transaction_Get";
         }
 
         public override bool IsValid()

@@ -17,6 +17,8 @@
         IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
+
+        void InsertMonitorTransaction(string transJson);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -69,5 +71,9 @@
             return monitoringDataAccess.GetDCSCustByDate(transDate);
         }
 
+        public void InsertMonitorTransaction(string transJson)
+        {
+            monitoringDataAccess.InsertMonitorTransaction(transJson);
+        }
     }
 }

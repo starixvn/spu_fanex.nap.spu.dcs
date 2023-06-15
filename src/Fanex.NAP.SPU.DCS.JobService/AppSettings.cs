@@ -15,6 +15,8 @@
         string SentryDsn { get; }
 
         string AbnormalTransactionUrl { get; }
+        
+        string TelegramProxy { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -25,6 +27,7 @@
         private readonly string spName;
         private readonly string sentryDsn;
         private readonly string abnormalTransactionUrl;
+        private readonly string telegramProxy;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -37,6 +40,8 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
 
             abnormalTransactionUrl = GetValue<string>("AbnormalTransaction:Url");
+            
+            telegramProxy = GetValue<string>("Telegram:Proxy");
         }
 
         public int Environment
@@ -68,6 +73,8 @@
         public string SentryDsn => sentryDsn;
 
         public string AbnormalTransactionUrl => abnormalTransactionUrl;
+        
+        public string TelegramProxy => telegramProxy;
 
         public T GetValue<T>(string key)
         {

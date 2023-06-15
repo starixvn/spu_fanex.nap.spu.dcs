@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Logging;
@@ -9,6 +10,7 @@
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using Fanex.NAP.SPU.Notification.Services;
+    using Newtonsoft.Json;
     using Sentry;
 
     public interface INotifyTransactionJobService
@@ -36,7 +38,7 @@
             this.monitoringServices = monitoringServices;
             this.appSettings = appSettings;
 
-            proxy = appSettings.EnvironmentString == "PROD" ? "10.2.252.100:8801" : null;
+            proxy = appSettings.EnvironmentString == "PROD" ? appSettings.TelegramProxy : null;
         }
 
         public Task<bool> Execute()
@@ -102,7 +104,7 @@
             try
             {
                 var cfgLimitShowCust = 10;
-                var date = DateTime.Today;
+                var date = new DateTime(2023,4,2);
                 var rptDate = date.AddDays(-1);
 
                 sentryClient.CaptureMessage($"MonitorTransactionLevelAccount on date: {rptDate:dd/MM/yyyy}");
@@ -126,8 +128,9 @@
                             message += ", ...";
                         }
 
-                        sentryClient.CaptureMessage($"List Cust on date: {message}");
-                        NotifyMessageMonitorTransaction("FPS-Cust-MissedTrans " + rptDate.ToString("MM/dd/yyyy"), message, string.Empty);
+                        //NotifyMessageMonitorTransaction("FPS-Cust-MissedTrans " + rptDate.ToString("MM/dd/yyyy"), message, string.Empty);
+
+                        StoreDataMonitorTransaction(ctsCustNotInDcs);
                     }
                 }
             }
@@ -148,12 +151,22 @@
         private void NotifyMessageMonitorTransaction(string jobName, string message, string moreInfo)
         {
             var telegramService = new NotificationService();
+            var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
+
             telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001586405982", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
+               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(jobName, DateTime.Now, appSettings.EnvironmentString, message, moreInfo))
                .SendWithoutDelay(true);
         }
 
+        private void StoreDataMonitorTransaction(IEnumerable<CTSCustModel> ctsCust)
+        {
+            if (ctsCust != null && ctsCust.Any())
+            {
+                monitoringServices.InsertMonitorTransaction(JsonConvert.SerializeObject(ctsCust));
+            }
+        }
+        
         public Task<bool> TestSentryCaptureMessage(string message)
         {
             sentryClient.CaptureMessage(message);

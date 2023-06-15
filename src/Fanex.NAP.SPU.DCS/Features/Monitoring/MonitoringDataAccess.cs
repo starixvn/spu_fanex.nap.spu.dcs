@@ -20,6 +20,8 @@
         IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
+
+        void InsertMonitorTransaction(string transJson);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -120,6 +122,16 @@
             {
                 return db.Query<ulong>(criteria);
             }
+        }
+
+        public async void InsertMonitorTransaction(string transJson)
+        {
+            var criteria = new InsertMonitorTransactionCriteria
+            {
+                TransJson = transJson
+            };
+
+            await repository.ExecuteAsync(criteria);
         }
     }
 }
