@@ -16,6 +16,10 @@
         int UpdateSumRawTransaction(SumTransactionModel sumTrans, string sumSubsJson, string sumDeviceTypeJson, string accountIPJson, string accountDeviceJson);
 
         NotifyTransactionModel GetNotificationTransaction();
+
+        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+
+        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -89,6 +93,32 @@
 
                     return notifyTransList;
                 }
+            }
+        }
+
+        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        {
+            var criteria = new GetCTSCustByDateCriteria
+            {
+                RptDate = rptDate
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.Query<CTSCustModel>(criteria);
+            }
+        }
+
+        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
+        {
+            var criteria = new GetDCSCustByDateCriteria
+            {
+                TransDate = transDate
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.Query<ulong>(criteria);
             }
         }
     }
