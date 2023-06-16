@@ -2,7 +2,7 @@
 {
     public class CTSCustModel
     {
-        public ulong CustID { get; set; }
+        public int CustID { get; set; }
 
         public string Username { get; set; }
 

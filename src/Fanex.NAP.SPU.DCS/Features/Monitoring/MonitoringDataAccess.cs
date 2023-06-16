@@ -17,11 +17,11 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
-        void InsertMonitorTransaction(string transJson);
+        void InsertMonitorTransaction(DateTime rptDate, string transJson);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -98,11 +98,13 @@
             }
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
             var criteria = new GetCTSCustByDateCriteria
             {
-                RptDate = rptDate
+                RptDate = rptDate,
+                MinCustID = minCustID,
+                BatchSize = batchSize
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -124,10 +126,11 @@
             }
         }
 
-        public async void InsertMonitorTransaction(string transJson)
+        public async void InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
             var criteria = new InsertMonitorTransactionCriteria
             {
+                RptDate = rptDate,
                 TransJson = transJson
             };
 

@@ -87,9 +87,9 @@
         }
 
         [HttpPost("monitortransactionlevelaccount")]
-        public async Task<bool> MonitorTransactionLevelAccount()
+        public async Task<bool> MonitorTransactionLevelAccount([FromForm] int batchSize)
         {
-            return await notifyTransactionJobService.MonitorTransactionLevelAccount();
+            return await notifyTransactionJobService.MonitorTransactionLevelAccount(batchSize);
         }
 
         [HttpPost("testSentry")]
@@ -97,5 +97,11 @@
         {
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
+
+        //[HttpPost("notifymonitortransactionlevelaccount")]
+        //public async Task<bool> NotifyMonitorTransactionLevelAccount([FromForm] int batchSize)
+        //{
+        //    return await notifyTransactionJobService.NotifyMonitorTransactionLevelAccount(batchSize);
+        //}
     }
 }

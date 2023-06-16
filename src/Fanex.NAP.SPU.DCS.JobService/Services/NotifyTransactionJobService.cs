@@ -19,8 +19,10 @@
 
         Task<bool> TestTelegramNotifyMessage();
 
-        Task<bool> MonitorTransactionLevelAccount();
+        Task<bool> MonitorTransactionLevelAccount(int batchSize);
 
+        Task<bool> NotifyMonitorTransactionLevelAccount();
+        
         Task<bool> TestSentryCaptureMessage(string message);
     }
 
@@ -83,7 +85,7 @@
                 var telegramService = new NotificationService();
                 telegramService
                    .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-                   .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, message))
+                   .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message))
                    .SendWithDelay(300, true);
             }
         }
@@ -93,44 +95,33 @@
             var telegramService = new NotificationService();
             telegramService
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.Now, appSettings.EnvironmentString, "Test"))
+               .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "Test"))
                .SendWithDelay(300, true);
 
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorTransactionLevelAccount()
+        public Task<bool> MonitorTransactionLevelAccount(int batchSize)
         {
             try
             {
-                var cfgLimitShowCust = 10;
-                var date = new DateTime(2023,4,2);
-                var rptDate = date.AddDays(-1);
+                var curDate = new DateTime(2023,4,2);
+                var rptDate = curDate.AddDays(-1);
 
-                sentryClient.CaptureMessage($"MonitorTransactionLevelAccount on date: {rptDate:dd/MM/yyyy}");
-
-                var ctsCust = monitoringServices.GetCTSCustByDate(rptDate);
-                if (ctsCust != null && ctsCust.Any())
+                var stopLoopFlag = false;
+                var minCustID = 0;
+                while (!stopLoopFlag)
                 {
-                    var dcsCust = monitoringServices.GetDCSCustByDate(rptDate);
-                    var ctsCustNotInDcs = ctsCust.Where(c => !dcsCust.Contains(c.CustID));
+                    var ctsCust = monitoringServices.GetCTSCustByDate(rptDate, minCustID, batchSize);
 
-                    if (ctsCustNotInDcs != null && ctsCustNotInDcs.Any())
+                    if (ctsCust != null && ctsCust.Any())
                     {
-                        var countListCustToSend = ctsCustNotInDcs.Count();
-
-                        var message = "Please kindly check the following Usersname without Transaction";
-                        message += $"\n - Total Usersname: {countListCustToSend}";
-                        message += $"\n - Top {cfgLimitShowCust} Usersname: {string.Join(", ", ctsCustNotInDcs.Take(cfgLimitShowCust).OrderByDescending(x => x.Username).Select(x => x.Username))}";
-
-                        if (countListCustToSend > cfgLimitShowCust)
-                        {
-                            message += ", ...";
-                        }
-
-                        //NotifyMessageMonitorTransaction("FPS-Cust-MissedTrans " + rptDate.ToString("MM/dd/yyyy"), message, string.Empty);
-
-                        StoreDataMonitorTransaction(ctsCustNotInDcs);
+                        monitoringServices.InsertMonitorTransaction(rptDate, JsonConvert.SerializeObject(ctsCust));
+                        minCustID = ctsCust.Max(c => c.CustID);
+                    }
+                    else
+                    {
+                        stopLoopFlag = true;
                     }
                 }
             }
@@ -148,6 +139,11 @@
             return Task.FromResult(true);
         }
 
+        public Task<bool> NotifyMonitorTransactionLevelAccount()
+        {
+            throw new NotImplementedException();
+        }
+
         private void NotifyMessageMonitorTransaction(string jobName, string message, string moreInfo)
         {
             var telegramService = new NotificationService();
@@ -155,22 +151,14 @@
 
             telegramService
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel(jobName, DateTime.Now, appSettings.EnvironmentString, message, moreInfo))
+               .Message(new MessageModel(jobName, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message, moreInfo))
                .SendWithoutDelay(true);
         }
-
-        private void StoreDataMonitorTransaction(IEnumerable<CTSCustModel> ctsCust)
-        {
-            if (ctsCust != null && ctsCust.Any())
-            {
-                monitoringServices.InsertMonitorTransaction(JsonConvert.SerializeObject(ctsCust));
-            }
         }
         
         public Task<bool> TestSentryCaptureMessage(string message)
         {
             sentryClient.CaptureMessage(message);
             return Task.FromResult(true);
-        }
     }
 }

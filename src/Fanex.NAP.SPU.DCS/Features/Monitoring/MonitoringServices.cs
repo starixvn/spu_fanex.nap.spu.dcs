@@ -14,11 +14,11 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
-        void InsertMonitorTransaction(string transJson);
+        void InsertMonitorTransaction(DateTime rptDate, string transJson);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -61,9 +61,9 @@
             return this.monitoringDataAccess.GetNotificationTransaction();
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
-            return monitoringDataAccess.GetCTSCustByDate(rptDate);
+            return monitoringDataAccess.GetCTSCustByDate(rptDate, minCustID, batchSize);
         }
 
         public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
@@ -71,9 +71,9 @@
             return monitoringDataAccess.GetDCSCustByDate(transDate);
         }
 
-        public void InsertMonitorTransaction(string transJson)
+        public void InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
-            monitoringDataAccess.InsertMonitorTransaction(transJson);
+            monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
         }
     }
 }
