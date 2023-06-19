@@ -1,14 +1,10 @@
-﻿using System;
-using Fanex.Data;
-using Fanex.Data.Repository;
-
-namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
+﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
-    public class InsertNotifyMonitorTransaction : NonQueryCommand
-    {
-        [SpParam(SqlParamName = "ip_RptDate")]
-        public DateTime RptDate { get; set; }
+    using Fanex.Data;
+    using Fanex.Data.Repository;
 
+    public class GetNotifyMessageCriteria : NonQueryCommand
+    {
         [SpParam(SqlParamName = "ip_NotifyType")]
         public string NotifyType { get; set; }
 
@@ -17,12 +13,13 @@ namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_Notify_MonitorTransaction_Insert";
+            return "DCS_DC_Notify_NotifyMessage_Get";
         }
 
         public override bool IsValid()
         {
             return true;
         }
+
     }
 }

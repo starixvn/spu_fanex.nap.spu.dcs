@@ -98,10 +98,10 @@
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
 
-        //[HttpPost("notifymonitortransactionlevelaccount")]
-        //public async Task<bool> NotifyMonitorTransactionLevelAccount([FromForm] int batchSize)
-        //{
-        //    return await notifyTransactionJobService.NotifyMonitorTransactionLevelAccount(batchSize);
-        //}
+        [HttpPost("notifymessage")]
+        public async Task<bool> NotifyMessage([FromForm] string groupId, [FromForm] string notifyType, [FromForm] int batchSize)
+        {
+            return await notifyTransactionJobService.NotifyMessage(groupId, notifyType, batchSize);
+        }
     }
 }

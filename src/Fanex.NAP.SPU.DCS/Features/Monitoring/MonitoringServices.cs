@@ -18,7 +18,13 @@
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
-        void InsertMonitorTransaction(DateTime rptDate, string transJson);
+        int InsertMonitorTransaction(DateTime rptDate, string transJson);
+
+        int InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
+
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessage(string ids);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -71,9 +77,24 @@
             return monitoringDataAccess.GetDCSCustByDate(transDate);
         }
 
-        public void InsertMonitorTransaction(DateTime rptDate, string transJson)
+        public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
-            monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
+            return monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
+        }
+
+        public int InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
+        {
+            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, batchSize);
+        }
+
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
+        {
+            return monitoringDataAccess.GetNotifyMessage(notifyType, batchSize);
+        }
+
+        public int UpdateNotifyMessage(string ids)
+        {
+            return monitoringDataAccess.UpdateNotifyMessage(ids);
         }
     }
 }

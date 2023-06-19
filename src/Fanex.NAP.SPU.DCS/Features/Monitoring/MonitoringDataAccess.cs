@@ -21,9 +21,13 @@
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
-        void InsertMonitorTransaction(DateTime rptDate, string transJson);
+        int InsertMonitorTransaction(DateTime rptDate, string transJson);
 
-        void InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
+        int InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
+
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessage(string ids);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -128,7 +132,7 @@
             }
         }
 
-        public void InsertMonitorTransaction(DateTime rptDate, string transJson)
+        public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
             var criteria = new InsertMonitorTransactionCriteria
             {
@@ -136,19 +140,43 @@
                 TransJson = transJson
             };
 
-            repository.Execute(criteria);
+            return repository.Execute(criteria);
         }
 
-        public async void InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
+        public int InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
         {
-            var criteria = new InsertNotifyMonitorTransaction
+            var criteria = new InsertNotifyMonitorTransactionCriteria
             {
                 RptDate = rptDate,
                 NotifyType = notifyType,
-                BatchSize = batchSize,
+                BatchSize = batchSize
             };
 
-            await repository.ExecuteAsync(criteria);
+            return repository.Execute(criteria);
+        }
+
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
+        {
+            var criteria = new GetNotifyMessageCriteria
+            {
+                NotifyType = notifyType,
+                BatchSize = batchSize
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.Query<NotifyMessageModel>(criteria);
+            }
+        }
+
+        public int UpdateNotifyMessage(string ids)
+        {
+            var criteria = new UpdateNotifyMessageCriteria
+            {
+                IDs = ids
+            };
+
+            return repository.Execute(criteria);
         }
     }
 }

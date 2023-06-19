@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Logging;
@@ -20,8 +19,7 @@
         Task<bool> TestTelegramNotifyMessage();
 
         Task<bool> MonitorTransactionLevelAccount(int batchSize);
-
-        Task<bool> NotifyMonitorTransactionLevelAccount();
+        Task<bool> NotifyMessage(string groupId, string notifyType, int batchSize);
         
         Task<bool> TestSentryCaptureMessage(string message);
     }
@@ -49,7 +47,7 @@
             {
                 var transactions = this.monitoringServices.GetNotificationTransaction();
 
-                NotifyMessage(transactions);
+                NotifyTransaction(transactions);
             }
             catch (Exception ex)
             {
@@ -67,7 +65,7 @@
             return Task.FromResult(true);
         }
 
-        private void NotifyMessage(NotifyTransactionModel data)
+        private void NotifyTransaction(NotifyTransactionModel data)
         {
             var isNotify = !string.IsNullOrWhiteSpace(data.YesterdayLess50Percent)
                         || !string.IsNullOrWhiteSpace(data.ValidLess50Percent);
@@ -105,11 +103,13 @@
         {
             try
             {
-                var curDate = new DateTime(2023,4,2);
+                var curDate = new DateTime(2023, 4, 2);
                 var rptDate = curDate.AddDays(-1);
+                var cfgLimitShowCust = 10;
 
                 var stopLoopFlag = false;
                 var minCustID = 0;
+                var notifyType = "MonitorTransaction";
                 while (!stopLoopFlag)
                 {
                     var ctsCust = monitoringServices.GetCTSCustByDate(rptDate, minCustID, batchSize);
@@ -122,7 +122,8 @@
                     else
                     {
                         stopLoopFlag = true;
-                        CreateNotifyMessage(rptDate);
+                        CreateNotifyMessage(rptDate, notifyType, cfgLimitShowCust);
+                        NotifyMonitorTransactionLevelAccount(notifyType, cfgLimitShowCust);
                     }
                 }
             }
@@ -140,25 +141,66 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> NotifyMonitorTransactionLevelAccount()
+        private void CreateNotifyMessage(DateTime rptDate, string notifyType, int cfgLimitShowCust)
         {
-            throw new NotImplementedException();
+            monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, cfgLimitShowCust);
         }
 
-        private Task<bool> CreateNotifyMessage(DateTime rptDate)
+        public void NotifyMonitorTransactionLevelAccount(string notifyType, int batchSize)
         {
-            throw new NotImplementedException();
+            var notifyMessages = monitoringServices.GetNotifyMessage(notifyType, batchSize);
+            if (notifyMessages != null && notifyMessages.Any())
+            {
+                var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
+                foreach (var notifyMessage in notifyMessages)
+                {
+                    NotifyMessageToTelegram(groupId, notifyMessage);
+                }
+                string ids = string.Join(",", notifyMessages.Select(x => x.ID));
+                monitoringServices.UpdateNotifyMessage(ids);
+            }
         }
 
-        private void NotifyMessageMonitorTransaction(string jobName, string message, string moreInfo)
+        public Task<bool> NotifyMessage(string groupId, string notifyType, int batchSize)
         {
-            var telegramService = new NotificationService();
-            var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
+            try
+            {
+                var notifyMessages = monitoringServices.GetNotifyMessage(notifyType, batchSize);
+                if (notifyMessages != null && notifyMessages.Any())
+                {
+                    foreach (var notifyMessage in notifyMessages)
+                    {
+                        NotifyMessageToTelegram(groupId, notifyMessage);
+                    }
+                    string ids = string.Join(",", notifyMessages.Select(x => x.ID));
+                    monitoringServices.UpdateNotifyMessage(ids);
+                }
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-            telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel(jobName, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message, moreInfo))
-               .SendWithoutDelay(true);
+                LogService.Error($"DCS - NotifyMessage job Execute exeption message:  {logMessage}");
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        private void NotifyMessageToTelegram(string groupId, NotifyMessageModel model)
+        {
+            if (model != null)
+            {
+                var telegramService = new NotificationService();
+
+                telegramService
+                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
+                   .Message(new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo))
+                   .SendWithoutDelay(true);
+            }
         }
         }
         
