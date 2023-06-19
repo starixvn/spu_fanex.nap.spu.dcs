@@ -86,16 +86,16 @@
             return await abnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
-        [HttpPost("archivenewaccountdevice")]
-        public Task<bool> ArchiveNewAccountDevice()
-        {
-            return abnormalTransactionJobService.ArchiveNewAccountDevice();
-        }
-
         [HttpPost("monitortransactionlevelaccount")]
         public async Task<bool> MonitorTransactionLevelAccount()
         {
             return await notifyTransactionJobService.MonitorTransactionLevelAccount();
+        }
+
+        [HttpPost("testSentry")]
+        public async Task<bool> TestSentry([FromForm] string message)
+        {
+            return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
     }
 }

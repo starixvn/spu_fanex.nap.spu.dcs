@@ -9,7 +9,6 @@
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using Fanex.NAP.SPU.Notification.Services;
-    using Microsoft.Extensions.Hosting;
     using Sentry;
 
     public interface INotifyTransactionJobService
@@ -19,6 +18,8 @@
         Task<bool> TestTelegramNotifyMessage();
 
         Task<bool> MonitorTransactionLevelAccount();
+
+        Task<bool> TestSentryCaptureMessage(string message);
     }
 
     public class NotifyTransactionJobService : INotifyTransactionJobService
@@ -151,6 +152,12 @@
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001586405982", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel(jobName, DateTime.Now, appSettings.EnvironmentString, message, moreInfo))
                .SendWithoutDelay(true);
+        }
+
+        public Task<bool> TestSentryCaptureMessage(string message)
+        {
+            sentryClient.CaptureMessage(message);
+            return Task.FromResult(true);
         }
     }
 }
