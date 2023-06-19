@@ -22,6 +22,8 @@
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
         void InsertMonitorTransaction(DateTime rptDate, string transJson);
+
+        void InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -126,12 +128,24 @@
             }
         }
 
-        public async void InsertMonitorTransaction(DateTime rptDate, string transJson)
+        public void InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
             var criteria = new InsertMonitorTransactionCriteria
             {
                 RptDate = rptDate,
                 TransJson = transJson
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public async void InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
+        {
+            var criteria = new InsertNotifyMonitorTransaction
+            {
+                RptDate = rptDate,
+                NotifyType = notifyType,
+                BatchSize = batchSize,
             };
 
             await repository.ExecuteAsync(criteria);

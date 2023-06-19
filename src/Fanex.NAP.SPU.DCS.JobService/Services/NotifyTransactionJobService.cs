@@ -122,6 +122,7 @@
                     else
                     {
                         stopLoopFlag = true;
+                        CreateNotifyMessage(rptDate);
                     }
                 }
             }
@@ -140,6 +141,11 @@
         }
 
         public Task<bool> NotifyMonitorTransactionLevelAccount()
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<bool> CreateNotifyMessage(DateTime rptDate)
         {
             throw new NotImplementedException();
         }
