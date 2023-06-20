@@ -18,7 +18,8 @@
 
         Task<bool> TestTelegramNotifyMessage();
 
-        Task<bool> MonitorTransactionLevelAccount(int batchSize);
+        Task<bool> MonitorTransactionLevelAccount(int batchSize, int limitShowCust);
+
         Task<bool> NotifyMessage(string groupId, string notifyType, int batchSize);
         
         Task<bool> TestSentryCaptureMessage(string message);
@@ -99,17 +100,17 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorTransactionLevelAccount(int batchSize)
+        public Task<bool> MonitorTransactionLevelAccount(int batchSize, int limitShowCust)
         {
             try
             {
                 var curDate = new DateTime(2023, 4, 2);
                 var rptDate = curDate.AddDays(-1);
-                var cfgLimitShowCust = 10;
 
                 var stopLoopFlag = false;
                 var minCustID = 0;
-                var notifyType = "MonitorTransaction";
+                var notifyType = "MonitorTransactionLevelAccount";
+
                 while (!stopLoopFlag)
                 {
                     var ctsCust = monitoringServices.GetCTSCustByDate(rptDate, minCustID, batchSize);
@@ -122,8 +123,8 @@
                     else
                     {
                         stopLoopFlag = true;
-                        CreateNotifyMessage(rptDate, notifyType, cfgLimitShowCust);
-                        NotifyMonitorTransactionLevelAccount(notifyType, cfgLimitShowCust);
+                        var notifyMessageID = CreateNotifyMessage(rptDate, notifyType, limitShowCust);
+                        NotifyMonitorTransactionLevelAccount(notifyMessageID, notifyType, limitShowCust);
                     }
                 }
             }
@@ -141,14 +142,14 @@
             return Task.FromResult(true);
         }
 
-        private void CreateNotifyMessage(DateTime rptDate, string notifyType, int cfgLimitShowCust)
+        private uint? CreateNotifyMessage(DateTime rptDate, string notifyType, int limitShowCust)
         {
-            monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, cfgLimitShowCust);
+            return monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, limitShowCust);
         }
 
-        public void NotifyMonitorTransactionLevelAccount(string notifyType, int batchSize)
+        public void NotifyMonitorTransactionLevelAccount(uint? notifyMessageID, string notifyType, int batchSize)
         {
-            var notifyMessages = monitoringServices.GetNotifyMessage(notifyType, batchSize);
+            var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
             if (notifyMessages != null && notifyMessages.Any())
             {
                 var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
@@ -165,7 +166,7 @@
         {
             try
             {
-                var notifyMessages = monitoringServices.GetNotifyMessage(notifyType, batchSize);
+                var notifyMessages = monitoringServices.GetNotifyMessage(null, notifyType, batchSize);
                 if (notifyMessages != null && notifyMessages.Any())
                 {
                     foreach (var notifyMessage in notifyMessages)

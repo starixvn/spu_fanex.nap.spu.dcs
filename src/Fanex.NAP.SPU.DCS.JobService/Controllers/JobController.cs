@@ -87,9 +87,9 @@
         }
 
         [HttpPost("monitortransactionlevelaccount")]
-        public async Task<bool> MonitorTransactionLevelAccount([FromForm] int batchSize)
+        public async Task<bool> MonitorTransactionLevelAccount([FromForm] int batchSize, [FromForm] int limitShowCust)
         {
-            return await notifyTransactionJobService.MonitorTransactionLevelAccount(batchSize);
+            return await notifyTransactionJobService.MonitorTransactionLevelAccount(batchSize, limitShowCust);
         }
 
         [HttpPost("testSentry")]

@@ -5,6 +5,9 @@
 
     public class GetNotifyMessageCriteria : NonQueryCommand
     {
+        [SpParam(SqlParamName = "ip_NotifyMessageID")]
+        public uint? NotifyMessageID { get; set; }
+
         [SpParam(SqlParamName = "ip_NotifyType")]
         public string NotifyType { get; set; }
 
