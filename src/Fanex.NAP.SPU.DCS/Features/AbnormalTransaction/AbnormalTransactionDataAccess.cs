@@ -24,7 +24,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
         public (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size)
         {
-            var criteria = new AbnormalTransasctionGetCriteria
+            var criteria = new AbnormalTransactionGetCriteria
             {
                 Size = size
             };
@@ -34,7 +34,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
         public void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId)
         {
-            var criteria = new AbnormalTransasctionUpdateCriteria
+            var criteria = new AbnormalTransactionUpdateCriteria
             {
                 TransJson = transJson,
                 MinID = minId,

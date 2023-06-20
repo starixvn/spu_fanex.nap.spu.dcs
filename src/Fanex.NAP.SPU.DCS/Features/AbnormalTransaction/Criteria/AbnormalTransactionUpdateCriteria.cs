@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria
 {
-    internal class AbnormalTransasctionUpdateCriteria : NonQueryCommand
+    internal class AbnormalTransactionUpdateCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_TransJson")]
         public string TransJson { get; set; }
@@ -16,7 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_Abnormal_Transasction_Update";
+            return "DCS_DC_AbnormalTransaction_Update";
         }
 
         public override bool IsValid()
