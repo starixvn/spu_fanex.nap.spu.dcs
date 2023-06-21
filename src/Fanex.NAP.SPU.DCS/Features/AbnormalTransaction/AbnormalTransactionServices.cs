@@ -89,13 +89,14 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             var jsonContent = JsonConvert.SerializeObject(modelsToPush);
             var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
 
-            if (!response.IsSuccessStatusCode)
+            var responseBody = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode || responseBody != "true")
             {
-                var responseBody = await response.Content.ReadAsStringAsync();
                 _sentryClient.CaptureException(new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush)));
+                return false;
             }
 
-            return response.IsSuccessStatusCode;
+            return true;
         }
     }
 }
