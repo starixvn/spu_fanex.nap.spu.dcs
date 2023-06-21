@@ -54,20 +54,9 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             }
             else
             {
-
-                _sentryClient.CaptureMessage($"Cannot GetAbnormalTransactions: {minID} - {maxID}");
                 //Update MaxId
                 if (maxID > 0)
-                {
-                    try
-                    {
-                        _dataAccess.UpdateAbnormalTransactions(string.Empty, minID, maxID);
-                    }
-                    catch (Exception ex)
-                    {
-                        _sentryClient.CaptureException(ex);
-                    }
-                }
+                    _dataAccess.UpdateAbnormalTransactions(string.Empty, minID, maxID);
             }
 
             return true;
