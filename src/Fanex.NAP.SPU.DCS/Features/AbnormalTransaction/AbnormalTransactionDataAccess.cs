@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
     {
         (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size);
 
-        void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId);
+        void UpdateAbnormalTransactions(string transJson, ulong minId, ulong maxId);
     }
 
     public class AbnormalTransactionDataAccess : IAbnormalTransactionDataAccess
@@ -32,7 +32,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             return repository.FetchMultiple<AbnormalTransactionEntity, TransIDMinMaxModel>(criteria);
         }
 
-        public void UpdateAbnormalTransactionsAsync(string transJson, ulong minId, ulong maxId)
+        public void UpdateAbnormalTransactions(string transJson, ulong minId, ulong maxId)
         {
             var criteria = new AbnormalTransactionUpdateCriteria
             {
@@ -41,7 +41,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 MaxID = maxId
             };
 
-            repository.ExecuteAsync(criteria);
+            repository.Execute(criteria);
         }
     }
 }

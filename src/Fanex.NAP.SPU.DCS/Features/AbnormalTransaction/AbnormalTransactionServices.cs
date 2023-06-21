@@ -47,16 +47,27 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });
                     var jsonTrans = JsonConvert.SerializeObject(updateStatus);
 
-                    _dataAccess.UpdateAbnormalTransactionsAsync(jsonTrans, minID, maxID);
+                    _dataAccess.UpdateAbnormalTransactions(jsonTrans, minID, maxID);
                 }
                 else
                     return false;
             }
             else
             {
+
+                _sentryClient.CaptureMessage($"Cannot GetAbnormalTransactions: {minID} - {maxID}");
                 //Update MaxId
                 if (maxID > 0)
-                    _dataAccess.UpdateAbnormalTransactionsAsync(string.Empty, minID, maxID);
+                {
+                    try
+                    {
+                        _dataAccess.UpdateAbnormalTransactions(string.Empty, minID, maxID);
+                    }
+                    catch (Exception ex)
+                    {
+                        _sentryClient.CaptureException(ex);
+                    }
+                }
             }
 
             return true;
