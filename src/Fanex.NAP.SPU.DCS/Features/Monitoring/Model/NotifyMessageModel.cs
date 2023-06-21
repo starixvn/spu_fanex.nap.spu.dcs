@@ -4,6 +4,8 @@
     {
         public uint ID { get; set; }
 
+        public string GroupID { get; set; }
+
         public string Title { get; set; }
 
         public string Message { get; set; }

@@ -20,7 +20,7 @@
 
         Task<bool> MonitorTransactionLevelAccount(int batchSize, int limitShowCust);
 
-        Task<bool> NotifyMessage(string groupId, string notifyType, int batchSize);
+        Task<bool> NotifyMessage(string notifyMessageID, string notifyType, int batchSize);
         
         Task<bool> TestSentryCaptureMessage(string message);
     }
@@ -123,10 +123,12 @@
                     else
                     {
                         stopLoopFlag = true;
-                        var notifyMessageID = CreateNotifyMessage(rptDate, notifyType, limitShowCust);
-                        NotifyMonitorTransactionLevelAccount(notifyMessageID, notifyType, limitShowCust);
                     }
                 }
+
+                var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
+                var notifyMessageID = CreateNotifyMessage(rptDate, notifyType, groupId, limitShowCust);
+                NotifyMonitorTransactionLevelAccount(notifyMessageID, notifyType, limitShowCust);
             }
             catch (Exception ex)
             {
@@ -142,9 +144,9 @@
             return Task.FromResult(true);
         }
 
-        private uint? CreateNotifyMessage(DateTime rptDate, string notifyType, int limitShowCust)
+        private uint? CreateNotifyMessage(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
         {
-            return monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, limitShowCust);
+            return monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, limitShowCust);
         }
 
         public void NotifyMonitorTransactionLevelAccount(uint? notifyMessageID, string notifyType, int batchSize)
@@ -152,17 +154,16 @@
             var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
             if (notifyMessages != null && notifyMessages.Any())
             {
-                var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
                 foreach (var notifyMessage in notifyMessages)
                 {
-                    NotifyMessageToTelegram(groupId, notifyMessage);
+                    NotifyMessageToTelegram(notifyMessage);
                 }
                 string ids = string.Join(",", notifyMessages.Select(x => x.ID));
                 monitoringServices.UpdateNotifyMessage(ids);
             }
         }
 
-        public Task<bool> NotifyMessage(string groupId, string notifyType, int batchSize)
+        public Task<bool> NotifyMessage(string notifyType, int batchSize)
         {
             try
             {
@@ -171,7 +172,7 @@
                 {
                     foreach (var notifyMessage in notifyMessages)
                     {
-                        NotifyMessageToTelegram(groupId, notifyMessage);
+                        NotifyMessageToTelegram(notifyMessage);
                     }
                     string ids = string.Join(",", notifyMessages.Select(x => x.ID));
                     monitoringServices.UpdateNotifyMessage(ids);
@@ -191,23 +192,23 @@
             return Task.FromResult(true);
         }
 
-        private void NotifyMessageToTelegram(string groupId, NotifyMessageModel model)
+        private void NotifyMessageToTelegram(NotifyMessageModel model)
         {
             if (model != null)
             {
                 var telegramService = new NotificationService();
 
                 telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", groupId, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
+                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", model.GroupID, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                    .Message(new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo))
                    .SendWithoutDelay(true);
             }
         }
-        }
-        
+
         public Task<bool> TestSentryCaptureMessage(string message)
         {
             sentryClient.CaptureMessage(message);
             return Task.FromResult(true);
+        }
     }
 }

@@ -92,16 +92,16 @@
             return await notifyTransactionJobService.MonitorTransactionLevelAccount(batchSize, limitShowCust);
         }
 
+        [HttpPost("notifymessage")]
+        public async Task<bool> NotifyMessage([FromForm] string notifyMessageID, [FromForm] string notifyType, [FromForm] int batchSize)
+        {
+            return await notifyTransactionJobService.NotifyMessage(notifyMessageID, notifyType, batchSize);
+        }
+
         [HttpPost("testSentry")]
         public async Task<bool> TestSentry([FromForm] string message)
         {
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
-        }
-
-        [HttpPost("notifymessage")]
-        public async Task<bool> NotifyMessage([FromForm] string groupId, [FromForm] string notifyType, [FromForm] int batchSize)
-        {
-            return await notifyTransactionJobService.NotifyMessage(groupId, notifyType, batchSize);
         }
     }
 }

@@ -23,7 +23,7 @@
 
         int InsertMonitorTransaction(DateTime rptDate, string transJson);
 
-        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
+        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize);
 
         IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
 
@@ -143,12 +143,13 @@
             return repository.Execute(criteria);
         }
 
-        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
+        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize)
         {
             var criteria = new InsertNotifyMonitorTransactionCriteria
             {
                 RptDate = rptDate,
                 NotifyType = notifyType,
+                GroupId = groupId,
                 BatchSize = batchSize
             };
 
@@ -160,6 +161,7 @@
         {
             var criteria = new GetNotifyMessageCriteria
             {
+                NotifyMessageID = notifyMessageID,
                 NotifyType = notifyType,
                 BatchSize = batchSize
             };

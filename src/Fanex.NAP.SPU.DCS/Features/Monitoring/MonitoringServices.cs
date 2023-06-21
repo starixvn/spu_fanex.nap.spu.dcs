@@ -20,7 +20,7 @@
 
         int InsertMonitorTransaction(DateTime rptDate, string transJson);
 
-        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize);
+        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize);
 
         IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
 
@@ -82,9 +82,9 @@
             return monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
         }
 
-        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, int batchSize)
+        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize)
         {
-            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, batchSize);
+            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, batchSize);
         }
 
         public IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize)
