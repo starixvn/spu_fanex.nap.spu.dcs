@@ -18,9 +18,9 @@
 
         Task<bool> TestTelegramNotifyMessage();
 
-        Task<bool> MonitorTransactionLevelAccount(int batchSize, int limitShowCust);
+        Task<bool> MonitorTransactionAndNotify(int batchSize, int limitShowCust);
 
-        Task<bool> NotifyMessage(string notifyMessageID, string notifyType, int batchSize);
+        Task<bool> NotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
         
         Task<bool> TestSentryCaptureMessage(string message);
     }
@@ -100,25 +100,25 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorTransactionLevelAccount(int batchSize, int limitShowCust)
+        public Task<bool> MonitorTransactionAndNotify(int batchSize, int limitShowCust)
         {
             try
             {
                 var curDate = new DateTime(2023, 4, 2);
                 var rptDate = curDate.AddDays(-1);
 
+                var notifyType = "MonitorTransaction";
                 var stopLoopFlag = false;
                 var minCustID = 0;
-                var notifyType = "MonitorTransactionLevelAccount";
 
                 while (!stopLoopFlag)
                 {
-                    var ctsCust = monitoringServices.GetCTSCustByDate(rptDate, minCustID, batchSize);
+                    var mainCust = monitoringServices.GetMainCustByDate(rptDate, minCustID, batchSize);
 
-                    if (ctsCust != null && ctsCust.Any())
+                    if (mainCust != null && mainCust.Any())
                     {
-                        monitoringServices.InsertMonitorTransaction(rptDate, JsonConvert.SerializeObject(ctsCust));
-                        minCustID = ctsCust.Max(c => c.CustID);
+                        monitoringServices.InsertMonitorTransaction(rptDate, JsonConvert.SerializeObject(mainCust));
+                        minCustID = mainCust.Max(c => c.CustID);
                     }
                     else
                     {
@@ -127,8 +127,9 @@
                 }
 
                 var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
+
                 var notifyMessageID = CreateNotifyMessage(rptDate, notifyType, groupId, limitShowCust);
-                NotifyMonitorTransactionLevelAccount(notifyMessageID, notifyType, limitShowCust);
+                NotifyMonitorTransaction(notifyMessageID, notifyType, 1);
             }
             catch (Exception ex)
             {
@@ -149,7 +150,7 @@
             return monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, limitShowCust);
         }
 
-        public void NotifyMonitorTransactionLevelAccount(uint? notifyMessageID, string notifyType, int batchSize)
+        public void NotifyMonitorTransaction(uint? notifyMessageID, string notifyType, int batchSize)
         {
             var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
             if (notifyMessages != null && notifyMessages.Any())
@@ -158,16 +159,17 @@
                 {
                     NotifyMessageToTelegram(notifyMessage);
                 }
+
                 string ids = string.Join(",", notifyMessages.Select(x => x.ID));
                 monitoringServices.UpdateNotifyMessage(ids);
             }
         }
 
-        public Task<bool> NotifyMessage(string notifyType, int batchSize)
+        public Task<bool> NotifyMessage(uint? notifyMessageID, string notifyType, int batchSize)
         {
             try
             {
-                var notifyMessages = monitoringServices.GetNotifyMessage(null, notifyType, batchSize);
+                var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
                 if (notifyMessages != null && notifyMessages.Any())
                 {
                     foreach (var notifyMessage in notifyMessages)

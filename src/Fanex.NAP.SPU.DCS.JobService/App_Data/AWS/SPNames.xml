@@ -19,11 +19,11 @@
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 
-		<Setting Key="DCS_DC_Monitor_Transaction_Get" SpName="DCS_DC_Monitor_Transaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_Monitor_Transaction_Insert" SpName="DCS_DC_Monitor_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_Notify_MonitorTransaction_Insert" SpName="DCS_DC_Notify_MonitorTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_Notify_NotifyMessage_Get" SpName="DCS_DC_Notify_NotifyMessage_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_Notify_NotifyMessage_Update" SpName="DCS_DC_Notify_NotifyMessage_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_Get" SpName="DCS_DC_NotifyMessage_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_Update" SpName="DCS_DC_NotifyMessage_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
 

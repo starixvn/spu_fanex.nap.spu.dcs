@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Model
 {
-    public class CTSCustModel
+    public class CustModel
     {
         public int CustID { get; set; }
 

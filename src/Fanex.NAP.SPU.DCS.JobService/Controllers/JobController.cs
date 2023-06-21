@@ -1,9 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     [ApiController]
@@ -86,14 +86,14 @@
             return await abnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
-        [HttpPost("monitortransactionlevelaccount")]
-        public async Task<bool> MonitorTransactionLevelAccount([FromForm] int batchSize, [FromForm] int limitShowCust)
+        [HttpPost("monitortransaction")]
+        public async Task<bool> MonitorTransaction([FromForm] int batchSize, [FromForm] int limitShowCust)
         {
-            return await notifyTransactionJobService.MonitorTransactionLevelAccount(batchSize, limitShowCust);
+            return await notifyTransactionJobService.MonitorTransactionAndNotify(batchSize, limitShowCust);
         }
 
         [HttpPost("notifymessage")]
-        public async Task<bool> NotifyMessage([FromForm] string notifyMessageID, [FromForm] string notifyType, [FromForm] int batchSize)
+        public async Task<bool> NotifyMessage([FromForm] uint? notifyMessageID, [FromForm] string notifyType, [FromForm] int batchSize)
         {
             return await notifyTransactionJobService.NotifyMessage(notifyMessageID, notifyType, batchSize);
         }

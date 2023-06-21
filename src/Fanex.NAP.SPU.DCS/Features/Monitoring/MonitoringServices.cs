@@ -14,7 +14,7 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize);
+        IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
@@ -67,9 +67,9 @@
             return this.monitoringDataAccess.GetNotificationTransaction();
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize)
+        public IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
-            return monitoringDataAccess.GetCTSCustByDate(rptDate, minCustID, batchSize);
+            return monitoringDataAccess.GetMainCustByDate(rptDate, minCustID, batchSize);
         }
 
         public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)

@@ -17,7 +17,7 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize);
+        IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
         IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
 
@@ -104,9 +104,9 @@
             }
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate, int minCustID, int batchSize)
+        public IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
-            var criteria = new GetCTSCustByDateCriteria
+            var criteria = new GetMainCustByDateCriteria
             {
                 RptDate = rptDate,
                 MinCustID = minCustID,
@@ -115,7 +115,7 @@
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
-                return db.Query<CTSCustModel>(criteria);
+                return db.Query<CustModel>(criteria);
             }
         }
 

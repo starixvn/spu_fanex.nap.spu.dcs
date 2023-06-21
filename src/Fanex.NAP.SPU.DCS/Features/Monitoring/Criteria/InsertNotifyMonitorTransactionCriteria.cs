@@ -23,7 +23,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_Notify_MonitorTransaction_Insert";
+            return "DCS_DC_NotifyMessage_InsertMonitorTransaction";
         }
 
         public override bool IsValid()

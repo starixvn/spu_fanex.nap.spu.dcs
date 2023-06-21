@@ -16,7 +16,7 @@
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_Notify_NotifyMessage_Get";
+            return "DCS_DC_NotifyMessage_Get";
         }
 
         public override bool IsValid()
