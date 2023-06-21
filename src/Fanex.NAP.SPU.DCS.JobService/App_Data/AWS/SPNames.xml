@@ -18,5 +18,11 @@
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
+
+		<Setting Key="DCS_DC_Monitor_GetCustByDate" SpName="DCS_DC_Monitor_GetCustByDate" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
+
+		<Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 	</Function>
 </Functions>

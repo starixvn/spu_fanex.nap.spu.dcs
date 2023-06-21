@@ -3,7 +3,6 @@
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
-    using System;
     using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
@@ -17,13 +16,15 @@
         private readonly ITransactionJobService transactionJobService;
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly INotifyTransactionJobService notifyTransactionJobService;
+        private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
 
         public JobController(ISentryClient sentryClient,
             IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
-            INotifyTransactionJobService notifyTransactionJobService)
+            INotifyTransactionJobService notifyTransactionJobService,
+            IAbnormalTransactionJobService abnormalTransactionJobService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
@@ -31,6 +32,7 @@
             this.transactionJobService = transactionJobService;
             this.sumTransactionJobService = sumTransactionJobService;
             this.notifyTransactionJobService = notifyTransactionJobService;
+            this.abnormalTransactionJobService = abnormalTransactionJobService;
         }
 
         [HttpPost("useragent")]
@@ -49,8 +51,8 @@
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice([FromForm]int size, [FromForm] int numberOfBatch)
-        {            
+        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        {
             return await this.deviceJobService.Execute(size, numberOfBatch);
         }
 
@@ -78,10 +80,22 @@
             return await this.notifyTransactionJobService.TestTelegramNotifyMessage();
         }
 
+        [HttpPost("pushabnormaltransaction")]
+        public async Task<bool> PushAbnormalTransaction([FromForm] int size)
+        {
+            return await abnormalTransactionJobService.PushAbnormalTransaction(size);
+        }
+
         [HttpPost("monitortransactionlevelaccount")]
         public async Task<bool> MonitorTransactionLevelAccount()
         {
             return await notifyTransactionJobService.MonitorTransactionLevelAccount();
+        }
+
+        [HttpPost("testSentry")]
+        public async Task<bool> TestSentry([FromForm] string message)
+        {
+            return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
     }
 }

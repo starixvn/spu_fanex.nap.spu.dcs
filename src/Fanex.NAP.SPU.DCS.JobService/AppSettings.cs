@@ -13,6 +13,8 @@
         string SPName { get; }
 
         string SentryDsn { get; }
+
+        string AbnormalTransactionUrl { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -22,6 +24,7 @@
         private readonly string environment;        
         private readonly string spName;
         private readonly string sentryDsn;
+        private readonly string abnormalTransactionUrl;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -32,6 +35,8 @@
             spName = GetValue<string>(nameof(SPName));
 
             sentryDsn = GetValue<string>("Sentry:Dsn");
+
+            abnormalTransactionUrl = GetValue<string>("AbnormalTransaction:Url");
         }
 
         public int Environment
@@ -61,6 +66,8 @@
         public string SPName => spName;
 
         public string SentryDsn => sentryDsn;
+
+        public string AbnormalTransactionUrl => abnormalTransactionUrl;
 
         public T GetValue<T>(string key)
         {

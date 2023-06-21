@@ -78,9 +78,7 @@
                         {
                             OSName = clientInfo.OS != null ? clientInfo.OS.Family : string.Empty,
                             BrowserName = clientInfo.UA != null ? clientInfo.UA.Family : string.Empty,
-                            DeviceTypeName = clientInfo.Device != null
-                                    ? Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor)
-                                    : Enum.GetName(typeof(DeviceFormFactor), DeviceFormFactor.Unknown),
+                            DeviceTypeName = GetDeviceTypeName(clientInfo),
                             UserAgentKey = x.UserAgentKey,
                             CreatedDate = x.CreatedDate
                         };
@@ -117,6 +115,23 @@
             LogService.Info($"DCS - Parse User Agent null:");
 
             return null;
+        }
+
+        private string GetDeviceTypeName(ClientInfo clientInfo)
+        {
+            if (clientInfo != null && clientInfo.Device != null)
+            {
+                var osName = clientInfo.OS != null ? clientInfo.OS.Family : string.Empty;
+                var browserName = clientInfo.UA != null ? clientInfo.UA.Family : string.Empty;
+                if (clientInfo.Device.FormFactor == DeviceFormFactor.Unknown && osName == "Mac OS X" && browserName == "Safari")
+                {
+                    return Enum.GetName(typeof(DeviceFormFactor), DeviceFormFactor.Desktop);
+                }
+
+                return Enum.GetName(typeof(DeviceFormFactor), clientInfo.Device.FormFactor);
+            }
+
+            return Enum.GetName(typeof(DeviceFormFactor), DeviceFormFactor.Unknown);
         }
     }
 }
