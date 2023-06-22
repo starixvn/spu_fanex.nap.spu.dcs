@@ -3,14 +3,14 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class UpdateNotifyMessageCriteria : NonQueryCommand
+    public class UpdateNotifyMessagesToNotifiedCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_IDs")]
         public string IDs { get; set; }
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_NotifyMessage_Update";
+            return "DCS_DC_NotifyMessage_UpdateNotified";
         }
 
         public override bool IsValid()

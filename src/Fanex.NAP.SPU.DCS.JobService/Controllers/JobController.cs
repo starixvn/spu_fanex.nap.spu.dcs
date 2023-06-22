@@ -92,10 +92,16 @@
             return await notifyTransactionJobService.MonitorTransactionAndNotify(batchSize, limitShowCust);
         }
 
-        [HttpPost("notifymessage")]
-        public async Task<bool> NotifyMessage([FromForm] uint? notifyMessageID, [FromForm] string notifyType, [FromForm] int batchSize)
+        [HttpPost("notifymessagebyid")]
+        public async Task<bool> NotifyMessageByID([FromForm] uint notifyMessageID)
         {
-            return await notifyTransactionJobService.NotifyMessage(notifyMessageID, notifyType, batchSize);
+            return await notifyTransactionJobService.NotifyMessageByID(notifyMessageID);
+        }
+
+        [HttpPost("notifymessagebynotifytype")]
+        public async Task<bool> NotifyMessageByNotifyType([FromForm] string notifyType, [FromForm] int batchSize)
+        {
+            return await notifyTransactionJobService.NotifyMessageByNotifyType(notifyType, batchSize);
         }
 
         [HttpPost("testSentry")]

@@ -15,11 +15,12 @@ namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
         [SpParam(SqlParamName = "ip_GroupId")]
         public string GroupId { get; set; }
 
-        [SpParam(SqlParamName = "ip_BatchSize")]
-        public int BatchSize { get; set; }
+        [SpParam(SqlParamName = "ip_LimitShowCust")]
+        public int LimitShowCust { get; set; }
+
 
         [SpParam(SqlParamName = "op_NotifyMessageID")]
-        public uint? NotifyMessageID { get; set; }
+        public uint NotifyMessageID { get; set; }
 
         public override string GetSettingKey()
         {

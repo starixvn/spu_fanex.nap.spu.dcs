@@ -3,11 +3,8 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetNotifyMessageCriteria : NonQueryCommand
+    public class GetNotifyMessageByNotifyTypeCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_NotifyMessageID")]
-        public uint? NotifyMessageID { get; set; }
-
         [SpParam(SqlParamName = "ip_NotifyType")]
         public string NotifyType { get; set; }
 
@@ -16,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_NotifyMessage_Get";
+            return "DCS_DC_NotifyMessage_GetByNotifyType";
         }
 
         public override bool IsValid()

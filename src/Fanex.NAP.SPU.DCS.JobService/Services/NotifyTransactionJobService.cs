@@ -8,6 +8,7 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
+    using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.Notification.Services;
     using Newtonsoft.Json;
     using Sentry;
@@ -20,8 +21,10 @@
 
         Task<bool> MonitorTransactionAndNotify(int batchSize, int limitShowCust);
 
-        Task<bool> NotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
-        
+        Task<bool> NotifyMessageByID(uint notifyMessageID);
+
+        Task<bool> NotifyMessageByNotifyType(string notifyType, int batchSize);
+
         Task<bool> TestSentryCaptureMessage(string message);
     }
 
@@ -104,10 +107,7 @@
         {
             try
             {
-                var curDate = new DateTime(2023, 4, 2);
-                var rptDate = curDate.AddDays(-1);
-
-                var notifyType = "MonitorTransaction";
+                var rptDate = DateTime.Now.AddDays(-1);
                 var stopLoopFlag = false;
                 var minCustID = 0;
 
@@ -126,10 +126,8 @@
                     }
                 }
 
-                var groupId = appSettings.EnvironmentString == "PROD" ? "-1001586405982" : "-1001971031115";
-
-                var notifyMessageID = CreateNotifyMessage(rptDate, notifyType, groupId, limitShowCust);
-                NotifyMonitorTransaction(notifyMessageID, notifyType, 1);
+                var notifyMessageID = CreateNotifyMessage(rptDate, NotifyType.MonitorTransaction.ToString(), appSettings.TelegramGroupIDMonitorTransaction, limitShowCust);
+                NotifyMessageByID(notifyMessageID);
             }
             catch (Exception ex)
             {
@@ -145,39 +143,23 @@
             return Task.FromResult(true);
         }
 
-        private uint? CreateNotifyMessage(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
+        private uint CreateNotifyMessage(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
         {
             return monitoringServices.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, limitShowCust);
         }
 
-        public void NotifyMonitorTransaction(uint? notifyMessageID, string notifyType, int batchSize)
-        {
-            var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
-            if (notifyMessages != null && notifyMessages.Any())
-            {
-                foreach (var notifyMessage in notifyMessages)
-                {
-                    NotifyMessageToTelegram(notifyMessage);
-                }
-
-                string ids = string.Join(",", notifyMessages.Select(x => x.ID));
-                monitoringServices.UpdateNotifyMessage(ids);
-            }
-        }
-
-        public Task<bool> NotifyMessage(uint? notifyMessageID, string notifyType, int batchSize)
+        public Task<bool> NotifyMessageByID(uint notifyMessageID)
         {
             try
             {
-                var notifyMessages = monitoringServices.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
-                if (notifyMessages != null && notifyMessages.Any())
+                if (notifyMessageID > 0)
                 {
-                    foreach (var notifyMessage in notifyMessages)
+                    var notifyMessage = monitoringServices.GetNotifyMessageById(notifyMessageID);
+                    if (notifyMessage != null)
                     {
                         NotifyMessageToTelegram(notifyMessage);
+                        monitoringServices.UpdateNotifyMessagesToNotified(notifyMessage.ID.ToString());
                     }
-                    string ids = string.Join(",", notifyMessages.Select(x => x.ID));
-                    monitoringServices.UpdateNotifyMessage(ids);
                 }
             }
             catch (Exception ex)
@@ -186,7 +168,36 @@
                         .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                LogService.Error($"DCS - NotifyMessage job Execute exeption message:  {logMessage}");
+                LogService.Error($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
+
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> NotifyMessageByNotifyType(string notifyType, int batchSize)
+        {
+            try
+            {
+                var notifyMessages = monitoringServices.GetNotifyMessage(notifyType, batchSize);
+                if (notifyMessages != null && notifyMessages.Any())
+                {
+                    foreach (var notifyMessage in notifyMessages)
+                    {
+                        NotifyMessageToTelegram(notifyMessage);
+                    }
+                    string ids = string.Join(",", notifyMessages.Select(x => x.ID));
+                    monitoringServices.UpdateNotifyMessagesToNotified(ids);
+                }
+            }
+            catch (Exception ex)
+            {
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }

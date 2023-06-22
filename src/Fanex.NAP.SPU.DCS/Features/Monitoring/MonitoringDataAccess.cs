@@ -1,13 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public interface IMonitoringDataAccess
     {
@@ -19,15 +19,15 @@
 
         IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
-        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
-
         int InsertMonitorTransaction(DateTime rptDate, string transJson);
 
-        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize);
+        uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust);
 
-        IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
+        NotifyMessageModel GetNotifyMessageById(uint notifyMessageID);
 
-        int UpdateNotifyMessage(string ids);
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessagesToNotified(string ids);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -74,30 +74,30 @@
                 AccountDeviceJson = accountDeviceJson
             };
 
-           return repository.Execute(criteria);
+            return repository.Execute(criteria);
         }
 
         public NotifyTransactionModel GetNotificationTransaction()
         {
             var notifyTransList = new NotifyTransactionModel();
             var criteria = new GetNotificationTransactionCriteria();
-           
+
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
                 using (var result = db.QueryMultiple(criteria))
                 {
-                    var yesterdayLess50Percents = result.Read<string>();                    
+                    var yesterdayLess50Percents = result.Read<string>();
                     var validLess50Percents = result.Read<string>();
 
                     if (yesterdayLess50Percents != null && yesterdayLess50Percents.Any())
                     {
-                        notifyTransList.YesterdayLess50Percent = string.Join(',', yesterdayLess50Percents.Select(x=>x));
-                    }                   
+                        notifyTransList.YesterdayLess50Percent = string.Join(',', yesterdayLess50Percents.Select(x => x));
+                    }
 
                     if (validLess50Percents != null && validLess50Percents.Any())
                     {
                         notifyTransList.ValidLess50Percent = string.Join(',', validLess50Percents.Select(x => x));
-                    }                    
+                    }
 
                     return notifyTransList;
                 }
@@ -119,19 +119,6 @@
             }
         }
 
-        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
-        {
-            var criteria = new GetDCSCustByDateCriteria
-            {
-                TransDate = transDate
-            };
-
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                return db.Query<ulong>(criteria);
-            }
-        }
-
         public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
             var criteria = new InsertMonitorTransactionCriteria
@@ -143,25 +130,39 @@
             return repository.Execute(criteria);
         }
 
-        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize)
+        public uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
         {
             var criteria = new InsertNotifyMonitorTransactionCriteria
             {
                 RptDate = rptDate,
                 NotifyType = notifyType,
                 GroupId = groupId,
-                BatchSize = batchSize
+                LimitShowCust = limitShowCust,
+
+                NotifyMessageID = 0
             };
 
             repository.Execute(criteria);
             return criteria.NotifyMessageID;
         }
 
-        public IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize)
+        public NotifyMessageModel GetNotifyMessageById(uint notifyMessageID)
         {
-            var criteria = new GetNotifyMessageCriteria
+            var criteria = new GetNotifyMessageByIDCriteria
             {
-                NotifyMessageID = notifyMessageID,
+                NotifyMessageID = notifyMessageID
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.QueryEntity<NotifyMessageModel>(criteria);
+            }
+        }
+
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
+        {
+            var criteria = new GetNotifyMessageByNotifyTypeCriteria
+            {
                 NotifyType = notifyType,
                 BatchSize = batchSize
             };
@@ -172,9 +173,9 @@
             }
         }
 
-        public int UpdateNotifyMessage(string ids)
+        public int UpdateNotifyMessagesToNotified(string ids)
         {
-            var criteria = new UpdateNotifyMessageCriteria
+            var criteria = new UpdateNotifyMessagesToNotifiedCriteria
             {
                 IDs = ids
             };

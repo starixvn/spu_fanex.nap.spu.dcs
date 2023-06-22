@@ -16,15 +16,15 @@
 
         IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
-        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
-
         int InsertMonitorTransaction(DateTime rptDate, string transJson);
 
-        uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize);
+        uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust);
 
-        IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize);
+        NotifyMessageModel GetNotifyMessageById(uint notifyMessageID);
 
-        int UpdateNotifyMessage(string ids);
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessagesToNotified(string ids);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -72,29 +72,29 @@
             return monitoringDataAccess.GetMainCustByDate(rptDate, minCustID, batchSize);
         }
 
-        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
-        {
-            return monitoringDataAccess.GetDCSCustByDate(transDate);
-        }
-
         public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
             return monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
         }
 
-        public uint? InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int batchSize)
+        public uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
         {
-            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, batchSize);
+            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, limitShowCust);
         }
 
-        public IEnumerable<NotifyMessageModel> GetNotifyMessage(uint? notifyMessageID, string notifyType, int batchSize)
+        public NotifyMessageModel GetNotifyMessageById(uint notifyMessageID)
         {
-            return monitoringDataAccess.GetNotifyMessage(notifyMessageID, notifyType, batchSize);
+            return monitoringDataAccess.GetNotifyMessageById(notifyMessageID);
         }
 
-        public int UpdateNotifyMessage(string ids)
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
         {
-            return monitoringDataAccess.UpdateNotifyMessage(ids);
+            return monitoringDataAccess.GetNotifyMessage(notifyType, batchSize);
+        }
+
+        public int UpdateNotifyMessagesToNotified(string ids)
+        {
+            return monitoringDataAccess.UpdateNotifyMessagesToNotified(ids);
         }
     }
 }
