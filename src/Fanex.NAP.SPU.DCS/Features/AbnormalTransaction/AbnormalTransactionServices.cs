@@ -47,7 +47,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });
                     var jsonTrans = JsonConvert.SerializeObject(updateStatus);
 
-                    _dataAccess.UpdateAbnormalTransactionsAsync(jsonTrans, minID, maxID);
+                    _dataAccess.UpdateAbnormalTransactions(jsonTrans, minID, maxID);
                 }
                 else
                     return false;
@@ -56,7 +56,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             {
                 //Update MaxId
                 if (maxID > 0)
-                    _dataAccess.UpdateAbnormalTransactionsAsync(string.Empty, minID, maxID);
+                    _dataAccess.UpdateAbnormalTransactions(string.Empty, minID, maxID);
             }
 
             return true;
@@ -89,13 +89,14 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             var jsonContent = JsonConvert.SerializeObject(modelsToPush);
             var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
 
-            if (!response.IsSuccessStatusCode)
+            var responseBody = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode || responseBody != "true")
             {
-                var responseBody = await response.Content.ReadAsStringAsync();
-                _sentryClient.CaptureException(new Exception("PushData return false. ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush)));
+                _sentryClient.CaptureException(new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush)));
+                return false;
             }
 
-            return response.IsSuccessStatusCode;
+            return true;
         }
     }
 }
