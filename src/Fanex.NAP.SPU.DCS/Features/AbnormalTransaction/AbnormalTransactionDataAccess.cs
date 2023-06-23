@@ -1,14 +1,15 @@
-﻿using Fanex.Data.Repository;
+﻿using System.Collections.Generic;
+using Fanex.Data;
+using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
-using System.Collections.Generic;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
     public interface IAbnormalTransactionDataAccess
     {
-        (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size);
+        (IEnumerable<AbnormalTransactionEntity>, RangeIDModel) GetAbnormalTransactionsAsync(int size);
 
         void UpdateAbnormalTransactions(string transJson, ulong minId, ulong maxId);
     }
@@ -22,14 +23,26 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             repository = new DynamicRepository();
         }
 
-        public (IEnumerable<AbnormalTransactionEntity>, IEnumerable<TransIDMinMaxModel>) GetAbnormalTransactionsAsync(int size)
+        public (IEnumerable<AbnormalTransactionEntity>, RangeIDModel) GetAbnormalTransactionsAsync(int size)
         {
             var criteria = new AbnormalTransactionGetCriteria
             {
-                Size = size
+                Size = size,
+
+                MinID = 0,
+                MaxID = 0
             };
 
-            return repository.FetchMultiple<AbnormalTransactionEntity, TransIDMinMaxModel>(criteria);
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                var result = db.Query<AbnormalTransactionEntity>(criteria);
+                var rangeID = new RangeIDModel
+                {
+                    MinID = criteria.MinID,
+                    MaxID = criteria.MaxID
+                };
+                return (result, rangeID);
+            }
         }
 
         public void UpdateAbnormalTransactions(string transJson, ulong minId, ulong maxId)

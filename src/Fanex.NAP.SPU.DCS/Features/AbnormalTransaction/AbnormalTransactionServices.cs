@@ -30,10 +30,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
         public async Task<bool> PushAbnormalTransaction(int size, string abnormalTransactionUrl)
         {
-            var (abnormalTransactions, transIDMinMax) = _dataAccess.GetAbnormalTransactionsAsync(size);
-
-            ulong minID = transIDMinMax?.FirstOrDefault()?.MinID ?? 0;
-            ulong maxID = transIDMinMax?.FirstOrDefault()?.MaxID ?? 0;
+            var (abnormalTransactions, rangeID) = _dataAccess.GetAbnormalTransactionsAsync(size);
 
             if (abnormalTransactions.Any())
             {
@@ -44,10 +41,10 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 _sentryClient.CaptureMessage($"PushAbnormalTransaction data (${isResult}): ${JsonConvert.SerializeObject(dataTransformed)}");
                 if (isResult)
                 {
-                    var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { AssociationID = t.AssociationID, Status = 1 });
+                    var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { ID = t.ID, Status = 1 });
                     var jsonTrans = JsonConvert.SerializeObject(updateStatus);
 
-                    _dataAccess.UpdateAbnormalTransactions(jsonTrans, minID, maxID);
+                    _dataAccess.UpdateAbnormalTransactions(jsonTrans, rangeID.MinID, rangeID.MaxID);
                 }
                 else
                     return false;
@@ -55,8 +52,8 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             else
             {
                 //Update MaxId
-                if (maxID > 0)
-                    _dataAccess.UpdateAbnormalTransactions(string.Empty, minID, maxID);
+                if (rangeID.MaxID > 0)
+                    _dataAccess.UpdateAbnormalTransactions(string.Empty, rangeID.MinID, rangeID.MaxID);
             }
 
             return true;
@@ -69,12 +66,12 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 return entities
                     .Select(entity => new AbnormalTransactionModel
                     {
+                        ID = entity.ID,
                         Browser = entity.Browser,
                         Device = entity.DeviceTypeName,
                         IP = entity.IP,
                         LoginName = entity.LoginName,
                         OS = entity.OS,
-                        TransID = entity.TransID,
                         TransTime = entity.TransTime,
                         UserAgent = entity.UserAgent
                     });
