@@ -14,9 +14,17 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+        IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
-        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
+        int InsertMonitorTransaction(DateTime rptDate, string transJson);
+
+        uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust);
+
+        NotifyMessageModel GetNotifyMessageById(uint notifyMessageID);
+
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessagesToNotified(string ids);
     }
 
     public class MonitoringServices : IMonitoringServices
@@ -59,15 +67,34 @@
             return this.monitoringDataAccess.GetNotificationTransaction();
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        public IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
-            return monitoringDataAccess.GetCTSCustByDate(rptDate);
+            return monitoringDataAccess.GetMainCustByDate(rptDate, minCustID, batchSize);
         }
 
-        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
+        public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
-            return monitoringDataAccess.GetDCSCustByDate(transDate);
+            return monitoringDataAccess.InsertMonitorTransaction(rptDate, transJson);
         }
 
+        public uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
+        {
+            return monitoringDataAccess.InsertNotifyMonitorTransaction(rptDate, notifyType, groupId, limitShowCust);
+        }
+
+        public NotifyMessageModel GetNotifyMessageById(uint notifyMessageID)
+        {
+            return monitoringDataAccess.GetNotifyMessageById(notifyMessageID);
+        }
+
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
+        {
+            return monitoringDataAccess.GetNotifyMessage(notifyType, batchSize);
+        }
+
+        public int UpdateNotifyMessagesToNotified(string ids)
+        {
+            return monitoringDataAccess.UpdateNotifyMessagesToNotified(ids);
+        }
     }
 }

@@ -18,8 +18,15 @@
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction_xtest" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		
+		<Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		
+		<Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByID" SpName="DCS_DC_NotifyMessage_GetByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByNotifyType" SpName="DCS_DC_NotifyMessage_GetByNotifyType" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_UpdateNotified" SpName="DCS_DC_NotifyMessage_UpdateNotified" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_Monitor_GetCustByDate" SpName="DCS_DC_Monitor_GetCustByDate" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
 		
     <Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>

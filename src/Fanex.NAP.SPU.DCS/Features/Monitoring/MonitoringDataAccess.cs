@@ -1,13 +1,13 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public interface IMonitoringDataAccess
     {
@@ -17,9 +17,17 @@
 
         NotifyTransactionModel GetNotificationTransaction();
 
-        IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate);
+        IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize);
 
-        IEnumerable<ulong> GetDCSCustByDate(DateTime transDate);
+        int InsertMonitorTransaction(DateTime rptDate, string transJson);
+
+        uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust);
+
+        NotifyMessageModel GetNotifyMessageById(uint notifyMessageID);
+
+        IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize);
+
+        int UpdateNotifyMessagesToNotified(string ids);
     }
     public class MonitoringDataAccess : IMonitoringDataAccess
     {
@@ -66,60 +74,113 @@
                 AccountDeviceJson = accountDeviceJson
             };
 
-           return repository.Execute(criteria);
+            return repository.Execute(criteria);
         }
 
         public NotifyTransactionModel GetNotificationTransaction()
         {
             var notifyTransList = new NotifyTransactionModel();
             var criteria = new GetNotificationTransactionCriteria();
-           
+
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
                 using (var result = db.QueryMultiple(criteria))
                 {
-                    var yesterdayLess50Percents = result.Read<string>();                    
+                    var yesterdayLess50Percents = result.Read<string>();
                     var validLess50Percents = result.Read<string>();
 
                     if (yesterdayLess50Percents != null && yesterdayLess50Percents.Any())
                     {
-                        notifyTransList.YesterdayLess50Percent = string.Join(',', yesterdayLess50Percents.Select(x=>x));
-                    }                   
+                        notifyTransList.YesterdayLess50Percent = string.Join(',', yesterdayLess50Percents.Select(x => x));
+                    }
 
                     if (validLess50Percents != null && validLess50Percents.Any())
                     {
                         notifyTransList.ValidLess50Percent = string.Join(',', validLess50Percents.Select(x => x));
-                    }                    
+                    }
 
                     return notifyTransList;
                 }
             }
         }
 
-        public IEnumerable<CTSCustModel> GetCTSCustByDate(DateTime rptDate)
+        public IEnumerable<CustModel> GetMainCustByDate(DateTime rptDate, int minCustID, int batchSize)
         {
-            var criteria = new GetCTSCustByDateCriteria
+            var criteria = new GetMainCustByDateCriteria
             {
-                RptDate = rptDate
+                RptDate = rptDate,
+                MinCustID = minCustID,
+                BatchSize = batchSize
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
-                return db.Query<CTSCustModel>(criteria);
+                return db.Query<CustModel>(criteria);
             }
         }
 
-        public IEnumerable<ulong> GetDCSCustByDate(DateTime transDate)
+        public int InsertMonitorTransaction(DateTime rptDate, string transJson)
         {
-            var criteria = new GetDCSCustByDateCriteria
+            var criteria = new InsertMonitorTransactionCriteria
             {
-                TransDate = transDate
+                RptDate = rptDate,
+                TransJson = transJson
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        public uint InsertNotifyMonitorTransaction(DateTime rptDate, string notifyType, string groupId, int limitShowCust)
+        {
+            var criteria = new InsertNotifyMonitorTransactionCriteria
+            {
+                RptDate = rptDate,
+                NotifyType = notifyType,
+                GroupId = groupId,
+                LimitShowCust = limitShowCust,
+
+                NotifyMessageID = 0
+            };
+
+            repository.Execute(criteria);
+            return criteria.NotifyMessageID;
+        }
+
+        public NotifyMessageModel GetNotifyMessageById(uint notifyMessageID)
+        {
+            var criteria = new GetNotifyMessageByIDCriteria
+            {
+                NotifyMessageID = notifyMessageID
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
-                return db.Query<ulong>(criteria);
+                return db.QueryEntity<NotifyMessageModel>(criteria);
             }
+        }
+
+        public IEnumerable<NotifyMessageModel> GetNotifyMessage(string notifyType, int batchSize)
+        {
+            var criteria = new GetNotifyMessageByNotifyTypeCriteria
+            {
+                NotifyType = notifyType,
+                BatchSize = batchSize
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.Query<NotifyMessageModel>(criteria);
+            }
+        }
+
+        public int UpdateNotifyMessagesToNotified(string ids)
+        {
+            var criteria = new UpdateNotifyMessagesToNotifiedCriteria
+            {
+                IDs = ids
+            };
+
+            return repository.Execute(criteria);
         }
     }
 }

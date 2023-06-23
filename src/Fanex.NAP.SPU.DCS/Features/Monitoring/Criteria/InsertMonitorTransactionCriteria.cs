@@ -1,15 +1,20 @@
 ﻿using System;
+using Fanex.Data;
 using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
-    internal class GetCTSCustByDateCriteria : CriteriaBase
+    public class InsertMonitorTransactionCriteria : NonQueryCommand
     {
+        [SpParam(SqlParamName = "ip_RptDate")]
         public DateTime RptDate { get; set; }
+
+        [SpParam(SqlParamName = "ip_TransJson")]
+        public string TransJson { get; set; }
 
         public override string GetSettingKey()
         {
-            return "CTS_Monitor_MissingFPSTrans_GetCustByDate";
+            return "DCS_DC_MonitorTransaction_Insert";
         }
 
         public override bool IsValid()

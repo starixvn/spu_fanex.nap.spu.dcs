@@ -1,9 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Model
 {
-    public class CTSCustModel
+    public class CustModel
     {
-        public ulong CustID { get; set; }
+        public int CustID { get; set; }
 
         public string Username { get; set; }
+
+        public string SiteName { get; set; }
     }
 }
