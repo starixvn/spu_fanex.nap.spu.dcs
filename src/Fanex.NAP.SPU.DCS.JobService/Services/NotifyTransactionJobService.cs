@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Logging;
@@ -19,7 +20,7 @@
 
         Task<bool> TestTelegramNotifyMessage();
 
-        Task<bool> MonitorTransactionAndNotify(int batchSize, int limitShowCust);
+        Task<bool> MonitorTransactionAndNotify(string rptDateStr, int batchSize, int limitShowCust);
 
         Task<bool> NotifyMessageByID(uint notifyMessageID);
 
@@ -103,11 +104,24 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> MonitorTransactionAndNotify(int batchSize, int limitShowCust)
+        private DateTime GetRptDate(string input)
+        {
+            string format = "MM/dd/yyyy";
+            DateTime parsedDate;
+
+            if (DateTime.TryParseExact(input, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+            {
+                return parsedDate;
+            }
+
+            return DateTime.Now.AddDays(-1);
+        }
+
+        public Task<bool> MonitorTransactionAndNotify(string rptDateStr, int batchSize, int limitShowCust)
         {
             try
             {
-                var rptDate = DateTime.Now.AddDays(-1);
+                var rptDate = GetRptDate(rptDateStr);
                 var stopLoopFlag = false;
                 var minCustID = 0;
 
