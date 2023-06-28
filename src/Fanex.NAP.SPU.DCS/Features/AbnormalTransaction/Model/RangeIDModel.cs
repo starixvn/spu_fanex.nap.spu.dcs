@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model
 {
-    public class TransIDMinMaxModel
+    public class RangeIDModel
     {
         public ulong MinID { get; set; }
 

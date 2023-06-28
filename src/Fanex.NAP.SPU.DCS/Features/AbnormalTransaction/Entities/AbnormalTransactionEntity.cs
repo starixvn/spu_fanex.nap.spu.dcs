@@ -4,9 +4,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities
 {
     public class AbnormalTransactionEntity
     {
-        public ulong AssociationID { get; set; }
-
-        public ulong TransID { get; set; }
+        public ulong ID { get; set; }
 
         public string LoginName { get; set; }
 

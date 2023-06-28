@@ -2,7 +2,7 @@
 {
     internal class AbnormalTransactionUpdateModel
     {
-        public ulong AssociationID { get; set; }
+        public ulong ID { get; set; }
 
         public int Status { get; set; }
     }
