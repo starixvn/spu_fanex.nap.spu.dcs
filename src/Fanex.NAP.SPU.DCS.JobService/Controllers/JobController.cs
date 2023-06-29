@@ -87,9 +87,9 @@
         }
 
         [HttpPost("monitortransaction")]
-        public async Task<bool> MonitorTransaction([FromForm] int batchSize, [FromForm] int limitShowCust)
+        public async Task<bool> MonitorTransaction([FromForm] string rptDateStr, [FromForm] int batchSize, [FromForm] int limitShowCust)
         {
-            return await notifyTransactionJobService.MonitorTransactionAndNotify(batchSize, limitShowCust);
+            return await notifyTransactionJobService.MonitorTransactionAndNotify(rptDateStr, batchSize, limitShowCust);
         }
 
         [HttpPost("notifymessagebyid")]
