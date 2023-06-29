@@ -3,12 +3,14 @@
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Newtonsoft.Json;
     using Sentry;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     public interface IUserAgentJobService
     {
-        bool Execute(int size);
+        Task<bool> Execute(int size);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
@@ -17,11 +19,13 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly IUserAgentServices userAgentService;
+        private readonly IAppSettings appSettings;
 
-        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService)
+        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService, IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.userAgentService = userAgentService;
+            this.appSettings = appSettings;
         }
 
         public ClientInfo ConvertUserAgent(string userAgent)
@@ -29,28 +33,48 @@
             return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
-        public bool Execute(int size)
+        public async Task<bool> Execute(int size)
         {
             try
             {
                 if(size > 0)
                 {
-                    JobRun(size);
+                    await JobRun(size);
                 }                                
             }
             catch (System.Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
-                return false;
+                return await Task.FromResult(false);
             }
 
-            return true;            
+            return await Task.FromResult(true);            
         }
 
-        private void JobRun(int size)
+        private async Task JobRun(int size)
         {
-            var userAgents = userAgentService.GetUserAgent(size);
+            var tasks = new List<Task>();
+
+            if (appSettings.IsReadyDbExtra)
+            {                
+                tasks.Add(Task.Run(() =>
+                {
+                    TransformUserAgent(size, true);
+                }));
+            }
+            
+            tasks.Add(Task.Run(() =>
+            {
+                TransformUserAgent(size, false);
+            }));
+
+            await Task.WhenAll(tasks.ToArray());
+        }
+
+        private void TransformUserAgent(int size, bool isReadyDbExtra)
+        {
+            var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
 
             if (userAgents != null && userAgents.Any())
             {
@@ -60,7 +84,7 @@
                 {
                     var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
 
-                    userAgentService.UpdateUserAgent(userAgentJson);                                        
+                    userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
                 }
             }
         }

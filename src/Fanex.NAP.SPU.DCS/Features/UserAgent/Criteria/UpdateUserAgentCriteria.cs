@@ -8,9 +8,19 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria
         [SpParam(SqlParamName = "ip_UserAgentJson")]
         public string UserAgentJson { get; set; }
 
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
         public override string GetSettingKey()
         {
-            return "DCS_DC_Transform_UserAgent_UpdateOSBrowser";
+            if (this.IsReadyDbExtra)
+            {
+                return "DCS_ET_Transform_UserAgent_UpdateOSBrowser";
+            }
+            else
+            {
+                return "DCS_DC_Transform_UserAgent_UpdateOSBrowser";
+            }            
         }
 
         public override bool IsValid()

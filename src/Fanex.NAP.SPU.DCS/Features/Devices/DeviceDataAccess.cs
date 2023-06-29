@@ -1,29 +1,28 @@
-﻿using Fanex.Data;
-using Fanex.Data.Repository;
-using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
-using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-using Fanex.NAP.SPU.DCS.Shares;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fanex.NAP.SPU.DCS.Features.Devices
+﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
+    using Fanex.Data;
+    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
+    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
+    using Fanex.NAP.SPU.DCS.Shares;
+    using System.Collections.Generic;
+
     public interface IDeviceDataAccess
     {
-        IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch);
+        IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra);
 
-        DataResult UpdateDevice(string transIdJson);
+        DataResult UpdateDevice(string transIdJson, bool isReadyDbExtra);
     }
 
     public class DeviceDataAccess : IDeviceDataAccess
     {
-        public IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch)
+        public IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra)
         {
             var criteria = new GetDeviceStagingTransactionPackageCriteria
             {
                 Size = size,
-                NoOfBatch = noOfBatch
+                NoOfBatch = noOfBatch,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -32,13 +31,14 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices
             }
         }
 
-        public DataResult UpdateDevice(string transIdJson)
+        public DataResult UpdateDevice(string transIdJson, bool isReadyDbExtra)
         {
             var repository = new DynamicRepository();
 
             var criteria = new UpdateDeviceIdCriteria
             {
-                TransIdJson = transIdJson
+                TransIdJson = transIdJson,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             var errCode = repository.Execute(criteria);

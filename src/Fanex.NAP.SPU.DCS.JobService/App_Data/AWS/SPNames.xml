@@ -41,4 +41,21 @@
 		<Setting Key="DCS_ET_SystemSetting_UpdateParameterValue" SpName="DCS_ET_SystemSetting_UpdateParameterValue" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 		<Setting Key="DCS_ET_Transform_RawTrans_Insert" SpName="DCS_ET_Transform_RawTrans_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 	</Function>
+
+	<Function Name="Extra_TransformUserAgent">
+		<Setting Key="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_Extra.ctsService"/>
+		<Setting Key="DCS_ET_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_ET_Transform_UserAgent_UpdateOSBrowser" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	</Function>
+
+	<Function Name="Extra_TransformDevice">
+		<Setting Key="DCS_ET_Transform_Device_GetPackage" SpName="DCS_ET_Transform_Device_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_Transform_Device_Insert" SpName="DCS_ET_Transform_Device_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	</Function>
+
+	<Function Name="Extra_TransformTransaction">
+		<Setting Key="DCS_ET_Transform_RawTrans_GetPackage" SpName="DCS_ET_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_Transform_UnhandleSubscriberAction" SpName="DCS_ET_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_ET_Transform_UserAgent_Insert" SpName="DCS_ET_Transform_UserAgent_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_ET_Transform_Transaction_Insert" SpName="DCS_ET_Transform_Transaction_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	</Function>
 </Functions>

@@ -39,12 +39,9 @@
         }
 
         [HttpPost("useragent")]
-        public Task<bool> UserAgent([FromForm] int size)
+        public async Task<bool> UserAgent([FromForm] int size)
         {
-            var result = this.userAgentJobService.Execute(size);
-
-            return Task.FromResult(result);
-
+            return await this.userAgentJobService.Execute(size);          
         }
 
         [HttpGet("ConvertUserAgent")]

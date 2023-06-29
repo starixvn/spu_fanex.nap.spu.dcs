@@ -8,9 +8,19 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
         [SpParam(SqlParamName = "ip_TransJson")]
         public string TransIdJson { get; set; }
 
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
         public override string GetSettingKey()
         {
-            return "DCS_DC_Transform_Device_Insert";
+            if (IsReadyDbExtra)
+            {
+                return "DCS_ET_Transform_Device_Insert";
+            }
+            else
+            {
+                return "DCS_DC_Transform_Device_Insert";
+            }            
         }
 
         public override bool IsValid()

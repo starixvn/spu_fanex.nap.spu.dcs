@@ -17,12 +17,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly ISentryClient sentryClient;
         private readonly IDeviceServices deviceService;
+        private readonly IAppSettings appSettings;
         private const int delayTime = 100; // milliseconds
 
-        public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService)
+        public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService, IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.deviceService = deviceService;
+            this.appSettings = appSettings;
         }
 
         public async Task<bool> Execute(int size, int numberOfBatch)
@@ -30,10 +32,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 if (size > 0 && numberOfBatch > 0)
-                {
-                    var task = JobRun(size, numberOfBatch);
-
-                    await task;
+                {                    
+                    await JobRun(size, numberOfBatch);    
                 }
             }
             catch (Exception ex)
@@ -48,7 +48,26 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private async Task JobRun(int size, int numberOfBatch)
         {
-            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
+            var tasks = new List<Task>();
+            
+            if (appSettings.IsReadyDbExtra)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    _ = TransformDevice(size, numberOfBatch, true);
+                }));
+            }
+            tasks.Add(Task.Run(() =>
+            {
+                _ = TransformDevice(size, numberOfBatch, false);
+            }));
+
+            await Task.WhenAll(tasks.ToArray());
+        }
+
+        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        {
+            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch, isReadyDbExtra);
 
             if (stagingTransIds != null && stagingTransIds.Any())
             {
@@ -61,7 +80,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     {
                         try
                         {
-                            deviceService.UpdateDevices(trans);                                                        
+                            deviceService.UpdateDevices(trans, isReadyDbExtra);
                         }
                         catch (Exception ex)
                         {
@@ -71,13 +90,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                     await Task.Delay(delayTime);
 
-                    tasks.Add(task);                                        
+                    tasks.Add(task);
                 }
 
-                var taskCompleted = Task.WhenAll(tasks.ToArray());
-
-                await taskCompleted;
+                await Task.WhenAll(tasks.ToArray());                
             }
         }
+
     }
 }

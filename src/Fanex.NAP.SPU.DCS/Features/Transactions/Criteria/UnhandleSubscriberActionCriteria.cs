@@ -11,9 +11,19 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
         [SpParam(SqlParamName = "ip_ToTransID")]
         public long ToTransId { get; set; }
 
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
         public override string GetSettingKey()
         {
-            return "DCS_DC_Transform_UnhandleSubscriberAction";
+            if (IsReadyDbExtra)
+            {
+                return "DCS_ET_Transform_UnhandleSubscriberAction";
+            }
+            else
+            {
+                return "DCS_DC_Transform_UnhandleSubscriberAction";
+            }            
         }
 
         public override bool IsValid()

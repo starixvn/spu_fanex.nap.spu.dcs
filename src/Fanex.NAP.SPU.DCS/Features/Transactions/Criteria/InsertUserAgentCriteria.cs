@@ -1,8 +1,8 @@
-﻿using Fanex.Data;
-using Fanex.Data.Repository;
-
-namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
+﻿namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
+    using Fanex.Data;
+    using Fanex.Data.Repository;
+
     public class InsertUserAgentCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_FromTransID")]
@@ -11,9 +11,19 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
         [SpParam(SqlParamName = "ip_ToTransID")]
         public long ToStagingTransId { get; set; }
 
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
         public override string GetSettingKey()
         {
-            return "DCS_DC_Transform_UserAgent_Insert";
+            if (IsReadyDbExtra)
+            {
+                return "DCS_ET_Transform_UserAgent_Insert";
+            }
+            else
+            {
+                return "DCS_DC_Transform_UserAgent_Insert";
+            }            
         }
 
         public override bool IsValid()
