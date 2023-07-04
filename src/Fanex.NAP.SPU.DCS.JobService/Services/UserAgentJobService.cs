@@ -57,7 +57,9 @@
             var tasks = new List<Task>();
 
             if (appSettings.IsReadyDbExtra)
-            {                
+            {
+                TransformUserAgent(size, true);
+
                 tasks.Add(Task.Run(() =>
                 {
                     TransformUserAgent(size, true);
@@ -74,19 +76,28 @@
 
         private void TransformUserAgent(int size, bool isReadyDbExtra)
         {
-            var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
-
-            if (userAgents != null && userAgents.Any())
+            try
             {
-                var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
+                var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
 
-                if (transformUserAgent.Any())
+                if (userAgents != null && userAgents.Any())
                 {
-                    var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+                    var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
 
-                    userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+                    if (transformUserAgent.Any())
+                    {
+                        var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+
+                        userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+                    }
                 }
             }
+            catch (System.Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+
+                throw;
+            }            
         }
     }
 }

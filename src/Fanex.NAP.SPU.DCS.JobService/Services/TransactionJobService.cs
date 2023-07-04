@@ -64,12 +64,12 @@
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    _= TransformTransaction(numberOfTrans, numberOfBatch, appSettings.IsReadyDbExtra);
+                    _= TransformTransaction(numberOfTrans, numberOfBatch, true);
                 }));
             }
             tasks.Add(Task.Run(() =>
             {
-                _= TransformTransaction(numberOfTrans, numberOfBatch, appSettings.IsReadyDbExtra);
+                _= TransformTransaction(numberOfTrans, numberOfBatch, false);
             }));
 
             await Task.WhenAll(tasks.ToArray());
@@ -86,11 +86,19 @@
                 {
                     var task = Task.Run(() =>
                     {
-                        this.transactionService
-                        .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
-                        .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
-                        .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
+                        try
+                        {
+                            this.transactionService
+                                .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
+                                .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
+                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
+                        }
+                        catch (Exception e)
+                        {
+                            sentryClient.CaptureException(e);
 
+                            throw;
+                        }
                     });
 
                     await Task.Delay(delayTime);
