@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IDeviceJobService
     {
-        Task<bool> Execute(int size, int numberOfBatch);
+        Task<bool> Execute(int size, int numberOfBatch, bool isTransformExtra);
     }
 
     public class DeviceJobService : IDeviceJobService
@@ -27,42 +27,36 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.appSettings = appSettings;
         }
 
-        public async Task<bool> Execute(int size, int numberOfBatch)
+        public async Task<bool> Execute(int size, int numberOfBatch, bool isTransformExtra)
         {
             try
             {
                 if (size > 0 && numberOfBatch > 0)
                 {                    
-                    await JobRun(size, numberOfBatch);    
-                }
+                    JobRun(size, numberOfBatch, isTransformExtra);    
+                }              
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
-                return false;
+                return await Task.FromResult(false);
             }
 
-            return true;
+            return await Task.FromResult(true);
         }
 
-        private async Task JobRun(int size, int numberOfBatch)
+        private void JobRun(int size, int numberOfBatch, bool isTransformExtra)
         {
-            var tasks = new List<Task>();
-            
-            if (appSettings.IsReadyDbExtra)
+            if (isTransformExtra)
             {
-                tasks.Add(Task.Run(() =>
-                {
+                if(appSettings.IsReadyDbExtra)
                     TransformDevice(size, numberOfBatch, true).Wait();
-                }));
             }
-            tasks.Add(Task.Run(() =>
+            else
             {
                 TransformDevice(size, numberOfBatch, false).Wait();
-            }));
-
-            await Task.WhenAll(tasks.ToArray());
+            }          
         }
 
         private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)

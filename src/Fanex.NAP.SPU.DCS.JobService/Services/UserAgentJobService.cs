@@ -10,7 +10,7 @@
 
     public interface IUserAgentJobService
     {
-        Task<bool> Execute(int size);
+        Task<bool> Execute(int size, bool isTransformExtra);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
@@ -33,13 +33,13 @@
             return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
-        public async Task<bool> Execute(int size)
+        public async Task<bool> Execute(int size, bool isTransformExtra)
         {
             try
             {
                 if(size > 0)
                 {
-                    await JobRun(size);
+                    JobRun(size, isTransformExtra);
                 }                                
             }
             catch (System.Exception ex)
@@ -52,26 +52,17 @@
             return await Task.FromResult(true);            
         }
 
-        private async Task JobRun(int size)
-        {
-            var tasks = new List<Task>();
-
-            if (appSettings.IsReadyDbExtra)
+        private void JobRun(int size, bool isTransformExtra)
+        {            
+            if (isTransformExtra)
             {
-                TransformUserAgent(size, true);
-
-                tasks.Add(Task.Run(() =>
-                {
+                if(appSettings.IsReadyDbExtra)
                     TransformUserAgent(size, true);
-                }));
             }
-            
-            tasks.Add(Task.Run(() =>
+            else
             {
                 TransformUserAgent(size, false);
-            }));
-
-            await Task.WhenAll(tasks.ToArray());
+            }
         }
 
         private void TransformUserAgent(int size, bool isReadyDbExtra)

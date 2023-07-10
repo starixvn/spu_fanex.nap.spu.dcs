@@ -8,7 +8,7 @@
 
     public interface ITransactionJobService
     {
-        Task<bool> Execute(int numberOfTrans, int numberOfBatch);
+        Task<bool> Execute(int numberOfTrans, int numberOfBatch, bool isTransformExtra);
     }
 
     public class TransactionJobService : ITransactionJobService
@@ -30,13 +30,13 @@
             };
         }
 
-        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
+        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
         {
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                    await JobRun(numberOfTrans, numberOfBatch);   
+                    JobRun(numberOfTrans, numberOfBatch, isTransformExtra);   
                 }
 
                 return await Task.FromResult(true);
@@ -54,26 +54,19 @@
                     return await Task.FromResult(true);
                 }                             
             }           
-        }       
+        }
 
-        private async Task JobRun(int numberOfTrans, int numberOfBatch)
+        private void JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
         {
-            var tasks = new List<Task>();
-
-            if (appSettings.IsReadyDbExtra)
+            if (isTransformExtra)
             {
-                tasks.Add(Task.Run(() =>
-                {
+                if (appSettings.IsReadyDbExtra)
                     TransformTransaction(numberOfTrans, numberOfBatch, true).Wait();
-                }));
             }
-            tasks.Add(Task.Run(() =>
+            else
             {
                 TransformTransaction(numberOfTrans, numberOfBatch, false).Wait();
-            }));
-
-            await Task.WhenAll(tasks.ToArray());
-           
+            }          
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -87,21 +80,10 @@
                 {
                     var task = Task.Run(() =>
                     {
-                        try
-                        {
-                            sentryClient.CaptureMessage($"MinTransID: {trans.MinTransId} MaxTransID: {trans.MaxTransId} isReadyDbExtra: {isReadyDbExtra}", Sentry.Protocol.SentryLevel.Info);
-
-                            this.transactionService
-                                .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
-                                .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
-                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
-                        }
-                        catch (Exception e)
-                        {
-                            sentryClient.CaptureException(e);
-
-                            throw;
-                        }
+                        this.transactionService
+                               .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
+                               .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
+                               .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
                     });
 
                     await Task.Delay(delayTime);
