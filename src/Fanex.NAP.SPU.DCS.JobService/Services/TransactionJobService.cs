@@ -36,7 +36,7 @@
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                   await JobRun(numberOfTrans, numberOfBatch);                    
+                    await JobRun(numberOfTrans, numberOfBatch);   
                 }
 
                 return await Task.FromResult(true);
@@ -54,7 +54,7 @@
                     return await Task.FromResult(true);
                 }                             
             }           
-        }
+        }       
 
         private async Task JobRun(int numberOfTrans, int numberOfBatch)
         {
@@ -64,18 +64,16 @@
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    _= TransformTransaction(numberOfTrans, numberOfBatch, true);
+                    TransformTransaction(numberOfTrans, numberOfBatch, true).Wait();
                 }));
             }
             tasks.Add(Task.Run(() =>
             {
-                _= TransformTransaction(numberOfTrans, numberOfBatch, false);
+                TransformTransaction(numberOfTrans, numberOfBatch, false).Wait();
             }));
 
             await Task.WhenAll(tasks.ToArray());
-
-            sentryClient.CaptureMessage($"Now: {DateTime.Now} isReadyDbExtra: {appSettings.IsReadyDbExtra}", Sentry.Protocol.SentryLevel.Info);
-
+           
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -107,7 +105,7 @@
                     });
 
                     await Task.Delay(delayTime);
-
+                   
                     tasks.Add(task);
                 }
                 catch (Exception ex)

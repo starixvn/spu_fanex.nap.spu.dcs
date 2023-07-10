@@ -54,12 +54,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    _ = TransformDevice(size, numberOfBatch, true);
+                    TransformDevice(size, numberOfBatch, true).Wait();
                 }));
             }
             tasks.Add(Task.Run(() =>
             {
-                _ = TransformDevice(size, numberOfBatch, false);
+                TransformDevice(size, numberOfBatch, false).Wait();
             }));
 
             await Task.WhenAll(tasks.ToArray());
