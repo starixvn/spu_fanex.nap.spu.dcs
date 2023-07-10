@@ -73,6 +73,9 @@
             }));
 
             await Task.WhenAll(tasks.ToArray());
+
+            sentryClient.CaptureMessage($"Now: {DateTime.Now} isReadyDbExtra: {appSettings.IsReadyDbExtra}", Sentry.Protocol.SentryLevel.Info);
+
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -88,6 +91,8 @@
                     {
                         try
                         {
+                            sentryClient.CaptureMessage($"MinTransID: {trans.MinTransId} MaxTransID: {trans.MaxTransId} isReadyDbExtra: {isReadyDbExtra}", Sentry.Protocol.SentryLevel.Info);
+
                             this.transactionService
                                 .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
                                 .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
