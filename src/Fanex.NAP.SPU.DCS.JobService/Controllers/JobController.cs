@@ -17,6 +17,7 @@
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly INotifyTransactionJobService notifyTransactionJobService;
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
+        private readonly IDCSExtraService dcsExtraService;
 
         public JobController(ISentryClient sentryClient,
             IUserAgentJobService userAgentJobService,
@@ -24,7 +25,8 @@
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
             INotifyTransactionJobService notifyTransactionJobService,
-            IAbnormalTransactionJobService abnormalTransactionJobService)
+            IAbnormalTransactionJobService abnormalTransactionJobService,
+            IDCSExtraService dcsExtraService)
         {
             this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
@@ -33,6 +35,7 @@
             this.sumTransactionJobService = sumTransactionJobService;
             this.notifyTransactionJobService = notifyTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
+            this.dcsExtraService = dcsExtraService;
         }
 
         [HttpPost("useragent")]
@@ -108,6 +111,12 @@
         public async Task<bool> TestSentry([FromForm] string message)
         {
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
+        }
+
+        [HttpGet("migratedcsextra")]
+        public async Task<bool> MigrateDCSExtra()
+        {
+            return await dcsExtraService.MigrateDCSExtra();
         }
     }
 }
