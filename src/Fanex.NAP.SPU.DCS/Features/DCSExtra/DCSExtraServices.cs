@@ -11,7 +11,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
     {
         string GetParameterValue(int parameterID);
 
-        Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
+        Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime);
 
         IEnumerable<DeviceInfoModel> GetDeviceInfo(string deviceIDList);
 
@@ -54,29 +54,16 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return dataAccess.GetDeviceFingerprint(deviceNoList);
         }
 
-        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
+        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime)
         {
             try
             {
-                string methodName = "GetRawTransaction" + subscriberName + "Async";
-                GetRawTransactionDelegate methodDelegate = (GetRawTransactionDelegate)Delegate.CreateDelegate(typeof(GetRawTransactionDelegate), this, methodName);
-
-                return await methodDelegate(subscriberName, lastTransTime, toTransTime);
+                return await dataAccess.GetRawTransactionAsync(subscriberName, settingKey, lastTransTime, toTransTime);
             }
             catch (Exception)
             {
                 throw;
             }
-        }
-
-        private async Task<IEnumerable<RawTransactionModel>> GetRawTransactionCTMaxAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
-        {
-            return await dataAccess.GetRawTransactionCTMaxAsync(subscriberName, lastTransTime, toTransTime);
-        }
-
-        private async Task<IEnumerable<RawTransactionModel>> GetRawTransactionVelkiAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
-        {
-            return await dataAccess.GetRawTransactionVelkiAsync(subscriberName, lastTransTime, toTransTime);
         }
 
         public async Task InsertTransformRawTransAsync(string rawTransJson)

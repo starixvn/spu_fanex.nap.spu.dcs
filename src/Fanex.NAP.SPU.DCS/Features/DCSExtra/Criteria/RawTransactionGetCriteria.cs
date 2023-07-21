@@ -3,7 +3,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class RawTransactionVelkiGetCriteria : CriteriaBase
+    internal class RawTransactionGetCriteria : CriteriaBase
     {
         public string ip_SubscriberName { get; set; }
 
@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_FPS_GetRawTransaction_Velki";
+            return "";
         }
 
         public override bool IsValid()

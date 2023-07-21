@@ -2,6 +2,7 @@
 using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sentry;
 using System;
@@ -22,15 +23,17 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly IDCSExtraServices dcsExtraService;
         private readonly ISentryClient sentryClient;
         private readonly IAppSettings appSettings;
+        private readonly IConfiguration configuration;
 
         private readonly int rangeMinutes = 5;
         private readonly int parameterID = 1000;
 
-        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IAppSettings appSettings)
+        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IAppSettings appSettings, IConfiguration configuration)
         {
             this.dcsExtraService = dcsExtraService;
             this.sentryClient = sentryClient;
             this.appSettings = appSettings;
+            this.configuration = configuration;
         }
 
         public async Task<bool> MigrateDCSExtra()
@@ -62,9 +65,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private async Task<IEnumerable<RawTransactionDto>> GetMergedListAsync(DateTime lastTransTime, DateTime toTransTime)
         {
-            var tasks = appSettings.DCSExtraSite.Split(',').Select(subscriberName => dcsExtraService.GetRawTransactionAsync(subscriberName, lastTransTime, toTransTime));
-            var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result);
+            var tasks = new List<Task<IEnumerable<RawTransactionModel>>>();
 
+            var dcsExtraAppSetting = configuration.GetSection("DCSExtra");
+            var dcsExtraConfig = dcsExtraAppSetting.GetSection("Config").GetChildren();
+            foreach (var item in dcsExtraConfig)
+            {
+                tasks.Add(dcsExtraService.GetRawTransactionAsync(item["Site"], item["SettingKey"], lastTransTime, toTransTime));
+            }
+
+            var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result);
             if (listRawTrans != null && listRawTrans.Any())
             {
                 var deviceIDs = listRawTrans

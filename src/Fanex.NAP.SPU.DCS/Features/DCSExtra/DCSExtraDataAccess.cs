@@ -16,9 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList);
 
-        Task<IEnumerable<RawTransactionModel>> GetRawTransactionCTMaxAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
-
-        Task<IEnumerable<RawTransactionModel>> GetRawTransactionVelkiAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
+        Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime);
 
         Task InsertTransformRawTransAsync(string rawTransJson);
 
@@ -67,29 +65,16 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return db.Query<string>(criteria);
         }
 
-        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionCTMaxAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
+        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime)
         {
-            var criteria = new RawTransactionCTMaxGetCriteria
+            var criteria = new RawTransactionGetCriteria
             {
                 ip_SubscriberName = subscriberName,
                 ip_LastTransTime = lastTransTime,
                 ip_ToTransTime = toTransTime
             };
 
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return await db.QueryAsync<RawTransactionModel>(criteria);
-        }
-
-        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionVelkiAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
-        {
-            var criteria = new RawTransactionVelkiGetCriteria
-            {
-                ip_SubscriberName = subscriberName,
-                ip_LastTransTime = lastTransTime,
-                ip_ToTransTime = toTransTime
-            };
-
-            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            using var db = ObjectDbFactory.CreateInstance(settingKey);
             return await db.QueryAsync<RawTransactionModel>(criteria);
         }
 
