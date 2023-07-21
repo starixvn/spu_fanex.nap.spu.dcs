@@ -4,6 +4,7 @@ using Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria;
 using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 {
@@ -15,9 +16,13 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList);
 
-        IEnumerable<RawTransactionModel> GetRawTransactionCTMax(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
+        Task<IEnumerable<RawTransactionModel>> GetRawTransactionCTMaxAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
 
-        IEnumerable<RawTransactionModel> GetRawTransactionVelki(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
+        Task<IEnumerable<RawTransactionModel>> GetRawTransactionVelkiAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
+
+        Task InsertTransformRawTransAsync(string rawTransJson);
+
+        Task UpdateParameterValueAsync(int parameterID, string parameterValue);
     }
 
     public class DCSExtraDataAccess : IDCSExtraDataAccess
@@ -62,7 +67,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return db.Query<string>(criteria);
         }
 
-        public IEnumerable<RawTransactionModel> GetRawTransactionCTMax(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
+        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionCTMaxAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
         {
             var criteria = new RawTransactionCTMaxGetCriteria
             {
@@ -72,10 +77,10 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<RawTransactionModel>(criteria);
+            return await db.QueryAsync<RawTransactionModel>(criteria);
         }
 
-        public IEnumerable<RawTransactionModel> GetRawTransactionVelki(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
+        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionVelkiAsync(string subscriberName, DateTime lastTransTime, DateTime toTransTime)
         {
             var criteria = new RawTransactionVelkiGetCriteria
             {
@@ -85,7 +90,28 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<RawTransactionModel>(criteria);
+            return await db.QueryAsync<RawTransactionModel>(criteria);
+        }
+
+        public async Task InsertTransformRawTransAsync(string rawTransJson)
+        {
+            var criteria = new InsertTransformRawTransCriteria
+            {
+                RawTransJson = rawTransJson
+            };
+
+            await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task UpdateParameterValueAsync(int parameterID, string parameterValue)
+        {
+            var criteria = new ParameterValueUpdateCriteria
+            {
+                ParameterID = parameterID,
+                ParameterValue = parameterValue
+            };
+
+            await repository.ExecuteAsync(criteria);
         }
     }
 }
