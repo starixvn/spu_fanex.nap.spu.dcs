@@ -8,45 +8,50 @@
     {
         int Environment { get; }
 
-        string EnvironmentString { get; }        
+        string EnvironmentString { get; }
 
         string SPName { get; }
 
         string SentryDsn { get; }
 
         string AbnormalTransactionUrl { get; }
-        
+
         string TelegramProxy { get; }
-        
+
         string TelegramGroupIDMonitorTransaction { get; }
+
+        string DCSExtraSite { get; }
     }
 
     public class AppSettings : IAppSettings
     {
         private readonly IConfiguration configuration;
 
-        private readonly string environment;        
+        private readonly string environment;
         private readonly string spName;
         private readonly string sentryDsn;
         private readonly string abnormalTransactionUrl;
         private readonly string telegramProxy;
         private readonly string telegramGroupIDMonitorTransaction;
+        private readonly string dcsExtraSite;
 
         public AppSettings(IConfiguration configuration)
         {
             this.configuration = configuration;
 
-            environment = GetValue<string>(nameof(Environment));                       
+            environment = GetValue<string>(nameof(Environment));
 
             spName = GetValue<string>(nameof(SPName));
 
             sentryDsn = GetValue<string>("Sentry:Dsn");
 
             abnormalTransactionUrl = GetValue<string>("AbnormalTransaction:Url");
-            
+
             telegramProxy = GetValue<string>("Telegram:Proxy");
 
             telegramGroupIDMonitorTransaction = GetValue<string>("Telegram:GroupID:MonitorTransaction");
+
+            dcsExtraSite = GetValue<string>("DCSExtra:Site");
         }
 
         public int Environment
@@ -78,10 +83,12 @@
         public string SentryDsn => sentryDsn;
 
         public string AbnormalTransactionUrl => abnormalTransactionUrl;
-        
+
         public string TelegramProxy => telegramProxy;
-        
+
         public string TelegramGroupIDMonitorTransaction => telegramGroupIDMonitorTransaction;
+
+        public string DCSExtraSite => dcsExtraSite;
 
         public T GetValue<T>(string key)
         {

@@ -113,7 +113,7 @@
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
 
-        [HttpGet("migratedcsextra")]
+        [HttpPost("migratedcsextra")]
         public async Task<bool> MigrateDCSExtra()
         {
             return await dcsExtraService.MigrateDCSExtra();

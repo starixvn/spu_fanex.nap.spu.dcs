@@ -14,7 +14,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Models.Dto
 
         public string IP { get; set; }
 
-        public long PluginID { get; set; }
+        public long? PluginID { get; set; }
 
         public string URL { get; set; }
 
@@ -24,7 +24,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Models.Dto
 
         public string FlaggedCode { get; set; }
 
-        public long DeviceID { get; set; }
+        public long? DeviceID { get; set; }
 
         public string DeviceCode { get; set; }
 

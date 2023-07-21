@@ -7,7 +7,7 @@
 
     public enum Flagged
     {
-        Human,
+        Human=1,
         EmptyToken,
         InvalidToken,
         EmptyAnalysis,

@@ -6,10 +6,8 @@ using Newtonsoft.Json;
 using Sentry;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
@@ -23,15 +21,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly IDCSExtraServices dcsExtraService;
         private readonly ISentryClient sentryClient;
+        private readonly IAppSettings appSettings;
 
-        private readonly string[] subscriberNameS = { "CTMax", "Velki", "Velki1" };
         private readonly int rangeMinutes = 5;
         private readonly int parameterID = 1000;
 
-        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient)
+        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IAppSettings appSettings)
         {
             this.dcsExtraService = dcsExtraService;
             this.sentryClient = sentryClient;
+            this.appSettings = appSettings;
         }
 
         public async Task<bool> MigrateDCSExtra()
@@ -41,66 +40,17 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var parameterValue = dcsExtraService.GetParameterValue(parameterID);
                 var lastTransTime = DateTime.ParseExact(parameterValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 var toTransTime = lastTransTime.AddMinutes(rangeMinutes);
-                var isError = false;
 
-                var tasks = subscriberNameS.Select(subscriberName => dcsExtraService.GetRawTransactionAsync(subscriberName, lastTransTime, toTransTime)).ToList();
-
-                if (!isError)
+                var mergedList = await GetMergedListAsync(lastTransTime, toTransTime);
+                if (mergedList != null && mergedList.Any())
                 {
-                    var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result).ToList();
+                    var rawTransJson = JsonConvert.SerializeObject(mergedList);
+                    await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
 
-                    if (listRawTrans != null && listRawTrans.Any())
-                    {
-                        var deviceInfo = Enumerable.Empty<DeviceInfoDto>();
-                        var deviceFingerprint = Enumerable.Empty<DeviceFingerprintDto>();
-
-                        var deviceIDs = listRawTrans.Select(x => x.DeviceID).Distinct();
-                        var deviceIDList = string.Join(",", deviceIDs.Select(x => x.ToString()));
-                        deviceInfo = TransformDevicInfo(dcsExtraService.GetDeviceInfo(deviceIDList));
-
-                        if (deviceInfo != null && deviceInfo.Any())
-                        {
-                            var deviceNos = deviceInfo.Select(x => x.DeviceNo).Distinct();
-                            var deviceNoList = string.Join(",", deviceNos.Select(x => x.ToString()));
-                            deviceFingerprint = TransformDeviceFingerprint(dcsExtraService.GetDeviceFingerprint(deviceNoList));
-                        }
-
-                        List<RawTransactionDto> mergedList = listRawTrans
-                        .GroupJoin(deviceInfo, a => a.DeviceID, b => b.DeviceID, (a, bGroup) => new { a, bGroup })
-                        .SelectMany(ab => ab.bGroup.DefaultIfEmpty(), (a, b) => new { a.a, b })
-                        .GroupJoin(deviceFingerprint, ab => ab.b?.DeviceNo ?? "", c => c.DeviceNo, (ab, cGroup) => new { ab.a, cGroup })
-                        .SelectMany(abc => abc.cGroup.DefaultIfEmpty(), (ab, c) => new RawTransactionDto
-                        {
-                            LoginName = ab.a.LoginName,
-                            SubscriberName = ab.a.SubscriberName,
-                            TransTime = ab.a.TransTime,
-                            UserAgent = ab.a.UserAgent,
-                            IP = ab.a.IP,
-                            PluginID = ab.a.PluginID,
-                            URL = ab.a.URL,
-                            Action = ab.a.Action,
-                            ActionResult = ab.a.ActionResult,
-                            FlaggedCode = MappingFlaggedCode(ab.a.Flagged),
-                            DeviceID = ab.a.DeviceID,
-                            DeviceCode = c.DeviceNo,
-                            FingerprintCode = c.FingerprintCode
-                        })
-                        .ToList();
-
-                        if (mergedList != null && mergedList.Any())
-                        {
-                            var rawTransJson = JsonConvert.SerializeObject(mergedList);
-                            await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
-
-                            // 2019-05-07 00:14:11
-                            await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                        }
-                    }
-
-                    return true;
+                    await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
 
-                return false;
+                return true;
             }
             catch (Exception ex)
             {
@@ -109,7 +59,40 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private IEnumerable<DeviceInfoDto> TransformDevicInfo(IEnumerable<DeviceInfoModel> model)
+
+        private async Task<IEnumerable<RawTransactionDto>> GetMergedListAsync(DateTime lastTransTime, DateTime toTransTime)
+        {
+            var tasks = appSettings.DCSExtraSite.Split(',').Select(subscriberName => dcsExtraService.GetRawTransactionAsync(subscriberName, lastTransTime, toTransTime));
+            var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result);
+
+            if (listRawTrans != null && listRawTrans.Any())
+            {
+                var deviceIDs = listRawTrans
+                                .Where(x => x.DeviceID != null)
+                                .Select(x => x.DeviceID)
+                                .Distinct();
+
+                var deviceIDList = string.Join(",", deviceIDs.Select(x => x.ToString()));
+                var deviceInfo = TransformDeviceInfo(dcsExtraService.GetDeviceInfo(deviceIDList));
+
+                var deviceFingerprint = Enumerable.Empty<DeviceFingerprintDto>();
+                if (deviceInfo != null && deviceInfo.Any())
+                {
+                    var deviceNos = deviceInfo
+                                    .Where(x => x.DeviceNo != null)
+                                    .Select(x => x.DeviceNo)
+                                    .Distinct();
+
+                    var deviceNoList = string.Join(",", deviceNos.Select(x => x.ToString()));
+                    deviceFingerprint = TransformDeviceFingerprint(dcsExtraService.GetDeviceFingerprint(deviceNoList));
+                }
+
+                return MergedList(listRawTrans, deviceInfo, deviceFingerprint);
+            }
+            return Enumerable.Empty<RawTransactionDto>();
+        }
+
+        private IEnumerable<DeviceInfoDto> TransformDeviceInfo(IEnumerable<DeviceInfoModel> model)
         {
             return model.Select(x => new DeviceInfoDto
             {
@@ -127,8 +110,35 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             });
         }
 
-        private string MappingFlaggedCode(int flagged)
+        private IEnumerable<RawTransactionDto> MergedList(IEnumerable<RawTransactionModel> listRawTrans, IEnumerable<DeviceInfoDto> deviceInfo, IEnumerable<DeviceFingerprintDto> deviceFingerprint)
         {
+            return listRawTrans
+                    .GroupJoin(deviceInfo, a => a.DeviceID, b => b.DeviceID, (a, bGroup) => new { a, bGroup })
+                    .SelectMany(ab => ab.bGroup.DefaultIfEmpty(), (a, b) => new { a.a, b })
+                    .GroupJoin(deviceFingerprint, ab => ab.b?.DeviceNo ?? null, c => c.DeviceNo, (ab, cGroup) => new { ab.a, cGroup })
+                    .SelectMany(abc => abc.cGroup.DefaultIfEmpty(), (ab, c) => new RawTransactionDto
+                    {
+                        LoginName = ab.a.LoginName,
+                        SubscriberName = ab.a.SubscriberName,
+                        TransTime = ab.a.TransTime,
+                        UserAgent = ab.a.UserAgent,
+                        IP = ab.a.IP,
+                        PluginID = ab.a.PluginID,
+                        URL = ab.a.URL,
+                        Action = ab.a.Action,
+                        ActionResult = ab.a.ActionResult,
+                        FlaggedCode = MappingFlaggedCode(ab.a.Flagged),
+                        DeviceID = ab.a.DeviceID,
+                        DeviceCode = c?.DeviceNo ?? null,
+                        FingerprintCode = c?.FingerprintCode ?? null
+                    })
+                    .OrderBy(x => x.TransTime);
+        }
+
+        private string MappingFlaggedCode(int? flagged)
+        {
+            if (flagged == null) return Flagged.Human.ToString();
+
             if (flagged == 5) return Flagged.EmptyToken.ToString();
             if (flagged == 6) return Flagged.EmptyAnalysis.ToString();
             if (flagged == 7) return Flagged.EmptyDevice.ToString();
@@ -141,7 +151,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             if (flagged == 215) return Flagged.EmptyDevice.ToString();
             if (flagged == 216) return Flagged.InvalidDevice.ToString();
 
-            return string.Empty;
+            return Flagged.Human.ToString();
         }
     }
 }

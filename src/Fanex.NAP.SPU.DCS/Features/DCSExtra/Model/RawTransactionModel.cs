@@ -14,7 +14,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
 
         public string IP { get; set; }
 
-        public long PluginID { get; set; }
+        public long? PluginID { get; set; }
 
         public string URL { get; set; }
 
@@ -22,8 +22,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
 
         public string ActionResult { get; set; }
 
-        public int Flagged { get; set; }
+        public int? Flagged { get; set; }
 
-        public long DeviceID { get; set; }
+        public long? DeviceID { get; set; }
     }
 }
