@@ -22,17 +22,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly IDCSExtraServices dcsExtraService;
         private readonly ISentryClient sentryClient;
-        private readonly IAppSettings appSettings;
         private readonly IConfiguration configuration;
 
-        private readonly int rangeMinutes = 5;
-        private readonly int parameterID = 1000;
-
-        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IAppSettings appSettings, IConfiguration configuration)
+        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IConfiguration configuration)
         {
             this.dcsExtraService = dcsExtraService;
             this.sentryClient = sentryClient;
-            this.appSettings = appSettings;
             this.configuration = configuration;
         }
 
@@ -40,8 +35,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
+                var parameterID = configuration.GetSection("DCSExtra").GetValue<int>("ParameterID");
+                var rangeMinutes = configuration.GetSection("DCSExtra").GetValue<int>("RangeMinutes");
+
                 var parameterValue = dcsExtraService.GetParameterValue(parameterID);
                 var lastTransTime = DateTime.ParseExact(parameterValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
                 var toTransTime = lastTransTime.AddMinutes(rangeMinutes);
 
                 var mergedList = await GetMergedListAsync(lastTransTime, toTransTime);
