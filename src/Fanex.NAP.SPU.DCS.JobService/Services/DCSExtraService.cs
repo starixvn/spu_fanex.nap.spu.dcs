@@ -2,6 +2,7 @@
 using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
+using Fanex.NAP.SPU.DCS.JobService.Ultilities;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sentry;
@@ -69,6 +70,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private async Task<IEnumerable<RawTransactionDto>> GetMergedListAsync(DateTime lastTransTime, DateTime toTransTime)
         {
             var tasks = new List<Task<IEnumerable<RawTransactionModel>>>();
+            var batchSize = settingDCSExtra.GetValue<int>("BatchSizeGetData");
 
             var dcsExtraConfig = settingDCSExtra.GetSection("Config").GetChildren();
             foreach (var item in dcsExtraConfig)
@@ -84,8 +86,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                 .Select(x => x.DeviceID)
                                 .Distinct();
 
-                var deviceIDList = string.Join(",", deviceIDs.Select(x => x.ToString()));
-                var deviceInfo = TransformDeviceInfo(dcsExtraService.GetDeviceInfo(deviceIDList));
+                var deviceInfo = TransformDeviceInfo(await GetDeviceInfoBatchedAsync(deviceIDs, batchSize));
 
                 var deviceFingerprint = Enumerable.Empty<DeviceFingerprintDto>();
                 if (deviceInfo != null && deviceInfo.Any())
@@ -95,13 +96,46 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                     .Select(x => x.DeviceNo)
                                     .Distinct();
 
-                    var deviceNoList = string.Join(",", deviceNos.Select(x => x.ToString()));
-                    deviceFingerprint = TransformDeviceFingerprint(dcsExtraService.GetDeviceFingerprint(deviceNoList));
+                    deviceFingerprint = TransformDeviceFingerprint(await GetDeviceFingerprintBatchedAsync(deviceNos, batchSize));
                 }
 
                 return MergedList(listRawTrans, deviceInfo, deviceFingerprint);
             }
             return Enumerable.Empty<RawTransactionDto>();
+        }
+
+        public async Task<IEnumerable<DeviceInfoModel>> GetDeviceInfoBatchedAsync(IEnumerable<long?> deviceIDs, int batchSize)
+        {
+            var batches = deviceIDs.Chunk2(batchSize);
+
+            var tasks = new List<Task<IEnumerable<DeviceInfoModel>>>();
+
+            foreach (var batch in batches)
+            {
+                var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
+                tasks.Add(dcsExtraService.GetDeviceInfoAsync(deviceIDList));
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.SelectMany(x => x);
+        }
+
+        public async Task<IEnumerable<DeviceFingerprintModel>> GetDeviceFingerprintBatchedAsync(IEnumerable<string> deviceNos, int batchSize)
+        {
+            var batches = deviceNos.Chunk2(batchSize);
+
+            var tasks = new List<Task<IEnumerable<DeviceFingerprintModel>>>();
+
+            foreach (var batch in batches)
+            {
+                var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
+                tasks.Add(dcsExtraService.GetDeviceFingerprintAsync(deviceIDList));
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.SelectMany(x => x);
         }
 
         private IEnumerable<DeviceInfoDto> TransformDeviceInfo(IEnumerable<DeviceInfoModel> model)

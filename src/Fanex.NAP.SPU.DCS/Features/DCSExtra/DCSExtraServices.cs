@@ -13,9 +13,9 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime);
 
-        IEnumerable<DeviceInfoModel> GetDeviceInfo(string deviceIDList);
+        Task<IEnumerable<DeviceInfoModel>> GetDeviceInfoAsync(string deviceIDList);
 
-        IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList);
+        Task<IEnumerable<DeviceFingerprintModel>> GetDeviceFingerprintAsync(string deviceNoList);
 
         Task InsertTransformRawTransAsync(string rawTransJson);
 
@@ -25,13 +25,11 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
     public class DCSExtraServices : IDCSExtraServices
     {
         private readonly IDCSExtraDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
         public delegate Task<IEnumerable<RawTransactionModel>> GetRawTransactionDelegate(string subscriberName, DateTime lastTransTime, DateTime toTransTime);
 
-        public DCSExtraServices(IDCSExtraDataAccess dataAccess, ISentryClient sentryClient)
+        public DCSExtraServices(IDCSExtraDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public string GetParameterValue(int parameterID)
@@ -44,14 +42,28 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return string.Empty;
         }
 
-        public IEnumerable<DeviceInfoModel> GetDeviceInfo(string deviceIDList)
+        public Task<IEnumerable<DeviceInfoModel>> GetDeviceInfoAsync(string deviceIDList)
         {
-            return dataAccess.GetDeviceInfo(deviceIDList);
+            try
+            {
+                return dataAccess.GetDeviceInfoAsync(deviceIDList);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList)
+        public Task<IEnumerable<DeviceFingerprintModel>> GetDeviceFingerprintAsync(string deviceNoList)
         {
-            return dataAccess.GetDeviceFingerprint(deviceNoList);
+            try
+            {
+                return dataAccess.GetDeviceFingerprintAsync(deviceNoList);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime)

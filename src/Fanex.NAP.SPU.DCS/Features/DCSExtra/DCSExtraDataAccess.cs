@@ -12,9 +12,9 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
     {
         IEnumerable<string> GetParameterValue(int parameterID);
 
-        IEnumerable<DeviceInfoModel> GetDeviceInfo(string deviceIDList);
+        Task<IEnumerable<DeviceInfoModel>> GetDeviceInfoAsync(string deviceIDList);
 
-        IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList);
+        Task<IEnumerable<DeviceFingerprintModel>> GetDeviceFingerprintAsync(string deviceNoList);
 
         Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime);
 
@@ -32,7 +32,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<DeviceInfoModel> GetDeviceInfo(string deviceIDList)
+        public Task<IEnumerable<DeviceInfoModel>> GetDeviceInfoAsync(string deviceIDList)
         {
             var criteria = new DeviceInfoGetCriteria
             {
@@ -40,10 +40,10 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<DeviceInfoModel>(criteria);
+            return db.QueryAsync<DeviceInfoModel>(criteria);
         }
 
-        public IEnumerable<DeviceFingerprintModel> GetDeviceFingerprint(string deviceNoList)
+        public Task<IEnumerable<DeviceFingerprintModel>> GetDeviceFingerprintAsync(string deviceNoList)
         {
             var criteria = new LastDeviceFingerprintGetCriteria
             {
@@ -51,7 +51,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
-            return db.Query<DeviceFingerprintModel>(criteria);
+            return db.QueryAsync<DeviceFingerprintModel>(criteria);
         }
 
         public IEnumerable<string> GetParameterValue(int parameterID)
