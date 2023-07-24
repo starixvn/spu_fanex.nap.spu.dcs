@@ -22,34 +22,38 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly IDCSExtraServices dcsExtraService;
         private readonly ISentryClient sentryClient;
-        private readonly IConfiguration configuration;
+        private readonly IConfigurationSection settingDCSExtra;
 
         public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IConfiguration configuration)
         {
             this.dcsExtraService = dcsExtraService;
             this.sentryClient = sentryClient;
-            this.configuration = configuration;
+            this.settingDCSExtra = configuration.GetSection("DCSExtra");
         }
 
         public async Task<bool> MigrateDCSExtra()
         {
             try
             {
-                var parameterID = configuration.GetSection("DCSExtra").GetValue<int>("ParameterID");
-                var rangeMinutes = configuration.GetSection("DCSExtra").GetValue<int>("RangeMinutes");
+                var parameterID = settingDCSExtra.GetValue<int>("ParameterID");
+                var rangeMinutes = settingDCSExtra.GetValue<int>("RangeMinutes");
+                var stopMinutes = settingDCSExtra.GetValue<int>("StopMinutes");
 
                 var parameterValue = dcsExtraService.GetParameterValue(parameterID);
                 var lastTransTime = DateTime.ParseExact(parameterValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
                 var toTransTime = lastTransTime.AddMinutes(rangeMinutes);
-
-                var mergedList = await GetMergedListAsync(lastTransTime, toTransTime);
-                if (mergedList != null && mergedList.Any())
+                var stopTime = DateTime.Now.AddMinutes(-stopMinutes);
+                if (toTransTime <= stopTime)
                 {
-                    var rawTransJson = JsonConvert.SerializeObject(mergedList);
-                    await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
+                    var mergedList = await GetMergedListAsync(lastTransTime, toTransTime);
+                    if (mergedList != null && mergedList.Any())
+                    {
+                        var rawTransJson = JsonConvert.SerializeObject(mergedList);
+                        await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
 
-                    await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    }
                 }
 
                 return true;
@@ -66,8 +70,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var tasks = new List<Task<IEnumerable<RawTransactionModel>>>();
 
-            var dcsExtraAppSetting = configuration.GetSection("DCSExtra");
-            var dcsExtraConfig = dcsExtraAppSetting.GetSection("Config").GetChildren();
+            var dcsExtraConfig = settingDCSExtra.GetSection("Config").GetChildren();
             foreach (var item in dcsExtraConfig)
             {
                 tasks.Add(dcsExtraService.GetRawTransactionAsync(item["Site"], item["SettingKey"], lastTransTime, toTransTime));
