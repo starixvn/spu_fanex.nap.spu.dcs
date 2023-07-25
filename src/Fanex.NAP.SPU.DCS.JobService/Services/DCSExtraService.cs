@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Sentry;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,7 +73,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             var dcsExtraConfig = settingDCSExtra.GetSection("Config").GetChildren();
             foreach (var item in dcsExtraConfig)
             {
-                tasks.Add(dcsExtraService.GetRawTransactionAsync(item["Site"], item["SettingKey"], lastTransTime, toTransTime));
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        return dcsExtraService.GetRawTransactionAsync(item["Site"], item["SettingKey"], lastTransTime, toTransTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        sentryClient.CaptureException(ex);
+                    }
+
+                    return null;
+                }));
+            }
+            
+            if (tasks.Any(x => x == null))
+            {
+                throw new Exception("The function GetRawTransaction has errors!");
             }
 
             var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result);
@@ -110,7 +128,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             foreach (var batch in batches)
             {
                 var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
-                tasks.Add(dcsExtraService.GetDeviceInfoAsync(deviceIDList));
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        return dcsExtraService.GetDeviceInfoAsync(deviceIDList);
+                    }
+                    catch (Exception ex)
+                    {
+                        sentryClient.CaptureException(ex);
+                    }
+
+                    return null;
+                }));
+            }
+
+            if (tasks.Any(x => x == null))
+            {
+                throw new Exception("The function GetDeviceInfoBatchedAsync has errors!");
             }
 
             var results = await Task.WhenAll(tasks);
@@ -127,7 +162,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             foreach (var batch in batches)
             {
                 var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
-                tasks.Add(dcsExtraService.GetDeviceFingerprintAsync(deviceIDList));
+                tasks.Add(Task.Run(() =>
+                {
+                    try
+                    {
+                        return dcsExtraService.GetDeviceFingerprintAsync(deviceIDList);
+                    }
+                    catch (Exception ex)
+                    {
+                        sentryClient.CaptureException(ex);
+                    }
+
+                    return null;
+                }));
+            }
+
+            if (tasks.Any(x => x == null))
+            {
+                throw new Exception("The function GetDeviceFingerprintBatchedAsync has errors!");
             }
 
             var results = await Task.WhenAll(tasks);

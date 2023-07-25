@@ -65,7 +65,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return db.Query<string>(criteria);
         }
 
-        public async Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime)
+        public Task<IEnumerable<RawTransactionModel>> GetRawTransactionAsync(string subscriberName, string settingKey, DateTime lastTransTime, DateTime toTransTime)
         {
             var criteria = new RawTransactionGetCriteria
             {
@@ -75,7 +75,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             using var db = ObjectDbFactory.CreateInstance(settingKey);
-            return await db.QueryAsync<RawTransactionModel>(criteria);
+            return db.QueryAsync<RawTransactionModel>(criteria);
         }
 
         public async Task InsertTransformRawTransAsync(string rawTransJson)
