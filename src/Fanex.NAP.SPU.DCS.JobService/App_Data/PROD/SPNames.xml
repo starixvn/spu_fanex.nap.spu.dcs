@@ -31,5 +31,18 @@
 		
     <Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
     <Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+
+		<Setting Key="DCS_FPS_GetDeviceInfo" SpName="DCS_FPS_GetDeviceInfo" DbName="SQLServer.FPS_DEV.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetLastDeviceFingerprint" SpName="DCS_FPS_GetLastDeviceFingerprint" DbName="SQLServer.FPS_DeviceFingerprint.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_AgentCTMax" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentCTMax.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_CTMax" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_CTMax.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_AgentSky" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentSky.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_Sky" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_Sky.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_AgentVelki" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentVelki.fpsWebService"/>
+		<Setting Key="DCS_FPS_GetRawTransaction_Velki" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_Velki.fpsWebService"/>
+
+		<Setting Key="DCS_ET_SystemSetting_GetParameterValue" SpName="DCS_ET_SystemSetting_GetParameterValue" DbName="MySQL.DCS_Extra.ctsService"/>
+		<Setting Key="DCS_ET_SystemSetting_UpdateParameterValue" SpName="DCS_ET_SystemSetting_UpdateParameterValue" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_Transform_RawTrans_Insert" SpName="DCS_ET_Transform_RawTrans_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 	</Function>
 </Functions>

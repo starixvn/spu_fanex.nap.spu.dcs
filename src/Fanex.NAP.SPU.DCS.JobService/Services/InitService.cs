@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+    using Fanex.NAP.SPU.DCS.Features.DCSExtra;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
@@ -16,6 +17,7 @@
             RegisterTransformTransaction(services);
             RegisterMonitoring(services);
             RegisterAbnormalTransaction(services);
+            RegisterDCSExtra(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -52,6 +54,13 @@
             services.AddSingleton<IAbnormalTransactionDataAccess, AbnormalTransactionDataAccess>();
             services.AddSingleton<IAbnormalTransactionServices, AbnormalTransactionServices>();
             services.AddSingleton<IAbnormalTransactionJobService, AbnormalTransactionJobService>();
+        }
+
+        private static void RegisterDCSExtra(this IServiceCollection services)
+        {
+            services.AddSingleton<IDCSExtraDataAccess, DCSExtraDataAccess>();
+            services.AddSingleton<IDCSExtraServices, DCSExtraServices>();
+            services.AddSingleton<IDCSExtraService, DCSExtraService>();
         }
     }
 }
