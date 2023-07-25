@@ -114,9 +114,9 @@
         }
 
         [HttpPost("migratedcsextra")]
-        public async Task<bool> MigrateDCSExtra()
+        public async Task<bool> MigrateDCSExtra([FromForm] int rangeMinutes, [FromForm] int stopMinutes, [FromForm] int batchSizeGetData)
         {
-            return await dcsExtraService.MigrateDCSExtra();
+            return await dcsExtraService.MigrateDCSExtra(rangeMinutes, stopMinutes, batchSizeGetData);
         }
     }
 }

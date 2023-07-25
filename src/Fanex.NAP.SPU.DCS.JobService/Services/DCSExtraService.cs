@@ -3,6 +3,7 @@ using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
 using Fanex.NAP.SPU.DCS.JobService.Ultilities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sentry;
@@ -16,7 +17,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IDCSExtraService
     {
-        Task<bool> MigrateDCSExtra();
+        Task<bool> MigrateDCSExtra(int rangeMinutes, int stopMinutes, int batchSizeGetData);
     }
 
     public class DCSExtraService : IDCSExtraService
@@ -32,14 +33,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.settingDCSExtra = configuration.GetSection("DCSExtra");
         }
 
-        public async Task<bool> MigrateDCSExtra()
+        public async Task<bool> MigrateDCSExtra(int rangeMinutes, int stopMinutes, int batchSizeGetData)
         {
             try
             {
                 var parameterID = settingDCSExtra.GetValue<int>("ParameterID");
-                var rangeMinutes = settingDCSExtra.GetValue<int>("RangeMinutes");
-                var stopMinutes = settingDCSExtra.GetValue<int>("StopMinutes");
-
                 var parameterValue = dcsExtraService.GetParameterValue(parameterID);
                 var lastTransTime = DateTime.ParseExact(parameterValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
@@ -47,7 +45,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var stopTime = DateTime.Now.AddMinutes(-stopMinutes);
                 if (toTransTime <= stopTime)
                 {
-                    var mergedList = await GetMergedListAsync(lastTransTime, toTransTime);
+                    var mergedList = await GetMergedListAsync(lastTransTime, toTransTime, batchSizeGetData);
                     if (mergedList != null && mergedList.Any())
                     {
                         var rawTransJson = JsonConvert.SerializeObject(mergedList);
@@ -67,10 +65,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         }
 
 
-        private async Task<IEnumerable<RawTransactionDto>> GetMergedListAsync(DateTime lastTransTime, DateTime toTransTime)
+        private async Task<IEnumerable<RawTransactionDto>> GetMergedListAsync(DateTime lastTransTime, DateTime toTransTime, int batchSizeGetData)
         {
             var tasks = new List<Task<IEnumerable<RawTransactionModel>>>();
-            var batchSize = settingDCSExtra.GetValue<int>("BatchSizeGetData");
 
             var dcsExtraConfig = settingDCSExtra.GetSection("Config").GetChildren();
             foreach (var item in dcsExtraConfig)
@@ -86,7 +83,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                 .Select(x => x.DeviceID)
                                 .Distinct();
 
-                var deviceInfo = TransformDeviceInfo(await GetDeviceInfoBatchedAsync(deviceIDs, batchSize));
+                var deviceInfo = TransformDeviceInfo(await GetDeviceInfoBatchedAsync(deviceIDs, batchSizeGetData));
 
                 var deviceFingerprint = Enumerable.Empty<DeviceFingerprintDto>();
                 if (deviceInfo != null && deviceInfo.Any())
@@ -96,7 +93,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                     .Select(x => x.DeviceNo)
                                     .Distinct();
 
-                    deviceFingerprint = TransformDeviceFingerprint(await GetDeviceFingerprintBatchedAsync(deviceNos, batchSize));
+                    deviceFingerprint = TransformDeviceFingerprint(await GetDeviceFingerprintBatchedAsync(deviceNos, batchSizeGetData));
                 }
 
                 return MergedList(listRawTrans, deviceInfo, deviceFingerprint);
