@@ -3,13 +3,11 @@ using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
 using Fanex.NAP.SPU.DCS.JobService.Ultilities;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sentry;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,11 +85,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     return null;
                 }));
             }
-            
-            if (tasks.Any(x => x == null))
-            {
-                throw new Exception("The function GetRawTransaction has errors!");
-            }
 
             var listRawTrans = (await Task.WhenAll(tasks)).Where(result => result != null).SelectMany(result => result);
             if (listRawTrans != null && listRawTrans.Any())
@@ -143,11 +136,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 }));
             }
 
-            if (tasks.Any(x => x == null))
-            {
-                throw new Exception("The function GetDeviceInfoBatchedAsync has errors!");
-            }
-
             var results = await Task.WhenAll(tasks);
 
             return results.SelectMany(x => x);
@@ -175,11 +163,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                     return null;
                 }));
-            }
-
-            if (tasks.Any(x => x == null))
-            {
-                throw new Exception("The function GetDeviceFingerprintBatchedAsync has errors!");
             }
 
             var results = await Task.WhenAll(tasks);
