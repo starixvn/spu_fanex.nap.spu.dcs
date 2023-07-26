@@ -4,6 +4,7 @@
     using Sentry;
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
 
     public interface ITransactionJobService
@@ -71,9 +72,13 @@
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
         {
+            var startTime = DateTime.Now;
             var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch, isReadyDbExtra);
-            var tasks = new List<Task>();
 
+            var durationInSeconds = (DateTime.Now - startTime).TotalSeconds;
+            sentryClient.CaptureMessage($"UnhandleSubscriberAccountProcessing duration: {durationInSeconds}s");
+
+            var tasks = new List<Task>();
             foreach (var trans in rawTrans)
             {
                 try
