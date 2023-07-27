@@ -19,7 +19,7 @@
         private readonly IAppSettings appSettings;
 
         private readonly IList<string> IgnoreMessages;
-        private const int delayTime = 200; // milliseconds
+        private const int delayTime = 500; // milliseconds
 
         public TransactionJobService(ISentryClient sentryClient, ITransactionServices transactionService, IAppSettings appSettings)
         {
@@ -76,7 +76,7 @@
             var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch, isReadyDbExtra);
 
             var durationInSeconds = (DateTime.Now - startTime).TotalSeconds;
-            sentryClient.CaptureMessage($"UnhandleSubscriberAccountProcessing duration: {durationInSeconds}s");
+            sentryClient.CaptureMessage($"GetRawTransaction duration: {durationInSeconds}s");
 
             var tasks = new List<Task>();
             foreach (var trans in rawTrans)
