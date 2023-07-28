@@ -72,11 +72,7 @@
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
         {
-            var startTime = DateTime.Now;
             var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch, isReadyDbExtra);
-
-            var durationInSeconds = (DateTime.Now - startTime).TotalSeconds;
-            sentryClient.CaptureMessage($"GetRawTransaction duration: {durationInSeconds}s");
 
             var tasks = new List<Task>();
             foreach (var trans in rawTrans)
