@@ -49,9 +49,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     {
                         var rawTransJson = JsonConvert.SerializeObject(mergedList);
                         await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
-
-                        await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     }
+
+                    await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
 
                 return true;
