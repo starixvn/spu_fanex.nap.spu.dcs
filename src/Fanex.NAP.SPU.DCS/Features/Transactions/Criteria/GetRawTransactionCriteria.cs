@@ -14,9 +14,19 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
         [SpParam(SqlParamName = "ip_NoOfBatch")]
         public int NumberOfBatch { get; set; }
 
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
         public override string GetSettingKey()
         {
-            return "DCS_DC_Transform_RawTrans_GetPackage";
+            if (IsReadyDbExtra)
+            {
+                return "DCS_ET_Transform_RawTrans_GetPackage";
+            }
+            else
+            {
+                return "DCS_DC_Transform_RawTrans_GetPackage";
+            }            
         }
 
         public override bool IsValid()

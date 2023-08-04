@@ -3,12 +3,14 @@
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Newtonsoft.Json;
     using Sentry;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     public interface IUserAgentJobService
     {
-        bool Execute(int size);
+        Task<bool> Execute(int size, bool isTransformExtra);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
@@ -17,11 +19,13 @@
     {
         private readonly ISentryClient sentryClient;
         private readonly IUserAgentServices userAgentService;
+        private readonly IAppSettings appSettings;
 
-        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService)
+        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService, IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.userAgentService = userAgentService;
+            this.appSettings = appSettings;
         }
 
         public ClientInfo ConvertUserAgent(string userAgent)
@@ -29,40 +33,62 @@
             return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
-        public bool Execute(int size)
+        public async Task<bool> Execute(int size, bool isTransformExtra)
         {
             try
             {
                 if(size > 0)
                 {
-                    JobRun(size);
+                    JobRun(size, isTransformExtra);
                 }                                
             }
             catch (System.Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
-                return false;
+                return await Task.FromResult(false);
             }
 
-            return true;            
+            return await Task.FromResult(true);            
         }
 
-        private void JobRun(int size)
-        {
-            var userAgents = userAgentService.GetUserAgent(size);
-
-            if (userAgents != null && userAgents.Any())
+        private void JobRun(int size, bool isTransformExtra)
+        {            
+            if (isTransformExtra)
             {
-                var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
+                if(appSettings.IsReadyDbExtra)
+                    TransformUserAgent(size, true);
+            }
+            else
+            {
+                TransformUserAgent(size, false);
+            }
+        }
 
-                if (transformUserAgent.Any())
+        private void TransformUserAgent(int size, bool isReadyDbExtra)
+        {
+            try
+            {
+                var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
+
+                if (userAgents != null && userAgents.Any())
                 {
-                    var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+                    var transformUserAgent = userAgentService.TransformUserAgent(userAgents);
 
-                    userAgentService.UpdateUserAgent(userAgentJson);                                        
+                    if (transformUserAgent.Any())
+                    {
+                        var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+
+                        userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+                    }
                 }
             }
+            catch (System.Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+
+                throw;
+            }            
         }
     }
 }

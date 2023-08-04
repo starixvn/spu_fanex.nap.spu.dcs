@@ -28,6 +28,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         [InlineData(0, 2, 2)]
         public void GetRawTransaction_ReturnListRawTrans(int isProcessed, int numberOfTrans, int numberOfBatch)
         {
+            var isReadyDbExtra = false;
             var result = new List<RawTransactionEntity> {
                 new RawTransactionEntity
                 {
@@ -51,9 +52,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
                 }
             };
 
-            transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch).Returns(result);
+            transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch, isReadyDbExtra).Returns(result);
 
-            var expectedResult = transactionServices.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch);
+            var expectedResult = transactionServices.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch, isReadyDbExtra);
 
             expectedResult.Should().BeEquivalentTo(result);
         }

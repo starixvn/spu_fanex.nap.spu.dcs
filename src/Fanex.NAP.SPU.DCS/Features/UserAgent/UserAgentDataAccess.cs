@@ -1,26 +1,27 @@
-﻿using Fanex.Data;
-using Fanex.Data.Repository;
-using Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria;
-using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
-using Fanex.NAP.SPU.DCS.Shares;
-using System.Collections.Generic;
-
-namespace Fanex.NAP.SPU.DCS.Features.UserAgent
+﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
+    using Fanex.Data;
+    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria;
+    using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+    using Fanex.NAP.SPU.DCS.Shares;
+    using System.Collections.Generic;
+
     public interface IUserAgentDataAccess
     {
-        IEnumerable<UserAgentEntity> GetUserAgent(int size);
+        IEnumerable<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra);
 
-        DataResult UpdateUserAgent(string userAgentJson);
+        DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra);
     }
 
     public class UserAgentDataAccess : IUserAgentDataAccess
     {
-        public IEnumerable<UserAgentEntity> GetUserAgent(int size)
+        public IEnumerable<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
         {
             var criteria = new GetUserAgentCriteria
             {
-                Size = size
+                Size = size,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -29,13 +30,14 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent
             }
         }
 
-        public DataResult UpdateUserAgent(string userAgentJson)
+        public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
         {
             var repository = new DynamicRepository();
 
             var criteria = new UpdateUserAgentCriteria
             {
-                UserAgentJson = userAgentJson
+                UserAgentJson = userAgentJson,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             var errCode = repository.Execute(criteria);

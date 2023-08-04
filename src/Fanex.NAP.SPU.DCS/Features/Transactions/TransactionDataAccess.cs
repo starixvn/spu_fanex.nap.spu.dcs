@@ -1,20 +1,20 @@
-﻿using Fanex.Data;
-using Fanex.Data.Repository;
-using Fanex.NAP.SPU.DCS.Features.Transactions.Criteria;
-using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
-using System.Collections.Generic;
-
-namespace Fanex.NAP.SPU.DCS.Features.Transactions
+﻿namespace Fanex.NAP.SPU.DCS.Features.Transactions
 {
+    using Fanex.Data;
+    using Fanex.Data.Repository;
+    using Fanex.NAP.SPU.DCS.Features.Transactions.Criteria;
+    using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
+    using System.Collections.Generic;
+
     public interface ITransactionDataAccess
     {
-        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch);
+        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra);
 
-        void InserUserAgent(long fromId, long toId);
+        void InserUserAgent(long fromId, long toId, bool isReadyDbExtra);
 
-        void InsertTransaction(long fromId, long toId);
+        void InsertTransaction(long fromId, long toId, bool isReadyDbExtra);
 
-        void UnhandleSubscriberActionProcess(long fromId, long toId);
+        void UnhandleSubscriberActionProcess(long fromId, long toId, bool isReadyDbExtra);
     }
     public class TransactionDataAccess : ITransactionDataAccess
     {
@@ -25,13 +25,14 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch)
+        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
         {
             var criteria = new GetRawTransactionCriteria
             {
                 IsProcessed = isProcessed,
                 NumberOfTickets = numberOfTrans,
-                NumberOfBatch = numberOfBatch
+                NumberOfBatch = numberOfBatch,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -40,34 +41,37 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions
             }
         }
 
-        public void InsertTransaction(long fromId, long toId)
+        public void InsertTransaction(long fromId, long toId, bool isReadyDbExtra)
         {
             var criteria = new InsertTransactionCriteria
             {
                 FromStagingTransId = fromId,
-                ToStagingTransId = toId
+                ToStagingTransId = toId,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             repository.Execute(criteria);
         }
 
-        public void InserUserAgent(long fromId, long toId)
+        public void InserUserAgent(long fromId, long toId, bool isReadyDbExtra)
         {
             var criteria = new InsertUserAgentCriteria
             {
                 FromStagingTransId = fromId,
-                ToStagingTransId = toId
+                ToStagingTransId = toId,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             repository.Execute(criteria);
         }
 
-        public void UnhandleSubscriberActionProcess(long fromId, long toId)
+        public void UnhandleSubscriberActionProcess(long fromId, long toId, bool isReadyDbExtra)
         {
             var criteria = new UnhandleSubscriberActionCriteria
             {
                 FromTransId = fromId,
-                ToTransId = toId
+                ToTransId = toId,
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             repository.Execute(criteria);

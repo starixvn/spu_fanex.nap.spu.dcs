@@ -25,6 +25,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [Fact]
         public void GetUserAgent_WhenCalled_ReturnUserAgentList()
         {
+            var isReadyDbExtra = false;
             var userAgentEntities = new List<UserAgentEntity> {
                 new UserAgentEntity
                 {
@@ -40,8 +41,8 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
                 }
             };
 
-            userAgentDataAccess.GetUserAgent(100).Returns(userAgentEntities);
-            var result = userAgentService.GetUserAgent(100);
+            userAgentDataAccess.GetUserAgent(100, isReadyDbExtra).Returns(userAgentEntities);
+            var result = userAgentService.GetUserAgent(100, isReadyDbExtra);
 
             result.Should().BeEquivalentTo(userAgentEntities);
         }
@@ -50,14 +51,15 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [InlineData("xyz")]
         public void UpdateUserAgent_WhenSuccess_ReturnDataResult(string userAgentJson)
         {
+            var isReadyDbExtra = false;
             var expectedResut = new DataResult
             {
                 ErrorCode = 0,
                 ErrorMessage = string.Empty
             };
 
-            userAgentDataAccess.UpdateUserAgent(userAgentJson).Returns(expectedResut);
-            var result = userAgentService.UpdateUserAgent(userAgentJson);
+            userAgentDataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra).Returns(expectedResut);
+            var result = userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
 
             result.ErrorCode.Should().Be(0);
         }
@@ -67,14 +69,15 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
         [InlineData(null)]
         public void UpdateUserAgent_WhenFail_ReturnDataResult(string userAgentJson)
         {
+            var isReadyDbExtra = false;
             var expectedResut = new DataResult
             {
                 ErrorCode = -1,
                 ErrorMessage = "Parameter is empty"
             };
 
-            userAgentDataAccess.UpdateUserAgent(userAgentJson).Returns(expectedResut);
-            var result = userAgentService.UpdateUserAgent(userAgentJson);
+            userAgentDataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra).Returns(expectedResut);
+            var result = userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
 
             result.ErrorCode.Should().Be(-1);
         }

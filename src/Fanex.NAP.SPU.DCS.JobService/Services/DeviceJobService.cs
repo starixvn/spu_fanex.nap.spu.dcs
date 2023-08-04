@@ -10,45 +10,58 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IDeviceJobService
     {
-        Task<bool> Execute(int size, int numberOfBatch);
+        Task<bool> Execute(int size, int numberOfBatch, bool isTransformExtra);
     }
 
     public class DeviceJobService : IDeviceJobService
     {
         private readonly ISentryClient sentryClient;
         private readonly IDeviceServices deviceService;
+        private readonly IAppSettings appSettings;
         private const int delayTime = 100; // milliseconds
 
-        public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService)
+        public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService, IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.deviceService = deviceService;
+            this.appSettings = appSettings;
         }
 
-        public async Task<bool> Execute(int size, int numberOfBatch)
+        public async Task<bool> Execute(int size, int numberOfBatch, bool isTransformExtra)
         {
             try
             {
                 if (size > 0 && numberOfBatch > 0)
-                {
-                    var task = JobRun(size, numberOfBatch);
-
-                    await task;
-                }
+                {                    
+                    JobRun(size, numberOfBatch, isTransformExtra);    
+                }              
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
-                return false;
+                return await Task.FromResult(false);
             }
 
-            return true;
+            return await Task.FromResult(true);
         }
 
-        private async Task JobRun(int size, int numberOfBatch)
+        private void JobRun(int size, int numberOfBatch, bool isTransformExtra)
         {
-            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch);
+            if (isTransformExtra)
+            {
+                if(appSettings.IsReadyDbExtra)
+                    TransformDevice(size, numberOfBatch, true).Wait();
+            }
+            else
+            {
+                TransformDevice(size, numberOfBatch, false).Wait();
+            }          
+        }
+
+        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        {
+            var stagingTransIds = deviceService.GetStagingTransIdForDevice(size, numberOfBatch, isReadyDbExtra);
 
             if (stagingTransIds != null && stagingTransIds.Any())
             {
@@ -61,7 +74,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     {
                         try
                         {
-                            deviceService.UpdateDevices(trans);                                                        
+                            deviceService.UpdateDevices(trans, isReadyDbExtra);
                         }
                         catch (Exception ex)
                         {
@@ -71,13 +84,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                     await Task.Delay(delayTime);
 
-                    tasks.Add(task);                                        
+                    tasks.Add(task);
                 }
 
-                var taskCompleted = Task.WhenAll(tasks.ToArray());
-
-                await taskCompleted;
+                await Task.WhenAll(tasks.ToArray());                
             }
         }
+
     }
 }

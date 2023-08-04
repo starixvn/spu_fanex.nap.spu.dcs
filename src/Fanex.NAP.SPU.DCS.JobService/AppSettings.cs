@@ -21,6 +21,8 @@
         string TelegramGroupIDMonitorTransaction { get; }
 
         string DCSExtraSite { get; }
+
+        bool IsReadyDbExtra { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -33,6 +35,7 @@
         private readonly string abnormalTransactionUrl;
         private readonly string telegramProxy;
         private readonly string telegramGroupIDMonitorTransaction;
+        private readonly bool isReadyDbExtra;
         private readonly string dcsExtraSite;
 
         public AppSettings(IConfiguration configuration)
@@ -50,6 +53,8 @@
             telegramProxy = GetValue<string>("Telegram:Proxy");
 
             telegramGroupIDMonitorTransaction = GetValue<string>("Telegram:GroupID:MonitorTransaction");
+
+            isReadyDbExtra = GetValue<bool>("IsReadyDbExtra");
 
             dcsExtraSite = GetValue<string>("DCSExtra:Site");
         }
@@ -87,6 +92,8 @@
         public string TelegramProxy => telegramProxy;
 
         public string TelegramGroupIDMonitorTransaction => telegramGroupIDMonitorTransaction;
+
+        public bool IsReadyDbExtra => isReadyDbExtra;
 
         public string DCSExtraSite => dcsExtraSite;
 

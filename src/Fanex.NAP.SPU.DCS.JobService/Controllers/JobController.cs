@@ -39,12 +39,15 @@
         }
 
         [HttpPost("useragent")]
-        public Task<bool> UserAgent([FromForm] int size)
+        public async Task<bool> UserAgent([FromForm] int size)
         {
-            var result = this.userAgentJobService.Execute(size);
+            return await this.userAgentJobService.Execute(size, false);          
+        }
 
-            return Task.FromResult(result);
-
+        [HttpPost("useragentextra")]
+        public async Task<bool> UserAgentExtra([FromForm] int size)
+        {
+            return await this.userAgentJobService.Execute(size, true);
         }
 
         [HttpGet("ConvertUserAgent")]
@@ -56,13 +59,25 @@
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await this.deviceJobService.Execute(size, numberOfBatch);
+            return await this.deviceJobService.Execute(size, numberOfBatch, false);
+        }
+
+        [HttpPost("transformdeviceextra")]
+        public async Task<bool> TransformDeviceExtra([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await this.deviceJobService.Execute(size, numberOfBatch, true);
         }
 
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await this.transactionJobService.Execute(size, numberOfBatch);
+            return await this.transactionJobService.Execute(size, numberOfBatch, false);
+        }
+
+        [HttpPost("transformtransactionextra")]
+        public async Task<bool> TransformTransactionExtra([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await this.transactionJobService.Execute(size, numberOfBatch, true);
         }
 
         [HttpPost("sumtransaction")]

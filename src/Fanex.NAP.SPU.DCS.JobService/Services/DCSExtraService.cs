@@ -42,16 +42,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 var toTransTime = lastTransTime.AddMinutes(rangeMinutes);
                 var stopTime = DateTime.Now.AddMinutes(-stopMinutes);
-                if (toTransTime <= stopTime)
+                if (stopMinutes == 0 || toTransTime <= stopTime)
                 {
                     var mergedList = await GetMergedListAsync(lastTransTime, toTransTime, batchSizeGetData);
                     if (mergedList != null && mergedList.Any())
                     {
                         var rawTransJson = JsonConvert.SerializeObject(mergedList);
                         await dcsExtraService.InsertTransformRawTransAsync(rawTransJson);
-
-                        await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
                     }
+
+                    await dcsExtraService.UpdateParameterValueAsync(parameterID, toTransTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
 
                 return true;
