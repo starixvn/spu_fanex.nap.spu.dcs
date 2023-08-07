@@ -1,16 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
-    using Sentry;
+    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     [ApiController]
     [Route("api/job")]
     public class JobController : ControllerBase
     {
-        private readonly ISentryClient sentryClient;
         private readonly IUserAgentJobService userAgentJobService;
         private readonly IDeviceJobService deviceJobService;
         private readonly ITransactionJobService transactionJobService;
@@ -18,17 +16,17 @@
         private readonly INotifyTransactionJobService notifyTransactionJobService;
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IDCSExtraService dcsExtraService;
+        private readonly IArchiveJobServices archiveJobServices;
 
-        public JobController(ISentryClient sentryClient,
-            IUserAgentJobService userAgentJobService,
+        public JobController(IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
             INotifyTransactionJobService notifyTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
-            IDCSExtraService dcsExtraService)
+            IDCSExtraService dcsExtraService,
+            IArchiveJobServices archiveJobServices)
         {
-            this.sentryClient = sentryClient;
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
             this.transactionJobService = transactionJobService;
@@ -36,12 +34,13 @@
             this.notifyTransactionJobService = notifyTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.dcsExtraService = dcsExtraService;
+            this.archiveJobServices = archiveJobServices;
         }
 
         [HttpPost("useragent")]
         public async Task<bool> UserAgent([FromForm] int size)
         {
-            return await this.userAgentJobService.Execute(size, false);          
+            return await this.userAgentJobService.Execute(size, false);
         }
 
         [HttpPost("useragentextra")]
@@ -132,6 +131,18 @@
         public async Task<bool> MigrateDCSExtra([FromForm] int rangeMinutes, [FromForm] int stopMinutes, [FromForm] int batchSizeGetData)
         {
             return await dcsExtraService.MigrateDCSExtra(rangeMinutes, stopMinutes, batchSizeGetData);
+        }
+
+        [HttpPost("updatemodifieddate")]
+        public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
+        {
+            return await archiveJobServices.Execute(batchSize);
+        }
+
+        [HttpPost("deletebotcomponent")]
+        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
+        {
+            return await archiveJobServices.DeleteBotComponent(retentionDays);
         }
 
         [HttpPost("initialtransipinfo")]

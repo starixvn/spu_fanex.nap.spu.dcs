@@ -31,6 +31,8 @@
 		
 		<Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="DCS_FPS_GetDeviceInfo" SpName="DCS_FPS_GetDeviceInfo" DbName="SQLServer.FPS_DEV.fpsWebService"/>
 		<Setting Key="DCS_FPS_GetLastDeviceFingerprint" SpName="DCS_FPS_GetLastDeviceFingerprint" DbName="SQLServer.FPS_DeviceFingerprint.fpsWebService"/>
