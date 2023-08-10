@@ -8,6 +8,12 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
         [SpParam(SqlParamName = "ip_BatchSize")]
         public int BatchSize { get; set; }
 
+        [SpParam(SqlParamName = "ip_LastTransID_ParameterID")]
+        public int LastTransID_ParameterID { get; set; }
+
+        [SpParam(SqlParamName = "ip_LastCreatedDate_ParameterID")]
+        public int LastCreatedDate_ParameterID { get; set; }
+
         public override string GetSettingKey()
         {
             return "DCS_ET_Transaction_InitialData_Get";

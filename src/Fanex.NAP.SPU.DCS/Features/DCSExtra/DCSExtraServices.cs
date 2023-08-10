@@ -21,7 +21,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
 
-        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize);
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastCreatedDate_ParameterID);
 
         Task UpdateTransactionInitialDataAsync(string transJs);
 
@@ -82,9 +82,9 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             await dataAccess.UpdateParameterValueAsync(parameterID, parameterValue);
         }
 
-        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize)
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastCreatedDate_ParameterID)
         {
-            return dataAccess.GetTransactionInitialDataAsync(batchSize);
+            return dataAccess.GetTransactionInitialDataAsync(batchSize, lastTransID_ParameterID, lastCreatedDate_ParameterID);
         }
 
         public async Task UpdateTransactionInitialDataAsync(string transJs)

@@ -243,10 +243,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
                 var lastCreatedDate_ParameterID = initialDataConfig.GetValue<int>("LastCreatedDate_ParameterID");
 
-
                 if (batchSize > 0 && numberOfBatch > 0)
                 {
-                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch);
+                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID, lastCreatedDate_ParameterID);
 
                     if (trans != null && trans.Any())
                     {
@@ -305,7 +304,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var countryList = ipInfo.Where(t => !string.IsNullOrEmpty(t.CountryCode))
                                     .GroupBy(t => new { t.Country, t.CountryCode })
-                                    .Select(group => new CountryModel { Country = group.Key.Country, CountryCode = group.Key.CountryCode })
+                                    .Select(group => new CountryModel { CountryName = group.Key.Country, CountryCode = group.Key.CountryCode })
                                     .ToList();
 
             if (countryList != null && countryList.Any())
@@ -376,9 +375,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                             TransID = t.TransID,
                             CreatedDate = t.CreatedDate,
                             CountryCode = ip.CountryCode,
-                            Region = ip.Region,
-                            City = ip.City,
-                            ISP = ip.ISP
+                            RegionName = ip.Region,
+                            CityName = ip.City,
+                            ISPName = ip.ISP
                         }).ToList();
             }
             return new List<TransactionInitialDataDto>();
