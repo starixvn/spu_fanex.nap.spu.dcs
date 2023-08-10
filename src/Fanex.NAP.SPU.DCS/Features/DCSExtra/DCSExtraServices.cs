@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +20,31 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
         Task InsertTransformRawTransAsync(string rawTransJson);
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
+
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize);
+
+        Task UpdateTransactionInitialDataAsync(string transJs);
+
+        Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs);
+
+        Task InsertListCityAsync(string inputJs);
+
+        Task InsertListCountryAsync(string inputJs);
+
+        Task InsertListISPAsync(string inputJs);
+
+        Task InsertListRegionAsync(string inputJs);
     }
 
     public class DCSExtraServices : IDCSExtraServices
     {
         private readonly IDCSExtraDataAccess dataAccess;
+        private readonly ISentryClient sentryClient;
 
-        public DCSExtraServices(IDCSExtraDataAccess dataAccess)
+        public DCSExtraServices(IDCSExtraDataAccess dataAccess, ISentryClient sentryClient)
         {
             this.dataAccess = dataAccess;
+            this.sentryClient = sentryClient;
         }
 
         public string GetParameterValue(int parameterID)
@@ -63,6 +80,48 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
         public async Task UpdateParameterValueAsync(int parameterID, string parameterValue)
         {
             await dataAccess.UpdateParameterValueAsync(parameterID, parameterValue);
+        }
+
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize)
+        {
+            return dataAccess.GetTransactionInitialDataAsync(batchSize);
+        }
+
+        public async Task UpdateTransactionInitialDataAsync(string transJs)
+        {
+            try
+            {
+                await dataAccess.UpdateTransactionInitialDataAsync(transJs);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs)
+        {
+            return dataAccess.GetLocationByIPList(ipIDs);
+        }
+
+        public Task InsertListCityAsync(string inputJs)
+        {
+            return dataAccess.InsertListCityAsync(inputJs);
+        }
+
+        public Task InsertListCountryAsync(string inputJs)
+        {
+            return dataAccess.InsertListCountryAsync(inputJs);
+        }
+
+        public Task InsertListISPAsync(string inputJs)
+        {
+            return dataAccess.InsertListISPAsync(inputJs);
+        }
+
+        public Task InsertListRegionAsync(string inputJs)
+        {
+            return dataAccess.InsertListRegionAsync(inputJs);
         }
     }
 }
