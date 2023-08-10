@@ -243,10 +243,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
                 var lastCreatedDate_ParameterID = initialDataConfig.GetValue<int>("LastCreatedDate_ParameterID");
 
+                sentryClient.CaptureMessage("Start InitialTransIpInfo!");
                 if (batchSize > 0 && numberOfBatch > 0)
                 {
                     var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID, lastCreatedDate_ParameterID);
 
+                    sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
                     if (trans != null && trans.Any())
                     {
                         var listIpID = trans.Where(t => t.IPID.HasValue)
@@ -259,6 +261,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                             var ipIDs = string.Join(",", listIpID);
 
                             var ipInfo = await dcsExtraService.GetLocationByIPList(ipIDs);
+                            sentryClient.CaptureMessage("GetLocationByIPList Finished!");
                             if (ipInfo != null && ipInfo.Any())
                             {
                                 var tasksInsert = new List<Task>
@@ -275,12 +278,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                 var mappingTransID = MergeTransactionInitial(trans, ipInfo);
                                 await UpdateTransactionInitialData(mappingTransID, batchSize);
 
+                                sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
                                 // UPDATE Parameter
                                 var lastTransID = mappingTransID.Max(x => x.TransID);
                                 var lastCreatedDate = mappingTransID.Max(x => x.CreatedDate);
 
                                 await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
                                 await dcsExtraService.UpdateParameterValueAsync(lastCreatedDate_ParameterID, lastCreatedDate.ToString("yyyy-MM-dd"));
+
+                                sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
                             }
                         }
                     }
