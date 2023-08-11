@@ -8,6 +8,6 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
 
         public decimal? IPID { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public string PartitionName { get; set; }
     }
 }

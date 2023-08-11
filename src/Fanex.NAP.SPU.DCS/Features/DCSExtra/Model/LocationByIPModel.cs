@@ -1,4 +1,8 @@
-﻿namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
+﻿using System.Security.Cryptography;
+using System.Text;
+using System;
+
+namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
 {
     public class LocationByIPModel
     {
@@ -13,6 +17,8 @@
         public string City { get; set; }
 
         public string ISP { get; set; }
+
+        public long IPInfoCode { get; set; }
     }
 }
 

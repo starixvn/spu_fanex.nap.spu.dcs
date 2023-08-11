@@ -241,12 +241,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 var initialDataConfig = settingDCSExtra.GetSection("InitialData");
                 var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
-                var lastCreatedDate_ParameterID = initialDataConfig.GetValue<int>("LastCreatedDate_ParameterID");
+                var lastPartitionName_ParameterID = initialDataConfig.GetValue<int>("LastPartitionName_ParameterID");
 
                 sentryClient.CaptureMessage("Start InitialTransIpInfo!");
                 if (batchSize > 0 && numberOfBatch > 0)
                 {
-                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID, lastCreatedDate_ParameterID);
+                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID, lastPartitionName_ParameterID);
 
                     sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
                     if (trans != null && trans.Any())
@@ -260,19 +260,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         {
                             var ipIDs = string.Join(",", listIpID);
 
-                            var ipInfo = await dcsExtraService.GetLocationByIPList(ipIDs);
+                            var locationByIP = await dcsExtraService.GetLocationByIPList(ipIDs);
+                            var ipInfo = HashIPInfoCode(locationByIP);
+
                             sentryClient.CaptureMessage("GetLocationByIPList Finished!");
                             if (ipInfo != null && ipInfo.Any())
                             {
-                                var tasksInsert = new List<Task>
-                                {
-                                    InsertCountry(ipInfo),
-                                    InsertCity(ipInfo),
-                                    InsertISP(ipInfo),
-                                    InsertRegion(ipInfo)
-                                };
-
-                                await Task.WhenAll(tasksInsert.ToArray());
+                                await InsertIPInfo(ipInfo);
+                                sentryClient.CaptureMessage("InsertIPInfo Finished!");
 
                                 // UPDATE Trans
                                 var mappingTransID = MergeTransactionInitial(trans, ipInfo);
@@ -280,11 +275,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                                 sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
                                 // UPDATE Parameter
-                                var lastTransID = mappingTransID.Max(x => x.TransID);
-                                var lastCreatedDate = mappingTransID.Max(x => x.CreatedDate);
+                                var lastTransID = mappingTransID.Min(x => x.TransID);
+                                var partitionName = trans.FirstOrDefault(x => !string.IsNullOrEmpty(x.PartitionName))?.PartitionName;
 
                                 await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
-                                await dcsExtraService.UpdateParameterValueAsync(lastCreatedDate_ParameterID, lastCreatedDate.ToString("yyyy-MM-dd"));
+                                await dcsExtraService.UpdateParameterValueAsync(lastPartitionName_ParameterID, partitionName);
 
                                 sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
                             }
@@ -306,65 +301,35 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return true;
         }
 
-        private Task InsertCountry(IEnumerable<LocationByIPModel> ipInfo)
+        private IEnumerable<LocationByIPModel> HashIPInfoCode(IEnumerable<LocationByIPModel> ipInfo)
         {
-            var countryList = ipInfo.Where(t => !string.IsNullOrEmpty(t.CountryCode))
-                                    .GroupBy(t => new { t.Country, t.CountryCode })
-                                    .Select(group => new CountryModel { CountryName = group.Key.Country, CountryCode = group.Key.CountryCode })
+            foreach (var item in ipInfo)
+            {
+                item.IPInfoCode = Cipher.Hashing2Int(string.Join(";", item.CountryCode, item.Region, item.City, item.ISP));
+            }
+
+            return ipInfo;
+        }
+
+        private Task InsertIPInfo(IEnumerable<LocationByIPModel> ipInfo)
+        {
+            var ipInfoList = ipInfo.Where(t => !string.IsNullOrEmpty(t.CountryCode))
+                                    .GroupBy(x => x.IPInfoCode)
+                                    .Select(group => new IPInfoModel
+                                    {
+                                        IPInfoCode = group.Key,
+                                        CountryCode = group.First().CountryCode,
+                                        Country = group.First().Country,
+                                        Region = group.First().Region,
+                                        City = group.First().City,
+                                        ISP = group.First().ISP
+                                    })
                                     .ToList();
 
-            if (countryList != null && countryList.Any())
+            if (ipInfoList != null && ipInfoList.Any())
             {
-                var countryInputJs = JsonConvert.SerializeObject(countryList);
-                return dcsExtraService.InsertListCountryAsync(countryInputJs);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        private Task InsertCity(IEnumerable<LocationByIPModel> ipInfo)
-        {
-            var cityList = ipInfo.Where(t => !string.IsNullOrEmpty(t.City))
-                                .Select(t => t.City)
-                                .Distinct()
-                                .ToList();
-
-            if (cityList != null && cityList.Any())
-            {
-                var cityInputJs = string.Join(",", cityList);
-                return dcsExtraService.InsertListCityAsync(cityInputJs);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        private Task InsertISP(IEnumerable<LocationByIPModel> ipInfo)
-        {
-            var ispList = ipInfo.Where(t => !string.IsNullOrEmpty(t.ISP))
-                                .Select(t => t.ISP)
-                                .Distinct()
-                                .ToList();
-
-            if (ispList != null && ispList.Any())
-            {
-                var ispInputJs = string.Join(",", ispList);
-                return dcsExtraService.InsertListISPAsync(ispInputJs);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        private Task InsertRegion(IEnumerable<LocationByIPModel> ipInfo)
-        {
-            var regionList = ipInfo.Where(t => !string.IsNullOrEmpty(t.Region))
-                                .Select(t => t.Region)
-                                .Distinct()
-                                .ToList();
-
-            if (regionList != null && regionList.Any())
-            {
-                var regionInputJs = string.Join(",", regionList);
-                return dcsExtraService.InsertListRegionAsync(regionInputJs);
+                var inputJs = JsonConvert.SerializeObject(ipInfoList);
+                return dcsExtraService.InsertListIPInfoAsync(inputJs);
             }
 
             return Task.CompletedTask;
@@ -379,11 +344,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         select new TransactionInitialDataDto
                         {
                             TransID = t.TransID,
-                            CreatedDate = t.CreatedDate,
-                            CountryCode = ip.CountryCode,
-                            RegionName = ip.Region,
-                            CityName = ip.City,
-                            ISPName = ip.ISP
+                            IPInfoCode = ip.IPInfoCode
                         }).ToList();
             }
             return new List<TransactionInitialDataDto>();

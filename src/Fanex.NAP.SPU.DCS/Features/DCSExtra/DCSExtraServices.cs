@@ -1,5 +1,4 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,30 +20,22 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
 
-        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastCreatedDate_ParameterID);
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastPartitionName_ParameterID);
 
         Task UpdateTransactionInitialDataAsync(string transJs);
 
         Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs);
 
-        Task InsertListCityAsync(string inputJs);
-
-        Task InsertListCountryAsync(string inputJs);
-
-        Task InsertListISPAsync(string inputJs);
-
-        Task InsertListRegionAsync(string inputJs);
+        Task InsertListIPInfoAsync(string inputJs);
     }
 
     public class DCSExtraServices : IDCSExtraServices
     {
         private readonly IDCSExtraDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
 
-        public DCSExtraServices(IDCSExtraDataAccess dataAccess, ISentryClient sentryClient)
+        public DCSExtraServices(IDCSExtraDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public string GetParameterValue(int parameterID)
@@ -82,21 +73,14 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             await dataAccess.UpdateParameterValueAsync(parameterID, parameterValue);
         }
 
-        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastCreatedDate_ParameterID)
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastPartitionName_ParameterID)
         {
-            return dataAccess.GetTransactionInitialDataAsync(batchSize, lastTransID_ParameterID, lastCreatedDate_ParameterID);
+            return dataAccess.GetTransactionInitialDataAsync(batchSize, lastTransID_ParameterID, lastPartitionName_ParameterID);
         }
 
         public async Task UpdateTransactionInitialDataAsync(string transJs)
         {
-            try
-            {
-                await dataAccess.UpdateTransactionInitialDataAsync(transJs);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await dataAccess.UpdateTransactionInitialDataAsync(transJs);
         }
 
         public Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs)
@@ -104,24 +88,9 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             return dataAccess.GetLocationByIPList(ipIDs);
         }
 
-        public Task InsertListCityAsync(string inputJs)
+        public Task InsertListIPInfoAsync(string inputJs)
         {
-            return dataAccess.InsertListCityAsync(inputJs);
-        }
-
-        public Task InsertListCountryAsync(string inputJs)
-        {
-            return dataAccess.InsertListCountryAsync(inputJs);
-        }
-
-        public Task InsertListISPAsync(string inputJs)
-        {
-            return dataAccess.InsertListISPAsync(inputJs);
-        }
-
-        public Task InsertListRegionAsync(string inputJs)
-        {
-            return dataAccess.InsertListRegionAsync(inputJs);
+            return dataAccess.InsertListIPInfoAsync(inputJs);
         }
     }
 }
