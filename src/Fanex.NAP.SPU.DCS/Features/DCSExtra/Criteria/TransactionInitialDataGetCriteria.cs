@@ -11,9 +11,6 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
         [SpParam(SqlParamName = "ip_LastTransID_ParameterID")]
         public int LastTransID_ParameterID { get; set; }
 
-        [SpParam(SqlParamName = "ip_LastPartitionName_ParameterID")]
-        public int LastPartitionName_ParameterID { get; set; }
-
         public override string GetSettingKey()
         {
             return "DCS_ET_Transaction_InitialData_Get";

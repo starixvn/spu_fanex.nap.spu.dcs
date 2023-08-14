@@ -22,7 +22,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
 
-        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastPartitionName_ParameterID);
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID);
 
         Task UpdateTransactionInitialDataAsync(string transJs);
 
@@ -107,13 +107,12 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             await repository.ExecuteAsync(criteria);
         }
 
-        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID, int lastPartitionName_ParameterID)
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID)
         {
             var criteria = new TransactionInitialDataGetCriteria
             {
                 BatchSize = batchSize,
-                LastTransID_ParameterID = lastTransID_ParameterID,
-                LastPartitionName_ParameterID = lastPartitionName_ParameterID
+                LastTransID_ParameterID = lastTransID_ParameterID
             };
 
             using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());

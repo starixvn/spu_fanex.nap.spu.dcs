@@ -240,13 +240,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 var initialDataConfig = settingDCSExtra.GetSection("InitialData");
-                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
-                var lastPartitionName_ParameterID = initialDataConfig.GetValue<int>("LastPartitionName_ParameterID");
+                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");                
 
                 sentryClient.CaptureMessage("Start InitialTransIpInfo!");
                 if (batchSize > 0 && numberOfBatch > 0)
                 {
-                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID, lastPartitionName_ParameterID);
+                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID);
 
                     sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
                     if (trans != null && trans.Any())
@@ -279,7 +278,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                 var partitionName = trans.FirstOrDefault(x => !string.IsNullOrEmpty(x.PartitionName))?.PartitionName;
 
                                 await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
-                                await dcsExtraService.UpdateParameterValueAsync(lastPartitionName_ParameterID, partitionName);
 
                                 sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
                             }
