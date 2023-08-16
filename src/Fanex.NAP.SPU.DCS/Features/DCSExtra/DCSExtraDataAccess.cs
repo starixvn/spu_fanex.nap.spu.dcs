@@ -21,6 +21,14 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
         Task InsertTransformRawTransAsync(string rawTransJson);
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
+
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID);
+
+        Task UpdateTransactionInitialDataAsync(string transJs);
+
+        Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs);
+
+        Task InsertListIPInfoAsync(string inputJs);
     }
 
     public class DCSExtraDataAccess : IDCSExtraDataAccess
@@ -97,6 +105,49 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
             };
 
             await repository.ExecuteAsync(criteria);
+        }
+
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID)
+        {
+            var criteria = new TransactionInitialDataGetCriteria
+            {
+                BatchSize = batchSize,
+                LastTransID_ParameterID = lastTransID_ParameterID
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return db.QueryAsync<TransactionInitialDataModel>(criteria);
+        }
+
+        public Task UpdateTransactionInitialDataAsync(string transJs)
+        {
+            var criteria = new TransactionInitialDataUpdate
+            {
+                TransJs = transJs
+            };
+
+            return repository.ExecuteAsync(criteria);
+        }
+
+        public Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs)
+        {
+            var criteria = new LocationByIPListGet
+            {
+                IPs = ipIDs
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return db.QueryAsync<LocationByIPModel>(criteria);
+        }
+
+        public Task InsertListIPInfoAsync(string inputJs)
+        {
+            var criteria = new IPInfoInsertCriteria
+            {
+                InputJs = inputJs
+            };
+
+            return repository.ExecuteAsync(criteria);
         }
     }
 }

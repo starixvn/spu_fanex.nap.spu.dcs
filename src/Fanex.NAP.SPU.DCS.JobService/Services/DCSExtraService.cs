@@ -3,6 +3,7 @@ using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
 using Fanex.NAP.SPU.DCS.JobService.Ultilities;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sentry;
@@ -17,6 +18,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public interface IDCSExtraService
     {
         Task<bool> MigrateDCSExtra(int rangeMinutes, int stopMinutes, int batchSizeGetData);
+
+        Task<bool> InitialTransIpInfo(int batchSize, int numberOfBatch);
     }
 
     public class DCSExtraService : IDCSExtraService
@@ -230,6 +233,136 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             if (flagged == 216) return Flagged.InvalidDevice.ToString();
 
             return Flagged.Human.ToString();
+        }
+
+        public async Task<bool> InitialTransIpInfo(int batchSize, int numberOfBatch)
+        {
+            try
+            {
+                var initialDataConfig = settingDCSExtra.GetSection("InitialData");
+                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");                
+
+                sentryClient.CaptureMessage("Start InitialTransIpInfo!");
+                if (batchSize > 0 && numberOfBatch > 0)
+                {
+                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID);
+
+                    sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
+                    if (trans != null && trans.Any())
+                    {
+                        var listIpID = trans.Where(t => t.IPID.HasValue)
+                                                .Select(t => t.IPID)
+                                                .Distinct()
+                                                .ToList();
+
+                        if (listIpID != null && listIpID.Any())
+                        {
+                            var ipIDs = string.Join(",", listIpID);
+
+                            var locationByIP = await dcsExtraService.GetLocationByIPList(ipIDs);
+                            var ipInfo = HashIPInfoCode(locationByIP);
+
+                            sentryClient.CaptureMessage("GetLocationByIPList Finished!");
+                            if (ipInfo != null && ipInfo.Any())
+                            {
+                                await InsertIPInfo(ipInfo);
+                                sentryClient.CaptureMessage("InsertIPInfo Finished!");
+
+                                // UPDATE Trans
+                                var mappingTransID = MergeTransactionInitial(trans, ipInfo);
+                                await UpdateTransactionInitialData(mappingTransID, batchSize);
+
+                                sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
+                                // UPDATE Parameter
+                                var lastTransID = mappingTransID.Min(x => x.TransID);
+                                var partitionName = trans.FirstOrDefault(x => !string.IsNullOrEmpty(x.PartitionName))?.PartitionName;
+
+                                await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
+
+                                sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                return false;
+            }
+
+            return true;
+        }
+
+        private IEnumerable<LocationByIPModel> HashIPInfoCode(IEnumerable<LocationByIPModel> ipInfo)
+        {
+            foreach (var item in ipInfo)
+            {
+                item.IPInfoCode = Cipher.Hashing2Int(string.Join(";", item.CountryCode, item.Region, item.City, item.ISP));
+            }
+
+            return ipInfo;
+        }
+
+        private Task InsertIPInfo(IEnumerable<LocationByIPModel> ipInfo)
+        {
+            var ipInfoList = ipInfo.Where(t => !string.IsNullOrEmpty(t.CountryCode))
+                                    .GroupBy(x => x.IPInfoCode)
+                                    .Select(group => new IPInfoModel
+                                    {
+                                        IPInfoCode = group.Key,
+                                        CountryCode = group.First().CountryCode,
+                                        Country = group.First().Country,
+                                        Region = group.First().Region,
+                                        City = group.First().City,
+                                        ISP = group.First().ISP
+                                    })
+                                    .ToList();
+
+            if (ipInfoList != null && ipInfoList.Any())
+            {
+                var inputJs = JsonConvert.SerializeObject(ipInfoList);
+                return dcsExtraService.InsertListIPInfoAsync(inputJs);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private IEnumerable<TransactionInitialDataDto> MergeTransactionInitial(IEnumerable<TransactionInitialDataModel> trans, IEnumerable<LocationByIPModel> ipInfo)
+        {
+            if (trans != null && trans.Any() && ipInfo != null && ipInfo.Any())
+            {
+                return (from t in trans
+                        join ip in ipInfo on t.IPID equals ip.IP
+                        select new TransactionInitialDataDto
+                        {
+                            TransID = t.TransID,
+                            IPInfoCode = ip.IPInfoCode
+                        }).ToList();
+            }
+            return new List<TransactionInitialDataDto>();
+        }
+
+        private async Task UpdateTransactionInitialData(IEnumerable<TransactionInitialDataDto> mappingTransID, int batchSize)
+        {
+            if(mappingTransID != null && mappingTransID.Any())
+            {
+                var batches = mappingTransID.Chunk2(batchSize);
+                var tasksUpdate = new List<Task>();
+
+                foreach (var batch in batches)
+                {
+                    var transJs = JsonConvert.SerializeObject(batch);
+                    tasksUpdate.Add(dcsExtraService.UpdateTransactionInitialDataAsync(transJs));
+                }
+
+                await Task.WhenAll(tasksUpdate.ToArray());
+            }
         }
     }
 }

@@ -19,6 +19,14 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
         Task InsertTransformRawTransAsync(string rawTransJson);
 
         Task UpdateParameterValueAsync(int parameterID, string parameterValue);
+
+        Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID);
+
+        Task UpdateTransactionInitialDataAsync(string transJs);
+
+        Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs);
+
+        Task InsertListIPInfoAsync(string inputJs);
     }
 
     public class DCSExtraServices : IDCSExtraServices
@@ -63,6 +71,26 @@ namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
         public async Task UpdateParameterValueAsync(int parameterID, string parameterValue)
         {
             await dataAccess.UpdateParameterValueAsync(parameterID, parameterValue);
+        }
+
+        public Task<IEnumerable<TransactionInitialDataModel>> GetTransactionInitialDataAsync(int batchSize, int lastTransID_ParameterID)
+        {
+            return dataAccess.GetTransactionInitialDataAsync(batchSize, lastTransID_ParameterID);
+        }
+
+        public async Task UpdateTransactionInitialDataAsync(string transJs)
+        {
+            await dataAccess.UpdateTransactionInitialDataAsync(transJs);
+        }
+
+        public Task<IEnumerable<LocationByIPModel>> GetLocationByIPList(string ipIDs)
+        {
+            return dataAccess.GetLocationByIPList(ipIDs);
+        }
+
+        public Task InsertListIPInfoAsync(string inputJs)
+        {
+            return dataAccess.InsertListIPInfoAsync(inputJs);
         }
     }
 }

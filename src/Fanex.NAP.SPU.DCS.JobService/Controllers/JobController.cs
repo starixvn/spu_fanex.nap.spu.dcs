@@ -133,5 +133,11 @@
         {
             return await dcsExtraService.MigrateDCSExtra(rangeMinutes, stopMinutes, batchSizeGetData);
         }
+
+        [HttpPost("initialtransipinfo")]
+        public async Task<bool> InitialTransIpInfo([FromForm] int batchSize, [FromForm] int numberOfBatch)
+        {
+            return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);
+        }
     }
 }

@@ -58,4 +58,11 @@
 		<Setting Key="DCS_ET_Transform_UserAgent_Insert" SpName="DCS_ET_Transform_UserAgent_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_ET_Transform_Transaction_Insert" SpName="DCS_ET_Transform_Transaction_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 	</Function>
+
+	<Function Name="Extra_Initial_TransactionIPInfo">
+		<Setting Key="DCS_ET_Transaction_InitialData_Get" SpName="DCS_ET_Transaction_InitialData_Get" DbName="MySQL.DCS_Extra.ctsService"/>
+		<Setting Key="DCS_ET_Transaction_InitialData_Update" SpName="DCS_ET_Transaction_InitialData_Update" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_IPInfo_Insert" SpName="DCS_ET_IPInfo_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="GetLocationByIPList" SpName="GetLocationByIPList" DbName="SQLServer.IPDB.fpsWinService"/>
+	</Function>
 </Functions>
