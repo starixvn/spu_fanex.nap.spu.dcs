@@ -2,9 +2,9 @@
 {
     public interface IArchiveDataService
     {
-        void UpdateModifiedDate(int batchSize);
+        void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
-        void DeleteBotComponent(int retentionDays);
+        void DeleteBotComponent(int retentionDays, bool isTransformExtra);
     }
 
     public class ArchiveDataService : IArchiveDataService
@@ -16,14 +16,14 @@
             this.archiveDataAccess = archiveDataAccess;
         }
 
-        public void UpdateModifiedDate(int batchSize)
+        public void UpdateModifiedDate(int batchSize, bool isTransformExtra)
         {
-            archiveDataAccess.UpdateModifiedDate(batchSize);
+            archiveDataAccess.UpdateModifiedDate(batchSize, isTransformExtra);
         }
 
-        public void DeleteBotComponent(int retentionDays)
+        public void DeleteBotComponent(int retentionDays, bool isTransformExtra)
         {
-            archiveDataAccess.DeleteBotComponent(retentionDays);
+            archiveDataAccess.DeleteBotComponent(retentionDays, isTransformExtra);
         }
     }
 }

@@ -4,7 +4,6 @@
     using Sentry;
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
     using System.Threading.Tasks;
 
     public interface ITransactionJobService
@@ -37,7 +36,7 @@
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                    JobRun(numberOfTrans, numberOfBatch, isTransformExtra);   
+                    JobRun(numberOfTrans, numberOfBatch, isTransformExtra);
                 }
 
                 return await Task.FromResult(true);
@@ -53,8 +52,8 @@
                 else
                 {
                     return await Task.FromResult(true);
-                }                             
-            }           
+                }
+            }
         }
 
         private void JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
@@ -67,7 +66,7 @@
             else
             {
                 TransformTransaction(numberOfTrans, numberOfBatch, false).Wait();
-            }          
+            }
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -88,7 +87,7 @@
                     });
 
                     await Task.Delay(delayTime);
-                   
+
                     tasks.Add(task);
                 }
                 catch (Exception ex)

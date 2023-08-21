@@ -43,12 +43,6 @@
             return await this.userAgentJobService.Execute(size, false);
         }
 
-        [HttpPost("useragentextra")]
-        public async Task<bool> UserAgentExtra([FromForm] int size)
-        {
-            return await this.userAgentJobService.Execute(size, true);
-        }
-
         [HttpGet("ConvertUserAgent")]
         public ClientInfo ConvertUserAgent(string userAgent)
         {
@@ -61,22 +55,10 @@
             return await this.deviceJobService.Execute(size, numberOfBatch, false);
         }
 
-        [HttpPost("transformdeviceextra")]
-        public async Task<bool> TransformDeviceExtra([FromForm] int size, [FromForm] int numberOfBatch)
-        {
-            return await this.deviceJobService.Execute(size, numberOfBatch, true);
-        }
-
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
             return await this.transactionJobService.Execute(size, numberOfBatch, false);
-        }
-
-        [HttpPost("transformtransactionextra")]
-        public async Task<bool> TransformTransactionExtra([FromForm] int size, [FromForm] int numberOfBatch)
-        {
-            return await this.transactionJobService.Execute(size, numberOfBatch, true);
         }
 
         [HttpPost("sumtransaction")]
@@ -109,6 +91,18 @@
             return await notifyTransactionJobService.MonitorTransactionAndNotify(rptDateStr, batchSize, limitShowCust);
         }
 
+        [HttpPost("updatemodifieddate")]
+        public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
+        {
+            return await archiveJobServices.Execute(batchSize, false);
+        }
+
+        [HttpPost("deletebotcomponent")]
+        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
+        {
+            return await archiveJobServices.DeleteBotComponent(retentionDays, false);
+        }
+
         [HttpPost("notifymessagebyid")]
         public async Task<bool> NotifyMessageByID([FromForm] uint notifyMessageID)
         {
@@ -127,25 +121,44 @@
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
         }
 
+
+        [HttpPost("useragentextra")]
+        public async Task<bool> UserAgentExtra([FromForm] int size)
+        {
+            return await this.userAgentJobService.Execute(size, true);
+        }
+
+        [HttpPost("transformtransactionextra")]
+        public async Task<bool> TransformTransactionExtra([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await this.transactionJobService.Execute(size, numberOfBatch, true);
+        }
+
+        [HttpPost("transformdeviceextra")]
+        public async Task<bool> TransformDeviceExtra([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await this.deviceJobService.Execute(size, numberOfBatch, true);
+        }
+
+        [HttpPost("updatemodifieddateextra")]
+        public async Task<bool> UpdateModifiedDateExtra([FromForm] int batchSize)
+        {
+            return await archiveJobServices.Execute(batchSize, true);
+        }
+
+        [HttpPost("deletebotcomponentextra")]
+        public async Task<bool> DeleteBotComponentExtra([FromForm] int retentionDays)
+        {
+            return await archiveJobServices.DeleteBotComponent(retentionDays, true);
+        }
+
         [HttpPost("migratedcsextra")]
         public async Task<bool> MigrateDCSExtra([FromForm] int rangeMinutes, [FromForm] int stopMinutes, [FromForm] int batchSizeGetData)
         {
             return await dcsExtraService.MigrateDCSExtra(rangeMinutes, stopMinutes, batchSizeGetData);
         }
 
-        [HttpPost("updatemodifieddate")]
-        public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
-        {
-            return await archiveJobServices.Execute(batchSize);
-        }
-
-        [HttpPost("deletebotcomponent")]
-        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
-        {
-            return await archiveJobServices.DeleteBotComponent(retentionDays);
-        }
-
-        [HttpPost("initialtransipinfo")]
+        [HttpPost("initialtransipinfoextra")]
         public async Task<bool> InitialTransIpInfo([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
             return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);

@@ -7,9 +7,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IArchiveJobServices
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute(int batchSize, bool isTransformExtra);
 
-        Task<bool> DeleteBotComponent(int retentionDays);
+        Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra);
     }
 
     public class ArchiveJobServices : IArchiveJobServices
@@ -23,13 +23,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             _sentryClient = sentryClient;
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute(int batchSize, bool isTransformExtra)
         {
             try
             {
                 if (batchSize > 0)
                 {
-                    archiveDataService.UpdateModifiedDate(batchSize);
+                    archiveDataService.UpdateModifiedDate(batchSize, isTransformExtra);
                 }
                 else
                 {
@@ -46,13 +46,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteBotComponent(int retentionDays)
+        public Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra)
         {
             try
             {
                 if (retentionDays >= 0)
                 {
-                    archiveDataService.DeleteBotComponent(retentionDays);
+                    archiveDataService.DeleteBotComponent(retentionDays, isTransformExtra);
                 }
                 else
                 {

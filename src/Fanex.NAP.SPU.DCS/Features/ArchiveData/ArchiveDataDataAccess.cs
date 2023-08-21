@@ -5,9 +5,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
 {
     public interface IArchiveDataDataAccess
     {
-        void UpdateModifiedDate(int batchSize);
+        void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
-        void DeleteBotComponent(int retentionDays);
+        void DeleteBotComponent(int retentionDays, bool isTransformExtra);
     }
 
     public class ArchiveDataDataAccess : IArchiveDataDataAccess
@@ -19,21 +19,23 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             repository = new DynamicRepository();
         }
 
-        public void UpdateModifiedDate(int batchSize)
+        public void UpdateModifiedDate(int batchSize, bool isTransformExtra)
         {
             var criteria = new UpdateModifiedDateCriteria
             {
-                BatchSize = batchSize
+                BatchSize = batchSize,
+                IsReadyDbExtra = isTransformExtra
             };
 
             repository.Execute(criteria);
         }
 
-        public void DeleteBotComponent(int retentionDays)
+        public void DeleteBotComponent(int retentionDays, bool isTransformExtra)
         {
             var criteria = new DeleteBotComponentCriteria
             {
-                RetentionDays = retentionDays
+                RetentionDays = retentionDays,
+                IsReadyDbExtra = isTransformExtra
             };
 
             repository.Execute(criteria);
