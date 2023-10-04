@@ -20,6 +20,7 @@
             RegisterAbnormalTransaction(services);
             RegisterDCSExtra(services);
             RegisterArchiveService(services);
+            RegisterDWTransactionService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -70,6 +71,11 @@
             services.AddSingleton<IArchiveDataDataAccess, ArchiveDataDataAccess>();
             services.AddSingleton<IArchiveDataService, ArchiveDataService>();
             services.AddSingleton<IArchiveJobServices, ArchiveJobServices>();
+        }
+
+        private static void RegisterDWTransactionService(this IServiceCollection services)
+        {
+            services.AddSingleton<IDCSDWtransactionService, DCSDWtransactionService>();
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
+    using System;
     using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
@@ -17,6 +18,7 @@
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IDCSExtraService dcsExtraService;
         private readonly IArchiveJobServices archiveJobServices;
+        private readonly IDCSDWtransactionService dcsDWTransactionService;
 
         public JobController(IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
@@ -25,7 +27,8 @@
             INotifyTransactionJobService notifyTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IDCSExtraService dcsExtraService,
-            IArchiveJobServices archiveJobServices)
+            IArchiveJobServices archiveJobServices,
+            IDCSDWtransactionService dwTransactionService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -35,6 +38,7 @@
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.dcsExtraService = dcsExtraService;
             this.archiveJobServices = archiveJobServices;
+            this.dcsDWTransactionService = dwTransactionService;
         }
 
         [HttpPost("useragent")]
@@ -162,6 +166,18 @@
         public async Task<bool> InitialTransIpInfo([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
             return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);
+        }
+
+        [HttpPost("dwsummarytransaction")]
+        public async Task<bool> DWSummarytransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        {
+           return await dcsDWTransactionService.SummaryTransactionsByRangeDate(fromDate, toDate);
+        }
+
+        [HttpPost("dwsummarybettickets")]
+        public async Task<bool> DWSummaryBetTickets([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        {
+            return await dcsDWTransactionService.SummaryBetTicketsByRangeDate(fromDate, toDate);
         }
     }
 }
