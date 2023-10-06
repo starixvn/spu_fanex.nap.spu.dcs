@@ -2,7 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Data;
-    public class InsertDTSummaryBetTicketCriteria : NonQueryCommand
+    public class InsertSummaryBetTicketCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_InputJson")]
         public string RawTransJson { get; set; }

@@ -2,7 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Data;
-    public class InsertDTSumaryLoginTransactionCriteria : NonQueryCommand
+    public class InsertSumaryLoginTransactionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_Size")]
         public int BatchSize { get; set; }

@@ -4,7 +4,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetFPSTranBetTicketByRangeDateCriteria : CriteriaBase
+    public class GetBetTickeCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "FromTransDate")]
         public DateTime FromDate { get; set; }

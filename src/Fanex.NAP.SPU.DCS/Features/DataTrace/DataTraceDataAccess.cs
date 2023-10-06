@@ -13,7 +13,7 @@
 
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
-        Task<IEnumerable<TranBetTicketInfo>> GetFPSTranBetTicketByRangeDateAsync(DateTime? fromDate, DateTime? toDate);
+        Task<IEnumerable<BetTicketInfo>> GetBetTicketAsync(DateTime? fromDate, DateTime? toDate);
 
         Task<int> InsertSummaryBetTicketAsync(string rawTransJson);
 
@@ -30,7 +30,7 @@
 
         public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
         {
-            var criteria = new InsertDTSumaryLoginTransactionCriteria
+            var criteria = new InsertSumaryLoginTransactionCriteria
             {
                 BatchSize = batchSize
             };
@@ -48,20 +48,20 @@
             return await repository.GetAsync<bool>(criteria);
         }
 
-        public async Task<IEnumerable<TranBetTicketInfo>> GetFPSTranBetTicketByRangeDateAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<IEnumerable<BetTicketInfo>> GetBetTicketAsync(DateTime? fromDate, DateTime? toDate)
         {
-            var criteria = new GetFPSTranBetTicketByRangeDateCriteria
+            var criteria = new GetBetTickeCriteria
             {
-                FromDate = fromDate ?? DateTime.Now,
-                ToDate = toDate ?? DateTime.Now
+                FromDate = fromDate ?? DateTime.Now.AddDays(-1),
+                ToDate = toDate ?? DateTime.Now.AddDays(-1)
             };
 
-            return await repository.FetchAsync<TranBetTicketInfo>(criteria);
+            return await repository.FetchAsync<BetTicketInfo>(criteria);
         }
 
         public async Task<int> InsertSummaryBetTicketAsync(string rawTransJson)
         {
-            var criteria = new InsertDTSummaryBetTicketCriteria
+            var criteria = new InsertSummaryBetTicketCriteria
             {
                 RawTransJson = rawTransJson
             };
@@ -71,7 +71,7 @@
 
         public async Task<int> InsertSummaryMissingLoginTransBetTicketAsync()
         {
-            var criteria = new InsertDTSummaryMissingLoginTransBetTicketCriteria();
+            var criteria = new InsertSummaryMissingLoginTransBetTicketCriteria();
 
             return await repository.ExecuteAsync(criteria);
         }

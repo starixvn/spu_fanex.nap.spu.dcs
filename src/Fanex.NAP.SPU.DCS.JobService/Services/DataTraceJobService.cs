@@ -11,11 +11,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
     public interface IDataTraceJobService
     {
-        Task<bool> SummaryLoginTransactions(int batchSize);
+        Task<bool> SummaryLoginTransactionsAsync(int batchSize);
 
-        Task<bool> SummaryBetTickets(DateTime? fromDate, DateTime? toDate);
+        Task<bool> SummaryBetTicketsAsync(DateTime? fromDate, DateTime? toDate);
 
-        Task<bool> SummaryMissingLoginTransBetTicket();
+        Task<bool> SummaryMissingLoginTransBetTicketAsync();
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -28,13 +28,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.dataTraceServices = dataTraceServices;
         }
 
-        public async Task<bool> SummaryLoginTransactions(int batchSize)
+        public async Task<bool> SummaryLoginTransactionsAsync(int batchSize)
         {
             try
             {
                 if (batchSize > 0)
                 {
                     await dataTraceServices.InsertSummaryLoginTransactionAsync(batchSize);
+
                     return true;
                 }
                 else
@@ -52,10 +53,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 LogService.Error($"DCS - DataTrace summary transaction job execute exeption message:  {logMessage}");
             }
+
             return false;
         }
 
-        public async Task<bool> SummaryBetTickets(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> SummaryBetTicketsAsync(DateTime? fromDate, DateTime? toDate)
         {
             try
             {
@@ -70,15 +72,17 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
                 LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
+
                 return false;
             }
         }
 
-        public async Task<bool> SummaryMissingLoginTransBetTicket()
+        public async Task<bool> SummaryMissingLoginTransBetTicketAsync()
         {
             try
             {
                 await dataTraceServices.InsertSummaryMissingLoginTransBetTicketAsync();
+
                 return true;
             }
             catch (Exception ex)
@@ -90,6 +94,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
                 LogService.Error($"DCS - DataTrace summary missing login tran bet ticket job execute exeption message:  {logMessage}");
+
                 return false;
             }
         }
