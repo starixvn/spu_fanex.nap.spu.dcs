@@ -18,7 +18,7 @@
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IDCSExtraService dcsExtraService;
         private readonly IArchiveJobServices archiveJobServices;
-        private readonly IDCSDWtransactionService dcsDWTransactionService;
+        private readonly IDataTraceJobService dataTraceJobService;
 
         public JobController(IUserAgentJobService userAgentJobService,
             IDeviceJobService deviceJobService,
@@ -28,7 +28,7 @@
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IDCSExtraService dcsExtraService,
             IArchiveJobServices archiveJobServices,
-            IDCSDWtransactionService dwTransactionService)
+            IDataTraceJobService dataTraceJobService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -38,7 +38,7 @@
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.dcsExtraService = dcsExtraService;
             this.archiveJobServices = archiveJobServices;
-            this.dcsDWTransactionService = dwTransactionService;
+            this.dataTraceJobService = dataTraceJobService;
         }
 
         [HttpPost("useragent")]
@@ -168,16 +168,16 @@
             return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);
         }
 
-        [HttpPost("dwsummarytransaction")]
-        public async Task<bool> DWSummarytransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        [HttpPost("dtsummarylogintransaction")]
+        public async Task<bool> DTSummaryLoginTransaction([FromForm] int batchSize)
         {
-           return await dcsDWTransactionService.SummaryTransactionsByRangeDate(fromDate, toDate);
+           return await dataTraceJobService.SummaryLoginTransactions(batchSize);
         }
 
-        [HttpPost("dwsummarybettickets")]
-        public async Task<bool> DWSummaryBetTickets([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        [HttpPost("dtsummarybettickets")]
+        public async Task<bool> DTSummaryBetTickets([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
         {
-            return await dcsDWTransactionService.SummaryBetTicketsByRangeDate(fromDate, toDate);
+            return await dataTraceJobService.SummaryBetTickets(fromDate, toDate);
         }
     }
 }
