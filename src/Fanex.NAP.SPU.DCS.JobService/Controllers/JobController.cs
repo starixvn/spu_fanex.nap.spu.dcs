@@ -179,5 +179,11 @@
         {
             return await dataTraceJobService.SummaryBetTickets(fromDate, toDate);
         }
+
+        [HttpPost("dtsummarymissinglogintranbetticket")]
+        public async Task<bool> DTSummaryMissingLoginTransBetTicket()
+        {
+            return await dataTraceJobService.SummaryMissingLoginTransBetTicket();
+        }
     }
 }

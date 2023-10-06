@@ -10,9 +10,14 @@
     public interface IDataTraceDataAccess
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
+
         Task<bool> IsDailyTaskReadyAsync(int taskID);
+
         Task<IEnumerable<TranBetTicketInfo>> GetFPSTranBetTicketByRangeDateAsync(DateTime? fromDate, DateTime? toDate);
+
         Task<int> InsertSummaryBetTicketAsync(string rawTransJson);
+
+        Task<int> InsertSummaryMissingLoginTransBetTicketAsync();
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -64,5 +69,11 @@
             return await repository.ExecuteAsync(criteria);
         }
 
+        public async Task<int> InsertSummaryMissingLoginTransBetTicketAsync()
+        {
+            var criteria = new InsertDTSummaryMissingLoginTransBetTicketCriteria();
+
+            return await repository.ExecuteAsync(criteria);
+        }
     }
 }

@@ -8,7 +8,10 @@
     public interface IDataTraceServices
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
+
         Task<bool> ProcessSummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate);
+
+        Task<int> InsertSummaryMissingLoginTransBetTicketAsync();
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -39,6 +42,11 @@
                 }
             }
             return false;
+        }
+
+        public async Task<int> InsertSummaryMissingLoginTransBetTicketAsync()
+        {
+            return await dataAccess.InsertSummaryMissingLoginTransBetTicketAsync();
         }
     }
 }
