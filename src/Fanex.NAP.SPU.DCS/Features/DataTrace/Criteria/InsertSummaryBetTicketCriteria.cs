@@ -4,7 +4,7 @@
     using Fanex.Data;
     public class InsertSummaryBetTicketCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_InputJson")]
+        [SpParam(SqlParamName = "ip_BetTicketJson")]
         public string RawTransJson { get; set; }
 
         public override string GetSettingKey()

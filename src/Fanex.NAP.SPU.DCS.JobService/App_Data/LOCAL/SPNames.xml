@@ -68,7 +68,12 @@
     <Function Name="DCSDataTrace">
         <Setting Key="DCS_DT_Summary_LoginTransaction_Insert" SpName="DCS_DT_Summary_LoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_BetTicket_Insert" SpName="DCS_DT_Summary_BetTicket_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Summary_MissingLoginTrans_BetTicket_Insert" SpName="DCS_DT_Summary_MissingLoginTrans_BetTicket_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+        <Setting Key="DCS_DT_Summary_MissingBetTicket_GetPackage" SpName="DCS_DT_Summary_MissingBetTicket_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
+        <Setting Key="DCS_DT_Summary_MissingBetTicket_Insert" SpName="DCS_DT_Summary_MissingBetTicket_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+        <Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
+        <Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+        <Setting Key="DCS_DT_SystemSetting_UpdateParameterValue" SpName="DCS_DT_SystemSetting_UpdateParameterValue" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+
         <Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
         <Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
     </Function>

@@ -175,16 +175,24 @@
            return await dataTraceJobService.SummaryLoginTransactionsAsync(batchSize);
         }
 
-        [HttpPost("dtsummarybetticketsandmissinglogintran")]
-        public async Task<bool> DTSummaryBetTicketsAndMissingLoginTran([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        [HttpPost("dtsummarybettickets")]
+        public async Task<bool> DTSummaryBetTickets([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
         {
-            return await dataTraceJobService.SummaryBetTicketsAndMissingLoginTranAsync(fromDate, toDate);
+            return await dataTraceJobService.SummaryBetTicketAsync(fromDate, toDate);
         }
 
-        [HttpPost("dtsummarymissinglogintranbetticket")]
-        public async Task<bool> DTSummaryMissingLoginTransBetTicket()
+        [HttpPost("dtsummarymissingbetticket")]
+        public async Task<bool> DTSummaryMissingBetTicket([FromForm] int batchSize)
         {
-            return await dataTraceJobService.SummaryMissingLoginTransBetTicketAsync();
+            return await dataTraceJobService.SummaryMissingBetTicketAsync(batchSize);
         }
+
+        [HttpPost("dtsummarymissinglogintransaction")]
+        public async Task<bool> DTSummaryMissingLoginTransaction([FromForm] int batchSize)
+        {
+            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
+        }
+
+        
     }
 }

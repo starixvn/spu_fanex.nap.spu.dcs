@@ -6,10 +6,8 @@
 
     public class GetBetTickeCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "FromTransDate")]
-        public DateTime FromDate { get; set; }
-        [SpParam(SqlParamName = "ToTransDate")]
-        public DateTime ToDate { get; set; }
+        public DateTime FromTransDate { get; set; }
+        public DateTime ToTransDate { get; set; }
 
         public override string GetSettingKey()
         {
