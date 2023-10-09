@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         Task<bool> SummaryLoginTransactionsAsync(int batchSize);
 
-        Task<bool> SummaryBetTicketsAsync(DateTime? fromDate, DateTime? toDate);
+        Task<bool> SummaryBetTicketsAndMissingLoginTranAsync(DateTime? fromDate, DateTime? toDate);
 
         Task<bool> SummaryMissingLoginTransBetTicketAsync();
     }
@@ -57,11 +57,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return false;
         }
 
-        public async Task<bool> SummaryBetTicketsAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> SummaryBetTicketsAndMissingLoginTranAsync(DateTime? fromDate, DateTime? toDate)
         {
             try
             {
-                return await dataTraceServices.ProcessSummaryBetTicketAsync(fromDate, toDate);
+                return await dataTraceServices.ProcessSummaryBetTicketAndMissingLoginTranAsync(fromDate, toDate);
             }
             catch (Exception ex)
             {
@@ -71,29 +71,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
-
-                return false;
-            }
-        }
-
-        public async Task<bool> SummaryMissingLoginTransBetTicketAsync()
-        {
-            try
-            {
-                await dataTraceServices.InsertSummaryMissingLoginTransBetTicketAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary missing login tran bet ticket job execute exeption message:  {logMessage}");
+                LogService.Error($"DCS - DataTrace summary bet tickets and missing login tran job execute exeption message:  {logMessage}");
 
                 return false;
             }

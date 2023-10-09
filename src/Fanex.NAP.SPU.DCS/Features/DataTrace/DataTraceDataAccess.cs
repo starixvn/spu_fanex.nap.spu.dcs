@@ -65,7 +65,6 @@
             {
                 RawTransJson = rawTransJson
             };
-
             return await repository.ExecuteAsync(criteria);
         }
 

@@ -9,9 +9,7 @@
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
 
-        Task<bool> ProcessSummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate);
-
-        Task<int> InsertSummaryMissingLoginTransBetTicketAsync();
+        Task<bool> ProcessSummaryBetTicketAndMissingLoginTranAsync(DateTime? fromDate, DateTime? toDate);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -29,7 +27,7 @@
             return await dataAccess.InsertSummaryLoginTransactionAsync(batchSize);
         }
 
-        public async Task<bool> ProcessSummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> ProcessSummaryBetTicketAndMissingLoginTranAsync(DateTime? fromDate, DateTime? toDate)
         {
             var isDailyTaskReady = await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
 
@@ -42,16 +40,13 @@
                     var rawTransJson = JsonConvert.SerializeObject(betTicketInfos);
                     await dataAccess.InsertSummaryBetTicketAsync(rawTransJson);
 
+                    await dataAccess.InsertSummaryMissingLoginTransBetTicketAsync();
+
                     return true;
                 }
             }
 
             return false;
-        }
-
-        public async Task<int> InsertSummaryMissingLoginTransBetTicketAsync()
-        {
-            return await dataAccess.InsertSummaryMissingLoginTransBetTicketAsync();
         }
     }
 }
