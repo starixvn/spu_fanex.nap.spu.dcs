@@ -76,5 +76,27 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 return false;
             }
         }
+
+        public async Task<bool> SummaryMissingLoginTransBetTicketAsync()
+        {
+            try
+            {
+                await dataTraceServices.InsertSummaryMissingLoginTransBetTicketAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - DataTrace summary missing login tran bet ticket job execute exeption message:  {logMessage}");
+
+                return false;
+            }
+        }
     }
 }

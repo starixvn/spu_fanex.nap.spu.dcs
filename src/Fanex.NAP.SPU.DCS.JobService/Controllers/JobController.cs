@@ -5,6 +5,7 @@
     using System;
     using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
+    using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
     [ApiController]
     [Route("api/job")]
@@ -178,6 +179,12 @@
         public async Task<bool> DTSummaryBetTicketsAndMissingLoginTran([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
         {
             return await dataTraceJobService.SummaryBetTicketsAndMissingLoginTranAsync(fromDate, toDate);
+        }
+
+        [HttpPost("dtsummarymissinglogintranbetticket")]
+        public async Task<bool> DTSummaryMissingLoginTransBetTicket()
+        {
+            return await dataTraceJobService.SummaryMissingLoginTransBetTicketAsync();
         }
     }
 }
