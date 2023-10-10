@@ -12,9 +12,9 @@
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
 
-        Task<bool> ProcessSummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate);
+        Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
 
-        Task<bool> ProcessSummaryMissingBetTicketAsync(int batchSize);
+        Task<bool> ProcessSummaryMissingBetTransactionAsync(int batchSize);
 
         Task<bool> ProcessSummaryMissingLoginTransactionAsync(int batchSize);
     }
@@ -27,7 +27,7 @@
         private const int batchSize = 50000;
         private const int dailyTaskFPSID = 104;
         private const int delayTime = 100;
-        private const int maxBetTicketDateID = 2;
+        private const int maxBetTransactionDateID = 2;
 
         public DataTraceServices(IDataTraceDataAccess dataAccess, ISentryClient sentryClient)
         {
@@ -40,7 +40,7 @@
             return await dataAccess.InsertSummaryLoginTransactionAsync(batchSize);
         }
 
-        public async Task<bool> ProcessSummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
         {
             try
             {
@@ -52,16 +52,16 @@
                     var fromTransDate = fromDate ?? transDate;
                     var toTransDate = fromDate ?? transDate;
 
-                    var betTicketInfos = await dataAccess.GetBetTicketAsync(fromTransDate, toTransDate);
+                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(fromTransDate, toTransDate);
 
-                    if (betTicketInfos != null && betTicketInfos.Any())
+                    if (betTransactionInfos != null && betTransactionInfos.Any())
                     {
-                        var isSuccessful = await InsertSummaryBetTicketByBatchAsync(betTicketInfos);
+                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(betTransactionInfos);
 
                         if (isSuccessful)
                         {
                             var transDateFormat = fromTransDate.ToString("yyyy-MM-dd");
-                            await dataAccess.UpdateSystemSettingParameter(maxBetTicketDateID, transDateFormat);
+                            await dataAccess.UpdateSystemSettingParameter(maxBetTransactionDateID, transDateFormat);
 
                             return true;
                         }
@@ -77,20 +77,20 @@
             }
         }
 
-        private async Task<bool> InsertSummaryBetTicketByBatchAsync(IEnumerable<BetTicketInfo> betTicketInfos)
+        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfo> betTransactionInfos)
         {
             var tasks = new List<Task>();
 
-            for (int startIndex = 0; startIndex < betTicketInfos.Count(); startIndex += batchSize)
+            for (int startIndex = 0; startIndex < betTransactionInfos.Count(); startIndex += batchSize)
             {
-                var batch = betTicketInfos.Skip(startIndex).Take(batchSize);
+                var batch = betTransactionInfos.Skip(startIndex).Take(batchSize);
                 var rawTransJson = JsonConvert.SerializeObject(batch);
 
                 var task = Task.Run(async () =>
                 {
                     try
                     {
-                        await dataAccess.InsertSummaryBetTicketAsync(rawTransJson);
+                        await dataAccess.InsertSummaryBetTransactionAsync(rawTransJson);
                     }
                     catch (Exception ex)
                     {
@@ -109,20 +109,20 @@
             return true;
         }
 
-        public async Task<bool> ProcessSummaryMissingBetTicketAsync(int batchSize)
+        public async Task<bool> ProcessSummaryMissingBetTransactionAsync(int batchSize)
         {
-            var missingBetTicketIDPackages = await dataAccess.GetMissingBetTicketsPacketAsync(batchSize);
-            if (missingBetTicketIDPackages != null && missingBetTicketIDPackages.Any())
+            var missingBetTransactionIDPackages = await dataAccess.GetMissingBetTransactionPacketAsync(batchSize);
+            if (missingBetTransactionIDPackages != null && missingBetTransactionIDPackages.Any())
             {
                 var tasks = new List<Task>();
 
-                foreach (var package in missingBetTicketIDPackages)
+                foreach (var package in missingBetTransactionIDPackages)
                 {
                     var task = Task.Run(async () =>
                     {
                         try
                         {
-                            await dataAccess.InsertSummaryMissingBetTicketAsync(package.MinID, package.MaxID);
+                            await dataAccess.InsertMissingBetTransactionAsync(package.MinID, package.MaxID);
                         }
                         catch (Exception ex)
                         {
@@ -157,7 +157,7 @@
                     {
                         try
                         {
-                            await dataAccess.InsertSummaryMissingLoginTransactionAsync(package.MinID, package.MaxID);
+                            await dataAccess.InsertMissingLoginTransactionAsync(package.MinID, package.MaxID);
                         }
                         catch (Exception ex)
                         {

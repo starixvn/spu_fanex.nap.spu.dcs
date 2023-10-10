@@ -12,7 +12,7 @@
 
         public override string GetSettingKey()
         {
-            return "DCS_DT_SystemSetting_UpdateParameterValue";
+            return "DCS_DT_SystemSetting_UpdateParameterByID";
         }
 
         public override bool IsValid() => true;

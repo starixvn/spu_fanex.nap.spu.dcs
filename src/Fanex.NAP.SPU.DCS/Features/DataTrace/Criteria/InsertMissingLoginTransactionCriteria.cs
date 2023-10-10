@@ -2,7 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Data;
-    public class InsertSummaryMissingLoginTransactionCriteria : NonQueryCommand
+    public class InsertMissingLoginTransactionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_FromID")]
         public int MinID { get; set; }

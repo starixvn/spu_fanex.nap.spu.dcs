@@ -4,7 +4,7 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetBetTickeCriteria : CriteriaBase
+    public class GetBetTransactionCriteria : CriteriaBase
     {
         public DateTime FromTransDate { get; set; }
         public DateTime ToTransDate { get; set; }

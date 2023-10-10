@@ -22,16 +22,16 @@
             return await dataTraceJobService.SummaryLoginTransactionsAsync(batchSize);
         }
 
-        [HttpPost("summarybettickets")]
-        public async Task<bool> SummaryBetTickets([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        [HttpPost("summarybettransaction")]
+        public async Task<bool> SummaryBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
         {
-            return await dataTraceJobService.SummaryBetTicketAsync(fromDate, toDate);
+            return await dataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate);
         }
 
-        [HttpPost("summarymissingbetticket")]
-        public async Task<bool> SummaryMissingBetTicket([FromForm] int batchSize = 50000)
+        [HttpPost("summarymissingbettransaction")]
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] int batchSize = 50000)
         {
-            return await dataTraceJobService.SummaryMissingBetTicketAsync(batchSize);
+            return await dataTraceJobService.SummaryMissingBetTransactionAsync(batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]

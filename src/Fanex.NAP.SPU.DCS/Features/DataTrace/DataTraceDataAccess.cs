@@ -13,19 +13,19 @@
 
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
-        Task<IEnumerable<BetTicketInfo>> GetBetTicketAsync(DateTime fromTransDate, DateTime toTransDate);
+        Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
 
-        Task<int> InsertSummaryBetTicketAsync(string rawTransJson);
+        Task<int> InsertSummaryBetTransactionAsync(string rawTransJson);
 
         Task<int> UpdateSystemSettingParameter(int id, string value);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingBetTicketsPacketAsync(int batchSize);
+        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize);
 
-        Task<int> InsertSummaryMissingBetTicketAsync(int minID, int maxID);
+        Task<int> InsertMissingBetTransactionAsync(int minID, int maxID);
 
         Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize);
 
-        Task<int> InsertSummaryMissingLoginTransactionAsync(int minID, int maxID);
+        Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -56,20 +56,20 @@
             return await repository.GetAsync<bool>(criteria);
         }
 
-        public async Task<IEnumerable<BetTicketInfo>> GetBetTicketAsync(DateTime fromTransDate, DateTime toTransDate)
+        public async Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
         {
-            var criteria = new GetBetTickeCriteria
+            var criteria = new GetBetTransactionCriteria
             {
                 FromTransDate = fromTransDate,
                 ToTransDate = toTransDate
             };
 
-            return await repository.FetchAsync<BetTicketInfo>(criteria);
+            return await repository.FetchAsync<BetTransactionInfo>(criteria);
         }
 
-        public async Task<int> InsertSummaryBetTicketAsync(string rawTransJson)
+        public async Task<int> InsertSummaryBetTransactionAsync(string rawTransJson)
         {
-            var criteria = new InsertSummaryBetTicketCriteria
+            var criteria = new InsertSummaryBetTransactionCriteria
             {
                 RawTransJson = rawTransJson
             };
@@ -89,9 +89,9 @@
         }
 
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTicketsPacketAsync(int batchSize)
+        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize)
         {
-            var criteria = new GetMissingBetTicketPackageCriteria
+            var criteria = new GetMissingBetTransactionPackageCriteria
             {
                 BatchSize = batchSize,
             };
@@ -99,9 +99,9 @@
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertSummaryMissingBetTicketAsync(int minID, int maxID)
+        public async Task<int> InsertMissingBetTransactionAsync(int minID, int maxID)
         {
-            var criteria = new InsertSummaryMissingBetTicketCriteria
+            var criteria = new InsertMissingBetTransactionCriteria
             {
                 MinID = minID,
                 MaxID = maxID
@@ -120,9 +120,9 @@
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertSummaryMissingLoginTransactionAsync(int minID, int maxID)
+        public async Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID)
         {
-            var criteria = new InsertSummaryMissingLoginTransactionCriteria
+            var criteria = new InsertMissingLoginTransactionCriteria
             {
                 MinID = minID,
                 MaxID = maxID

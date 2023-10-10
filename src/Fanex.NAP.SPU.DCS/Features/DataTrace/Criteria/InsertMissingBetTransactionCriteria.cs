@@ -2,7 +2,7 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
-    public class InsertSummaryMissingBetTicketCriteria : NonQueryCommand
+    public class InsertMissingBetTransactionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_FromID")]
         public int MinID { get; set; }
@@ -12,7 +12,7 @@
 
         public override string GetSettingKey()
         {
-            return "DCS_DT_Summary_MissingBetTicket_Insert";
+            return "DCS_DT_Summary_MissingBetTransaction_Insert";
         }
 
         public override bool IsValid() => MaxID >= MinID;
