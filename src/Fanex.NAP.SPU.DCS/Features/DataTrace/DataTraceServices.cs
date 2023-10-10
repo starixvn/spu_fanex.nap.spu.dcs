@@ -79,11 +79,9 @@
 
         private async Task<bool> InsertSummaryBetTicketByBatchAsync(IEnumerable<BetTicketInfo> betTicketInfos)
         {
-            var betTicketInfosCount = betTicketInfos.ToList().Count;
-
             var tasks = new List<Task>();
 
-            for (int startIndex = 0; startIndex < betTicketInfosCount; startIndex += batchSize)
+            for (int startIndex = 0; startIndex < betTicketInfos.Count(); startIndex += batchSize)
             {
                 var batch = betTicketInfos.Skip(startIndex).Take(batchSize);
                 var rawTransJson = JsonConvert.SerializeObject(batch);
