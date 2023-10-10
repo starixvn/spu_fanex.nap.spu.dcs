@@ -60,7 +60,7 @@
 
                         if (isSuccessful)
                         {
-                            var transDateFormat = transDate.ToString("yyyy-MM-dd");
+                            var transDateFormat = fromTransDate.ToString("yyyy-MM-dd");
                             await dataAccess.UpdateSystemSettingParameter(maxBetTicketDateID, transDateFormat);
 
                             return true;
