@@ -5,7 +5,6 @@
     using System;
     using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
-    using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
     [ApiController]
     [Route("api/job")]
@@ -170,7 +169,7 @@
         }
 
         [HttpPost("dtsummarylogintransaction")]
-        public async Task<bool> DTSummaryLoginTransaction([FromForm] int batchSize)
+        public async Task<bool> DTSummaryLoginTransaction([FromForm] int batchSize = 5000)
         {
            return await dataTraceJobService.SummaryLoginTransactionsAsync(batchSize);
         }
@@ -182,17 +181,15 @@
         }
 
         [HttpPost("dtsummarymissingbetticket")]
-        public async Task<bool> DTSummaryMissingBetTicket([FromForm] int batchSize)
+        public async Task<bool> DTSummaryMissingBetTicket([FromForm] int batchSize = 5000)
         {
             return await dataTraceJobService.SummaryMissingBetTicketAsync(batchSize);
         }
 
         [HttpPost("dtsummarymissinglogintransaction")]
-        public async Task<bool> DTSummaryMissingLoginTransaction([FromForm] int batchSize)
+        public async Task<bool> DTSummaryMissingLoginTransaction([FromForm] int batchSize = 5000)
         {
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
         }
-
-        
     }
 }

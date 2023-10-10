@@ -35,16 +35,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                if (batchSize > 0)
-                {
-                    await dataTraceServices.InsertSummaryLoginTransactionAsync(batchSize);
+                await dataTraceServices.InsertSummaryLoginTransactionAsync(batchSize);
 
-                    return true;
-                }
-                else
-                {
-                    sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
-                }
+                return true;
             }
             catch (Exception ex)
             {
@@ -55,9 +48,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
                 LogService.Error($"DCS - DataTrace summary login transaction job execute exeption message:  {logMessage}");
-            }
 
-            return false;
+                return false;
+            }
         }
 
         public async Task<bool> SummaryBetTicketAsync(DateTime? fromDate, DateTime? toDate)
@@ -84,14 +77,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                if (batchSize > 0)
-                {
-                    return await dataTraceServices.ProcessSummaryMissingBetTicketAsync(batchSize);
-                }
-                else
-                {
-                    sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
-                }
+                return await dataTraceServices.ProcessSummaryMissingBetTicketAsync(batchSize);
             }
             catch (Exception ex)
             {
@@ -102,23 +88,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
                 LogService.Error($"DCS - DataTrace summary missing bet ticket job execute exeption message:  {logMessage}");
-            }
-            return false;
 
+                return false;
+            }
         }
 
         public async Task<bool> SummaryMissingLoginTransactionAsync(int batchSize)
         {
             try
             {
-                if (batchSize > 0)
-                {
-                    return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(batchSize);
-                }
-                else
-                {
-                    sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
-                }
+                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(batchSize);
             }
             catch (Exception ex)
             {
@@ -129,9 +108,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
                 LogService.Error($"DCS - DataTrace summary missing login transaction job execute exeption message:  {logMessage}");
-            }
 
-            return false;
+                return false;
+            }
         }
     }
 }
