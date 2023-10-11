@@ -10,6 +10,8 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.Logging.Extensions;
     using Fanex.Logging;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
+    using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
 
     public interface IDataTraceServices
     {
@@ -59,7 +61,7 @@
 
                     if (betTransactionInfos != null && betTransactionInfos.Any())
                     {
-                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(betTransactionInfos);
+                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
 
                         if (isSuccessful)
                         {
@@ -85,7 +87,19 @@
             return false;
         }
 
-        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfo> betTransactionInfos)
+        private IEnumerable<BetTransactionInfoDto> TransformBetTransactionInfo(IEnumerable<BetTransactionInfo> model)
+        {
+            return model.Select(x => new BetTransactionInfoDto
+            {
+                TransDate = x.TransDate,
+                CustID = x.CustID,
+                BetCount = x.BetCount,
+                FirstBetTransactionTime = x.FirstBetTicketTime,
+                LastBetTransactionTime = x.LastBetTicketTime
+            });
+        }
+
+        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfoDto> betTransactionInfos)
         {
             var tasks = new List<Task>();
 

@@ -9,8 +9,8 @@
 
         public int BetCount { get; set; }
 
-        public DateTime FirstBetTransactionTime { get; set; }
+        public DateTime FirstBetTicketTime { get; set; }
 
-        public DateTime LastBetTransactionTime { get; set; }
+        public DateTime LastBetTicketTime { get; set; }
     }
 }
