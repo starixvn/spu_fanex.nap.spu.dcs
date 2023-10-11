@@ -55,22 +55,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
         {
-            try
-            {
                 return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
-            }
-            catch (Exception ex)
-            {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
-
-                return false;
-            }
         }
 
         public async Task<bool> SummaryMissingBetTransactionAsync(int batchSize)

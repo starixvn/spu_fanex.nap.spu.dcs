@@ -7,6 +7,9 @@
     using System.Collections.Generic;
     using Sentry;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging;
 
     public interface IDataTraceServices
     {
@@ -68,13 +71,18 @@
                     }
                 }
 
-                return false;
             }
             catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
-                throw;
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
             }
+
+            return false;
         }
 
         private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfo> betTransactionInfos)
