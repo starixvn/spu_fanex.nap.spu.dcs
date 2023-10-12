@@ -40,16 +40,16 @@
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
         }
 
-        [HttpPost("initsummarybettransaction")]
-        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime fromDate, [FromForm] DateTime toDate)
+        [HttpPost("exportreportdaily")]
+        public IActionResult ExportReportDaily()
         {
-            return await dataTraceJobService.InitBetTransactionAsync(fromDate, toDate);
-        }
+            var stream = dataTraceJobService.ReportDaily();
 
-        [HttpPost("updatesystemsetting")]
-        public async Task<bool> UpdateSystemSetting([FromForm] int SystemSettingID, [FromForm] string SystemSettingValue)
-        {
-            return await dataTraceJobService.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+            var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
+
+            return file;
         }
 
         [HttpPost("deletemissingtransactionbydate")]
@@ -57,5 +57,19 @@
         {
             return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
         }
+        
+        
+        [HttpPost("exportreportdaily")]
+        public IActionResult ExportReportDaily()
+        {
+            var stream = dataTraceJobService.ReportDaily();
+
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+            var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
+
+            return file;
+        }
+
     }
 }

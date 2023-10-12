@@ -22,6 +22,7 @@
             RegisterDCSExtra(services);
             RegisterArchiveService(services);
             RegisterDWTransactionService(services);
+            RegisterDCSDataTraceService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -79,6 +80,11 @@
             services.AddSingleton<IDataTraceJobService, DataTraceJobService>();
             services.AddSingleton<IDataTraceServices, DataTraceServices>();
             services.AddSingleton<IDataTraceDataAccess, DataTraceDataAccess>();
+        }
+
+        private static void RegisterDCSDataTraceService(this IServiceCollection services)
+        {
+            services.AddSingleton<IDCSDataTraceService, DCSDataTraceService>();
         }
     }
 }
