@@ -40,18 +40,6 @@
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
         }
 
-        [HttpPost("exportreportdaily")]
-        public IActionResult ExportReportDaily()
-        {
-            var stream = dataTraceJobService.ReportDaily();
-
-            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-            var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
-
-            return file;
-        }
-
         [HttpPost("deletemissingtransactionbydate")]
         public async Task<bool> DeleteMissingTransactionByDate([FromForm] DateTime transDate, [FromForm] int missingType)
         {
@@ -69,6 +57,14 @@
             var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
 
             return file;
+        }
+        
+        
+        [HttpPost("checktimeout")]
+        public bool CheckTimeout([FromForm] int delayTime = 10000)
+        {
+            Task.Delay(delayTime).Wait();
+            return true;
         }
 
     }

@@ -10,6 +10,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using System.Threading.Tasks;
     using System.IO;
     using OfficeOpenXml;
+    using OfficeOpenXml.Drawing.Chart;
 
     public interface IDataTraceJobService
     {
@@ -113,15 +114,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-                using (var package = new ExcelPackage(new FileInfo("Template/Template.xlsx")))
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransaction_Template.xlsx")))
                 {
                     var dataWorksheet = package.Workbook.Worksheets["Data"];
 
                     // Sample data
                     var data = new[]
                     {
-                        new { TransDate = "04/10/2023", SubscriberName = "Alpha", LoginName = "sutest01", DeviceID = 1, Flagged = "Human", TotalTrans = 3020000 },
-                        new { TransDate = "05/10/2023", SubscriberName = "Alpha1", LoginName = "sutest02", DeviceID = 1, Flagged = "Bot", TotalTrans = 2520000 }
+                        new { TransDate = "12/10/2023", SubscriberName = "Alpha", LoginName = "sutest01", DeviceID = 1, Flagged = "Human", TotalTrans = 1 },
+                        new { TransDate = "12/10/2023", SubscriberName = "Alpha1", LoginName = "sutest02", DeviceID = 1, Flagged = "Bot", TotalTrans = 2 },
+                        new { TransDate = "13/10/2023", SubscriberName = "Alpha", LoginName = "sutest01", DeviceID = 1, Flagged = "Human", TotalTrans = 3 }
                     };
 
                     dataWorksheet.Cells["A2"].LoadFromCollection(data, true);
@@ -132,6 +134,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     {
                         pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
                     }
+
+                    //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
+
+                    //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
+                    //{
+                    //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
+                    //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
+                    //}
 
                     return new MemoryStream(package.GetAsByteArray());
                 }
