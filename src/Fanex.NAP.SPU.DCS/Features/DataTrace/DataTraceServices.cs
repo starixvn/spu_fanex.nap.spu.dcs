@@ -51,12 +51,14 @@
             {
                 var isDailyTaskReady = await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
 
+                sentryClient.CaptureMessage("Trace log: isDailyTaskReady = " + isDailyTaskReady.ToString());
                 if (isDailyTaskReady)
                 {
                     var transDate = DateTime.Now.AddDays(-1);
                     var fromTransDate = fromDate ?? transDate;
                     var toTransDate = fromDate ?? transDate;
 
+                    sentryClient.CaptureMessage("Trace log: transDate = " + transDate.ToString());
                     var betTransactionInfos = await dataAccess.GetBetTransactionAsync(fromTransDate, toTransDate);
 
                     if (betTransactionInfos != null && betTransactionInfos.Any())
