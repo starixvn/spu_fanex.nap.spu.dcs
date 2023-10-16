@@ -11,7 +11,7 @@
 
         public override string GetSettingKey()
         {
-            return "Acc_Rpt_FPS_GetCustBettingInfo";
+            return "Ned_Acc_Rpt_FPS_GetCustBettingInfo";
         }
 
         public override bool IsValid()

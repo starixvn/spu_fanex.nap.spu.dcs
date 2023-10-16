@@ -80,6 +80,6 @@
 		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 
 		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
-		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
+		<Setting Key="Ned_Acc_Rpt_FPS_GetCustBettingInfo" SpName="Ned_Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_Adhoc.bodbSPUNet"/>
 	</Function>
 </Functions>
