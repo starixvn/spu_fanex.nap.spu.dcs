@@ -20,11 +20,13 @@
 
         Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate);
 
-        Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
-
         Task<bool> ProcessSummaryMissingBetTransactionAsync(int batchSize);
 
         Task<bool> ProcessSummaryMissingLoginTransactionAsync(int batchSize);
+
+        Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
+
+        Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -258,7 +260,28 @@
                         .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
+                LogService.Error($"DCS - DataTrace UpdateSystemSetting job execute exeption message:  {logMessage}");
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
+        {
+            try
+            {
+                await dataAccess.DeleteMissingTransactionByDate(transDate, missingType);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - DataTrace DeleteMissingTransactionByDate job execute exeption message:  {logMessage}");
             }
 
             return false;

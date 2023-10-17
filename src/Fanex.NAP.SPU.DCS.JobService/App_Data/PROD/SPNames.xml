@@ -77,6 +77,7 @@
 		<Setting Key="DCS_DT_Summary_MissingBetTransaction_Insert" SpName="DCS_DT_Summary_MissingBetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
 		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MissingTransaction_DeleteByDate" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 
 		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>

@@ -28,6 +28,8 @@
         Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize);
 
         Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID);
+
+        Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -142,6 +144,17 @@
             };
 
             return await repository.FetchAsync<BetTransactionInfo>(criteria);
+        }
+
+        public async Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
+        {
+            var criteria = new DeleteMissingTransactionByDateCriteria
+            {
+                TransDate = transDate,
+                MissingType = missingType
+            };
+
+            return await repository.ExecuteAsync(criteria);
         }
     }
 }

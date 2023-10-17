@@ -51,5 +51,11 @@
         {
             return await dataTraceJobService.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
         }
+
+        [HttpPost("deletemissingtransactionbydate")]
+        public async Task<bool> DeleteMissingTransactionByDate([FromForm] DateTime transDate, [FromForm] int missingType)
+        {
+            return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
+        }
     }
 }
