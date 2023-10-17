@@ -15,6 +15,8 @@
 
         Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
 
+        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
+
         Task<int> InsertSummaryBetTransactionAsync(string rawTransJson);
 
         Task<int> UpdateSystemSettingParameter(int id, string value);
@@ -129,6 +131,17 @@
             };
 
             return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
+        {
+            var criteria = new GetInitBetTransactionCriteria
+            {
+                FromTransDate = fromTransDate,
+                ToTransDate = toTransDate
+            };
+
+            return await repository.FetchAsync<BetTransactionInfo>(criteria);
         }
     }
 }

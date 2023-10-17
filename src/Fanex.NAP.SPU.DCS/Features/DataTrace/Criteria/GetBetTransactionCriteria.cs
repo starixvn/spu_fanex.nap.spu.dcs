@@ -1,8 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    using System;
-    using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
 
     public class GetBetTransactionCriteria : CriteriaBase
     {
@@ -11,7 +10,7 @@
 
         public override string GetSettingKey()
         {
-            return "Ned_Acc_Rpt_FPS_GetCustBettingInfo";
+            return "Acc_Rpt_FPS_GetCustBettingInfo";
         }
 
         public override bool IsValid()

@@ -1,23 +1,24 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
-    using System;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using System.Linq;
-    using System.Collections.Generic;
-    using Sentry;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.Logging.Extensions;
     using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
-    using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
+    using Newtonsoft.Json;
+    using Sentry;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public interface IDataTraceServices
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
 
         Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
+
+        Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate);
 
         Task<bool> ProcessSummaryMissingBetTransactionAsync(int batchSize);
 
@@ -171,7 +172,7 @@
         public async Task<bool> ProcessSummaryMissingLoginTransactionAsync(int batchSize)
         {
             var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPacketAsync(batchSize);
-            if (missingLoginIDPackages != null&& missingLoginIDPackages.Any())
+            if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
             {
                 var tasks = new List<Task>();
 
@@ -198,6 +199,43 @@
                 await Task.WhenAll(tasks);
 
                 return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                for (var date = fromDate; date <= toDate; date = date.AddDays(1))
+                {
+                    var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(date, date);
+
+                    if (betTransactionInfos != null && betTransactionInfos.Any())
+                    {
+                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
+
+                        if (isSuccessful)
+                        {
+                            var transDateFormat = date.ToString("yyyy-MM-dd");
+                            await dataAccess.UpdateSystemSettingParameter(maxBetTransactionDateID, transDateFormat);
+
+                        }
+                    }
+                }
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
             }
 
             return false;

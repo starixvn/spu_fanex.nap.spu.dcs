@@ -1,14 +1,13 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    using Sentry;
     using System;
     using System.Threading.Tasks;
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.Logging.Extensions;
-    using Fanex.Logging;
-    using Sentry;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using System.Linq;
 
     public interface IDataTraceJobService
     {
@@ -19,6 +18,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<bool> SummaryMissingBetTransactionAsync(int batchSize);
 
         Task<bool> SummaryMissingLoginTransactionAsync(int batchSize);
+
+        Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -55,7 +56,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
         {
-                return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
+            return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
         }
 
         public async Task<bool> SummaryMissingBetTransactionAsync(int batchSize)
@@ -96,6 +97,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 return false;
             }
+        }
+
+        public async Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceServices.ProcessInitBetTransactionAsync(fromDate, toDate);
         }
     }
 }

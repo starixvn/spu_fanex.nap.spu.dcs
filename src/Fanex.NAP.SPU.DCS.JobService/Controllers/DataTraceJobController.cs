@@ -39,5 +39,11 @@
         {
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
         }
+
+        [HttpPost("initsummarybettransaction")]
+        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime fromDate, [FromForm] DateTime toDate)
+        {
+            return await dataTraceJobService.InitBetTransactionAsync(fromDate, toDate);
+        }
     }
 }
