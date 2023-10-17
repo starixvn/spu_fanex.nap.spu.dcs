@@ -20,6 +20,8 @@
 
         Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate);
 
+        Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
+
         Task<bool> ProcessSummaryMissingBetTransactionAsync(int batchSize);
 
         Task<bool> ProcessSummaryMissingLoginTransactionAsync(int batchSize);
@@ -227,6 +229,27 @@
 
                 return true;
 
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                var logMessage = new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+                LogService.Error($"DCS - DataTrace summary bet tickets job execute exeption message:  {logMessage}");
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
+        {
+            try
+            {
+                await dataAccess.UpdateSystemSettingParameter(SystemSettingID, SystemSettingValue);
+
+                return true;
             }
             catch (Exception ex)
             {

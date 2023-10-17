@@ -8,6 +8,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Sentry;
     using System;
     using System.Threading.Tasks;
+    using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
     public interface IDataTraceJobService
     {
@@ -20,6 +21,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<bool> SummaryMissingLoginTransactionAsync(int batchSize);
 
         Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate);
+
+        Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -102,6 +105,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         public async Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate)
         {
             return await dataTraceServices.ProcessInitBetTransactionAsync(fromDate, toDate);
+        }
+
+        public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
+        {
+            return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
         }
     }
 }

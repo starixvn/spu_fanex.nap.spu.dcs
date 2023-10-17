@@ -45,5 +45,11 @@
         {
             return await dataTraceJobService.InitBetTransactionAsync(fromDate, toDate);
         }
+
+        [HttpPost("updatesystemsetting")]
+        public async Task<bool> UpdateSystemSetting([FromForm] int SystemSettingID, [FromForm] string SystemSettingValue)
+        {
+            return await dataTraceJobService.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+        }
     }
 }
