@@ -5,12 +5,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    using OfficeOpenXml;
     using Sentry;
     using System;
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
     using System.IO;
-    using OfficeOpenXml;
-    using OfficeOpenXml.Drawing.Chart;
+    using System.Threading.Tasks;
 
     public interface IDataTraceJobService
     {
@@ -27,8 +27,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
         Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
-        
-        MemoryStream ReportDaily();
+
+        Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -108,50 +112,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public MemoryStream ReportDaily()
-        {
-            try
-            {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransaction_Template.xlsx")))
-                {
-                    var dataWorksheet = package.Workbook.Worksheets["Data"];
-
-                    // Sample data
-                    var data = new[]
-                    {
-                        new { TransDate = "12/10/2023", SubscriberName = "Alpha", LoginName = "sutest01", DeviceID = 1, Flagged = "Human", TotalTrans = 1 },
-                        new { TransDate = "12/10/2023", SubscriberName = "Alpha1", LoginName = "sutest02", DeviceID = 1, Flagged = "Bot", TotalTrans = 2 },
-                        new { TransDate = "13/10/2023", SubscriberName = "Alpha", LoginName = "sutest01", DeviceID = 1, Flagged = "Human", TotalTrans = 3 }
-                    };
-
-                    dataWorksheet.Cells["A2"].LoadFromCollection(data, true);
-                    var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
-
-                    var firstRowData = 2;
-                    foreach (var pivotTable in pivotWorksheet.PivotTables)
-                    {
-                        pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
-                    }
-
-                    //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
-
-                    //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
-                    //{
-                    //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
-                    //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
-                    //}
-
-                    return new MemoryStream(package.GetAsByteArray());
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
         public async Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate)
         {
             return await dataTraceServices.ProcessInitBetTransactionAsync(fromDate, toDate);
@@ -165,6 +125,77 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         public async Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
         {
             return await dataTraceServices.DeleteMissingTransactionByDate(transDate, missingType);
+        }
+
+        public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransaction_Template.xlsx")))
+                {
+                    var data = await dataTraceServices.GetReportLoginTransaction(fromDate, toDate);
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportBotDTransaction_Template.xlsx")))
+                {
+                    var data = await dataTraceServices.GetReportBotDTransaction(fromDate, toDate);
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransactionDetail_Template.xlsx")))
+                {
+                    var data = await dataTraceServices.GetReportLoginTransactionDetail(transDate);
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        {
+            var dataWorksheet = package.Workbook.Worksheets["Data"];
+
+            dataWorksheet.Cells["A" + firstRowData].LoadFromCollection(data, true);
+            var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
+
+            foreach (var pivotTable in pivotWorksheet.PivotTables)
+            {
+                pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
+            }
+
+            //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
+
+            //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
+            //{
+            //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
+            //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
+            //}
+
+            return new MemoryStream(package.GetAsByteArray());
         }
     }
 }

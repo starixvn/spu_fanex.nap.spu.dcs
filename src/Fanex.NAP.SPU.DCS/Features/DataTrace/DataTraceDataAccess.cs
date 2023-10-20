@@ -30,6 +30,12 @@
         Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID);
 
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
+
+        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -155,6 +161,38 @@
             };
 
             return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportBotDTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportBotDTransactionModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
+        {
+            var criteria = new GetReportLoginTransactionDetailCriteria
+            {
+                TransDate = transDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionDetailModel>(criteria);
         }
     }
 }

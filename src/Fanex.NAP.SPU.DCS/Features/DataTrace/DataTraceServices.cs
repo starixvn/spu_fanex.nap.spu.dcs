@@ -27,6 +27,12 @@
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
         Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
+
+        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -285,6 +291,21 @@
             }
 
             return false;
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransaction(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportBotDTransaction(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
+        {
+            return await dataAccess.GetReportLoginTransactionDetail(transDate);
         }
     }
 }

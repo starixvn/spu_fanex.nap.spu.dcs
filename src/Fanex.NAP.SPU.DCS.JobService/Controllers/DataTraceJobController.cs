@@ -29,13 +29,13 @@
         }
 
         [HttpPost("summarymissingbettransaction")]
-        public async Task<bool> SummaryMissingBetTransaction([FromForm] int batchSize = 50000)
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] int batchSize = 25000)
         {
             return await dataTraceJobService.SummaryMissingBetTransactionAsync(batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]
-        public async Task<bool> SummaryMissingLoginTransaction([FromForm] int batchSize = 50000)
+        public async Task<bool> SummaryMissingLoginTransaction([FromForm] int batchSize = 25000)
         {
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
         }
@@ -46,17 +46,55 @@
             return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
         }
         
-        
-        [HttpPost("exportreportdaily")]
-        public IActionResult ExportReportDaily()
+        [HttpGet("reportlogintransactiondaily")]
+        public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
         {
-            var stream = dataTraceJobService.ReportDaily();
+            var stream = await dataTraceJobService.ReportLoginTransaction(fromDate, toDate);
 
-            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-            var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
 
-            return file;
+                return file;
+            }
+
+            return null;
+        }
+        
+        [HttpGet("reportbotdtransactiondaily")]
+        public async Task<IActionResult> ReportBotDTransactionDaily(DateTime fromDate, DateTime toDate)
+        {
+            var stream = await dataTraceJobService.ReportBotDTransaction(fromDate, toDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
+
+                return file;
+            }
+
+            return null;
+        }
+        
+        [HttpGet("report-login-transaction-detail-daily")]
+        public async Task<IActionResult> ReportLoginTransactionDetailDaily(DateTime transDate)
+        {
+            var stream = await dataTraceJobService.GetReportLoginTransactionDetail(transDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelFile.xlsx");
+
+                return file;
+            }
+
+            return null;
         }
         
         
