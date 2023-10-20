@@ -32,6 +32,8 @@
 
         Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
 
+        Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
+
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
     }
 
@@ -62,14 +64,12 @@
             {
                 var isDailyTaskReady = await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
 
-                sentryClient.CaptureMessage("Trace log: isDailyTaskReady = " + isDailyTaskReady.ToString());
                 if (isDailyTaskReady)
                 {
                     var transDate = DateTime.Now.AddDays(-1);
                     var fromTransDate = fromDate ?? transDate;
                     var toTransDate = fromDate ?? transDate;
 
-                    sentryClient.CaptureMessage("Trace log: transDate = " + transDate.ToString());
                     var betTransactionInfos = await dataAccess.GetBetTransactionAsync(fromTransDate, toTransDate);
 
                     if (betTransactionInfos != null && betTransactionInfos.Any())
@@ -83,6 +83,14 @@
 
                             return true;
                         }
+                        else
+                        {
+                            LogService.Error($"DCS - InsertSummaryBetTransactionByBatchAsync is not success!");
+                        }
+                    }
+                    else
+                    {
+                        LogService.Error($"DCS - GetBetTransactionAsync don't have any ticket for date: {fromTransDate.ToString("yyyy-mm-dd")}");
                     }
                 }
 
@@ -306,6 +314,11 @@
         public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
         {
             return await dataAccess.GetReportLoginTransactionDetail(transDate);
+        }
+
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportMissingTransaction(fromDate, toDate);
         }
     }
 }

@@ -36,6 +36,8 @@
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
 
         Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -193,6 +195,17 @@
             };
 
             return await repository.FetchAsync<ReportLoginTransactionDetailModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportMissingTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportMissingTransactionModel>(criteria);
         }
     }
 }

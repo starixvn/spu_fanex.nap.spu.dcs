@@ -32,6 +32,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate);
 
+        Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
+
         Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
     }
     public class DataTraceJobService : IDataTraceJobService
@@ -150,6 +152,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 using (var package = new ExcelPackage(new FileInfo("Template/ReportBotDTransaction_Template.xlsx")))
                 {
                     var data = await dataTraceServices.GetReportBotDTransaction(fromDate, toDate);
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportMissingTransaction_Template.xlsx")))
+                {
+                    var data = await dataTraceServices.GetReportMissingTransaction(fromDate, toDate);
                     return GenerateMemoryStream(package, data);
                 }
             }
