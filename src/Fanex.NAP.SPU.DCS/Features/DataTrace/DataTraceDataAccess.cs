@@ -1,11 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IDataTraceDataAccess
     {
@@ -13,13 +14,17 @@
 
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
-        Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
+        Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate);
 
-        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
+        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate);
 
         Task<int> InsertSummaryBetTransactionAsync(string rawTransJson);
 
-        Task<int> UpdateSystemSettingParameter(int id, string value);
+        Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate);
+
+        Task<string> GetSystemSettingParameterByID(int id);
+
+        Task<int> UpdateSystemSettingParameterByID(int id, string value);
 
         Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize);
 
@@ -68,12 +73,12 @@
             return await repository.GetAsync<bool>(criteria);
         }
 
-        public async Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
+        public async Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate)
         {
             var criteria = new GetBetTransactionCriteria
             {
-                FromTransDate = fromTransDate,
-                ToTransDate = toTransDate
+                FromTransDate = transDate,
+                ToTransDate = transDate
             };
 
             return await repository.FetchAsync<BetTransactionInfo>(criteria);
@@ -85,11 +90,32 @@
             {
                 RawTransJson = rawTransJson
             };
-            
+
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<int> UpdateSystemSettingParameter(int id, string value)
+        public async Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate)
+        {
+            var criteria = new DeleteBetTransactionSummaryByDateCriteria
+            {
+                TransDate = transDate
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<string> GetSystemSettingParameterByID(int parameterID)
+        {
+            var criteria = new GetSystemSettingParameterByIDCriteria
+            {
+                ParameterID = parameterID
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return await db.QueryEntityAsync<string>(criteria);
+        }
+
+        public async Task<int> UpdateSystemSettingParameterByID(int id, string value)
         {
             var criteria = new UpdateSystemSettingParameterCriteria
             {
@@ -143,12 +169,12 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
+        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate)
         {
             var criteria = new GetInitBetTransactionCriteria
             {
-                FromTransDate = fromTransDate,
-                ToTransDate = toTransDate
+                FromTransDate = transDate,
+                ToTransDate = transDate
             };
 
             return await repository.FetchAsync<BetTransactionInfo>(criteria);

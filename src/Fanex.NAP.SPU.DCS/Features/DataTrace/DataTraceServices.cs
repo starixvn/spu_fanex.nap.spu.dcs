@@ -5,10 +5,12 @@
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
+    using Microsoft.SqlServer.Server;
     using Newtonsoft.Json;
     using Sentry;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -45,7 +47,7 @@
         private const int batchSize = 50000;
         private const int dailyTaskFPSID = 104;
         private const int delayTime = 100;
-        private const int maxBetTransactionDateID = 2;
+        private const int CONST_Summary_maxBetTransactionDateID = 2;
 
         public DataTraceServices(IDataTraceDataAccess dataAccess, ISentryClient sentryClient)
         {
@@ -66,32 +68,56 @@
 
                 if (isDailyTaskReady)
                 {
-                    var transDate = DateTime.Now.AddDays(-1);
-                    var fromTransDate = fromDate ?? transDate;
-                    var toTransDate = fromDate ?? transDate;
-
-                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(fromTransDate, toTransDate);
-
-                    if (betTransactionInfos != null && betTransactionInfos.Any())
+                    if (fromDate != null && toDate != null)
                     {
-                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
-
-                        if (isSuccessful)
+                        if (fromDate > toDate)
                         {
-                            var transDateFormat = fromTransDate.ToString("yyyy-MM-dd");
-                            await dataAccess.UpdateSystemSettingParameter(maxBetTransactionDateID, transDateFormat);
-
                             return true;
                         }
-                        else
+
+                        for (var date = (DateTime)fromDate; date <= toDate; date = date.AddDays(1))
                         {
-                            LogService.Error($"DCS - InsertSummaryBetTransactionByBatchAsync is not success!");
+                            var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
+                            if (betTransactionInfos != null && betTransactionInfos.Any())
+                            {
+                                _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                                _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
+                            }
                         }
                     }
                     else
                     {
-                        LogService.Error($"DCS - GetBetTransactionAsync don't have any ticket for date: {fromTransDate.ToString("yyyy-mm-dd")}");
+                        var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_Summary_maxBetTransactionDateID);
+                        DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                        DateTime yesterday = DateTime.Now.Date.AddDays(-1);
+
+                        if (maxBetTicketDate > yesterday)
+                        {
+                            return true;
+                        }
+
+                        for (var date = maxBetTicketDate; date <= yesterday; date = date.AddDays(1))
+                        {
+                            var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
+                            if (betTransactionInfos != null && betTransactionInfos.Any())
+                            {
+                                _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                                var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
+
+                                if (isSuccessful)
+                                {
+                                    var transDateFormat = date.ToString("yyyy-MM-dd");
+                                    await dataAccess.UpdateSystemSettingParameterByID(CONST_Summary_maxBetTransactionDateID, transDateFormat);
+                                }
+                                else
+                                {
+                                    LogService.Error($"DCS - CRUDSummaryBetTransaction is not success!");
+                                }
+                            }
+                        }
                     }
+
+                    return true;
                 }
 
             }
@@ -228,18 +254,12 @@
             {
                 for (var date = fromDate; date <= toDate; date = date.AddDays(1))
                 {
-                    var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(date, date);
+                    var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(date);
 
                     if (betTransactionInfos != null && betTransactionInfos.Any())
                     {
-                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
-
-                        if (isSuccessful)
-                        {
-                            var transDateFormat = date.ToString("yyyy-MM-dd");
-                            await dataAccess.UpdateSystemSettingParameter(maxBetTransactionDateID, transDateFormat);
-
-                        }
+                        _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                        await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
                     }
                 }
 
@@ -263,7 +283,7 @@
         {
             try
             {
-                await dataAccess.UpdateSystemSettingParameter(SystemSettingID, SystemSettingValue);
+                await dataAccess.UpdateSystemSettingParameterByID(SystemSettingID, SystemSettingValue);
 
                 return true;
             }
