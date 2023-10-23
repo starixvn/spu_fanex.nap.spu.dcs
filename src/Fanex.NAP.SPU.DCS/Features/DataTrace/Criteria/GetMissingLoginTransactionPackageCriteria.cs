@@ -2,8 +2,13 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Data;
+    using System;
+
     public class GetMissingLoginTransactionPackageCriteria : CriteriaBase
     {
+        [SpParam(SqlParamName = "ip_TransDate")]
+        public DateTime TransDate { get; set; }
+
         [SpParam(SqlParamName = "ip_BatchSize")]
         public int BatchSize { get; set; }
 

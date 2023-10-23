@@ -18,9 +18,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
 
-        Task<bool> SummaryMissingBetTransactionAsync(int batchSize);
+        Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDateint, int batchSize);
 
-        Task<bool> SummaryMissingLoginTransactionAsync(int batchSize);
+        Task<bool> SummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize);
 
         Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate);
 
@@ -74,11 +74,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
         }
 
-        public async Task<bool> SummaryMissingBetTransactionAsync(int batchSize)
+        public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDate, int batchSize)
         {
             try
             {
-                return await dataTraceServices.ProcessSummaryMissingBetTransactionAsync(batchSize);
+                return await dataTraceServices.ProcessSummaryMissingBetTransactionAsync(transDate, batchSize);
             }
             catch (Exception ex)
             {
@@ -94,11 +94,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<bool> SummaryMissingLoginTransactionAsync(int batchSize)
+        public async Task<bool> SummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize)
         {
             try
             {
-                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(batchSize);
+                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(transDate, batchSize);
             }
             catch (Exception ex)
             {

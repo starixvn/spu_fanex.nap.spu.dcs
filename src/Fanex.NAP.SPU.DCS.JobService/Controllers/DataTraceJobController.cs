@@ -29,15 +29,15 @@
         }
 
         [HttpPost("summarymissingbettransaction")]
-        public async Task<bool> SummaryMissingBetTransaction([FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingBetTransactionAsync(batchSize);
+            return await dataTraceJobService.SummaryMissingBetTransactionAsync(transDate, batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]
-        public async Task<bool> SummaryMissingLoginTransaction([FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
+            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(transDate, batchSize);
         }
 
         [HttpPost("deletemissingtransactionbydate")]

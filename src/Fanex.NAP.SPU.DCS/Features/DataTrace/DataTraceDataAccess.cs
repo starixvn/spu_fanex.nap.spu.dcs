@@ -26,13 +26,13 @@
 
         Task<int> UpdateSystemSettingParameterByID(int id, string value);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize);
+        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize);
 
-        Task<int> InsertMissingBetTransactionAsync(int minID, int maxID);
+        Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize);
+        Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPackageAsync(DateTime transDate, int batchSize);
 
-        Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID);
+        Task<int> InsertMissingLoginTransactionAsync(DateTime transDate, int minID, int maxID);
 
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
@@ -127,20 +127,22 @@
         }
 
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize)
+        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize)
         {
             var criteria = new GetMissingBetTransactionPackageCriteria
             {
+                TransDate = transDate,
                 BatchSize = batchSize,
             };
 
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertMissingBetTransactionAsync(int minID, int maxID)
+        public async Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID)
         {
             var criteria = new InsertMissingBetTransactionCriteria
             {
+                TransDate = transDate,
                 MinID = minID,
                 MaxID = maxID
             };
@@ -148,20 +150,22 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize)
+        public async Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPackageAsync(DateTime transDate, int batchSize)
         {
             var criteria = new GetMissingLoginTransactionPackageCriteria
             {
+                TransDate = transDate,
                 BatchSize = batchSize,
             };
 
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID)
+        public async Task<int> InsertMissingLoginTransactionAsync(DateTime transDate, int minID, int maxID)
         {
             var criteria = new InsertMissingLoginTransactionCriteria
             {
+                TransDate = transDate,
                 MinID = minID,
                 MaxID = maxID
             };

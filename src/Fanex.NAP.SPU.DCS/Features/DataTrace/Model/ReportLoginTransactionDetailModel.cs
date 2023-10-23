@@ -22,6 +22,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string CustomerClassName { get; set; }
 
+        public string Flagged { get; set; }
+
         public int TotalTrans { get; set; }
     }
 }

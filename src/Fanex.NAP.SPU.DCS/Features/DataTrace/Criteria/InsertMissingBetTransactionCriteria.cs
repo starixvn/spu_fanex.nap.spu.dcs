@@ -2,8 +2,13 @@
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
+    using System;
+
     public class InsertMissingBetTransactionCriteria : NonQueryCommand
     {
+        [SpParam(SqlParamName = "ip_TransDate")]
+        public DateTime TransDate { get; set; }
+
         [SpParam(SqlParamName = "ip_FromID")]
         public int MinID { get; set; }
 
