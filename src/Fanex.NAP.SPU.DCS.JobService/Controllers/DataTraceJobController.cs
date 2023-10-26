@@ -122,5 +122,11 @@
             return true;
         }
 
+        [HttpPost("updatesystemsetting")]
+        public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
+        {
+            return await dataTraceJobService.UpdateSystemSetting(id, value);
+        }
+
     }
 }
