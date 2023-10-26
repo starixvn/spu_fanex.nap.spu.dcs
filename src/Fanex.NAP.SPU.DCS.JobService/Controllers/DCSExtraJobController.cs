@@ -52,12 +52,6 @@
             return await archiveJobServices.Execute(batchSize, true);
         }
 
-        [HttpPost("deletebotcomponent")]
-        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
-        {
-            return await archiveJobServices.DeleteBotComponent(retentionDays, true);
-        }
-
         [HttpPost("migrate")]
         public async Task<bool> Migrate([FromForm] int rangeMinutes, [FromForm] int stopMinutes, [FromForm] int batchSizeGetData)
         {

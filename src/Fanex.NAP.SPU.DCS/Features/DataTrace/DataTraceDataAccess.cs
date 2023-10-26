@@ -1,11 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IDataTraceDataAccess
     {
@@ -13,23 +14,35 @@
 
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
-        Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
+        Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate);
 
-        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate);
+        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate);
 
         Task<int> InsertSummaryBetTransactionAsync(string rawTransJson);
 
-        Task<int> UpdateSystemSettingParameter(int id, string value);
+        Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize);
+        Task<string> GetSystemSettingParameterByID(int id);
 
-        Task<int> InsertMissingBetTransactionAsync(int minID, int maxID);
+        Task<int> UpdateSystemSettingParameterByID(int id, string value);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize);
+        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize);
 
-        Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID);
+        Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID);
+
+        Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPackageAsync(DateTime transDate, int batchSize);
+
+        Task<int> InsertMissingLoginTransactionAsync(DateTime transDate, int minID, int maxID);
 
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
+
+        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -60,12 +73,12 @@
             return await repository.GetAsync<bool>(criteria);
         }
 
-        public async Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
+        public async Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate)
         {
             var criteria = new GetBetTransactionCriteria
             {
-                FromTransDate = fromTransDate,
-                ToTransDate = toTransDate
+                FromTransDate = transDate,
+                ToTransDate = transDate
             };
 
             return await repository.FetchAsync<BetTransactionInfo>(criteria);
@@ -77,11 +90,32 @@
             {
                 RawTransJson = rawTransJson
             };
-            
+
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<int> UpdateSystemSettingParameter(int id, string value)
+        public async Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate)
+        {
+            var criteria = new DeleteBetTransactionSummaryByDateCriteria
+            {
+                TransDate = transDate
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<string> GetSystemSettingParameterByID(int parameterID)
+        {
+            var criteria = new GetSystemSettingParameterByIDCriteria
+            {
+                ParameterID = parameterID
+            };
+
+            using var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey());
+            return await db.QueryEntityAsync<string>(criteria);
+        }
+
+        public async Task<int> UpdateSystemSettingParameterByID(int id, string value)
         {
             var criteria = new UpdateSystemSettingParameterCriteria
             {
@@ -93,20 +127,22 @@
         }
 
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPacketAsync(int batchSize)
+        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize)
         {
             var criteria = new GetMissingBetTransactionPackageCriteria
             {
+                TransDate = transDate,
                 BatchSize = batchSize,
             };
 
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertMissingBetTransactionAsync(int minID, int maxID)
+        public async Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID)
         {
             var criteria = new InsertMissingBetTransactionCriteria
             {
+                TransDate = transDate,
                 MinID = minID,
                 MaxID = maxID
             };
@@ -114,20 +150,22 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPacketAsync(int batchSize)
+        public async Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPackageAsync(DateTime transDate, int batchSize)
         {
             var criteria = new GetMissingLoginTransactionPackageCriteria
             {
+                TransDate = transDate,
                 BatchSize = batchSize,
             };
 
             return await repository.FetchAsync<RangeIDPackage>(criteria);
         }
 
-        public async Task<int> InsertMissingLoginTransactionAsync(int minID, int maxID)
+        public async Task<int> InsertMissingLoginTransactionAsync(DateTime transDate, int minID, int maxID)
         {
             var criteria = new InsertMissingLoginTransactionCriteria
             {
+                TransDate = transDate,
                 MinID = minID,
                 MaxID = maxID
             };
@@ -135,12 +173,12 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime fromTransDate, DateTime toTransDate)
+        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate)
         {
             var criteria = new GetInitBetTransactionCriteria
             {
-                FromTransDate = fromTransDate,
-                ToTransDate = toTransDate
+                FromTransDate = transDate,
+                ToTransDate = transDate
             };
 
             return await repository.FetchAsync<BetTransactionInfo>(criteria);
@@ -155,6 +193,49 @@
             };
 
             return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportBotDTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportBotDTransactionModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
+        {
+            var criteria = new GetReportLoginTransactionDetailCriteria
+            {
+                TransDate = transDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionDetailModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportMissingTransactionCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportMissingTransactionModel>(criteria);
         }
     }
 }

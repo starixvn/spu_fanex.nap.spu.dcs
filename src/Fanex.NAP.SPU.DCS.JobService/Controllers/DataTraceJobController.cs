@@ -29,27 +29,15 @@
         }
 
         [HttpPost("summarymissingbettransaction")]
-        public async Task<bool> SummaryMissingBetTransaction([FromForm] int batchSize = 50000)
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingBetTransactionAsync(batchSize);
+            return await dataTraceJobService.SummaryMissingBetTransactionAsync(transDate, batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]
-        public async Task<bool> SummaryMissingLoginTransaction([FromForm] int batchSize = 50000)
+        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(batchSize);
-        }
-
-        [HttpPost("initsummarybettransaction")]
-        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime fromDate, [FromForm] DateTime toDate)
-        {
-            return await dataTraceJobService.InitBetTransactionAsync(fromDate, toDate);
-        }
-
-        [HttpPost("updatesystemsetting")]
-        public async Task<bool> UpdateSystemSetting([FromForm] int SystemSettingID, [FromForm] string SystemSettingValue)
-        {
-            return await dataTraceJobService.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(transDate, batchSize);
         }
 
         [HttpPost("deletemissingtransactionbydate")]
@@ -57,5 +45,88 @@
         {
             return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
         }
+        
+        [HttpGet("report-login-transaction-daily")]
+        public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
+        {
+            var stream = await dataTraceJobService.ReportLoginTransaction(fromDate, toDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportLoginTransactionDaily.xlsx");
+
+                return file;
+            }
+
+            return null;
+        }
+        
+        [HttpGet("report-botd-transaction-daily")]
+        public async Task<IActionResult> ReportBotDTransactionDaily(DateTime fromDate, DateTime toDate)
+        {
+            var stream = await dataTraceJobService.ReportBotDTransaction(fromDate, toDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportBotDTransactionDaily.xlsx");
+
+                return file;
+            }
+
+            return null;
+        }
+        
+        [HttpGet("report-missing-transaction-daily")]
+        public async Task<IActionResult> ReportMissingTransactionDaily(DateTime fromDate, DateTime toDate)
+        {
+            var stream = await dataTraceJobService.ReportMissingTransaction(fromDate, toDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportMissingTransactionDaily.xlsx");
+
+                return file;
+            }
+
+            return null;
+        }
+        
+        [HttpGet("report-login-transaction-detail")]
+        public async Task<IActionResult> ReportLoginTransactionDetail(DateTime transDate)
+        {
+            var stream = await dataTraceJobService.GetReportLoginTransactionDetail(transDate);
+
+            if(stream != null)
+            {
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
+                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportLoginTransactionDetail"+ transDate.ToString("yyyymmdd")+ ".xlsx");
+
+                return file;
+            }
+
+            return null;
+        }
+        
+        
+        [HttpPost("checktimeout")]
+        public bool CheckTimeout([FromForm] int delayTime = 10000)
+        {
+            Task.Delay(delayTime).Wait();
+            return true;
+        }
+
+        [HttpPost("updatesystemsetting")]
+        public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
+        {
+            return await dataTraceJobService.UpdateSystemSetting(id, value);
+        }
+
     }
 }
