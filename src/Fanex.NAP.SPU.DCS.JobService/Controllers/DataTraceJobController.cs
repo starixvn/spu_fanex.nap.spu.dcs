@@ -23,9 +23,9 @@
         }
 
         [HttpPost("summarybettransaction")]
-        public async Task<bool> SummaryBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        public async Task<bool> SummaryBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate);
+            return await dataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         [HttpPost("summarymissingbettransaction")]

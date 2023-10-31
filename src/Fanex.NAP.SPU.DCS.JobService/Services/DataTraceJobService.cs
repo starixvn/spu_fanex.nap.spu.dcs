@@ -16,13 +16,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         Task<bool> SummaryLoginTransactionsAsync(int batchSize);
 
-        Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
+        Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDateint, int batchSize);
 
         Task<bool> SummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize);
-
-        Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate);
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
@@ -69,9 +67,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
+            return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDate, int batchSize)
@@ -112,11 +110,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 return false;
             }
-        }
-
-        public async Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate)
-        {
-            return await dataTraceServices.ProcessInitBetTransactionAsync(fromDate, toDate);
         }
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)

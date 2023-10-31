@@ -17,9 +17,7 @@
     {
         Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
 
-        Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
-
-        Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate);
+        Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? transDate, int batchSize);
 
@@ -43,7 +41,6 @@
         private readonly IDataTraceDataAccess dataAccess;
         private readonly ISentryClient sentryClient;
 
-        private const int batchSize = 50000;
         private const int dailyTaskFPSID = 104;
         private const int delayTime = 100;
         private const int CONST_SystemSetting_maxBetTransactionDateID = 2;
@@ -62,7 +59,7 @@
         }
 
 
-        public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
             try
             {
@@ -82,7 +79,7 @@
                         if (betTransactionInfos != null && betTransactionInfos.Any())
                         {
                             _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                            _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
+                            _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
                         }
                     }
                 }
@@ -104,7 +101,7 @@
                         if (betTransactionInfos != null && betTransactionInfos.Any())
                         {
                             _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                            var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
+                            var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
 
                             if (isSuccessful)
                             {
@@ -300,32 +297,6 @@
             return true;
         }
 
-        public async Task<bool> ProcessInitBetTransactionAsync(DateTime fromDate, DateTime toDate)
-        {
-            try
-            {
-                for (var date = fromDate; date <= toDate; date = date.AddDays(1))
-                {
-                    var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(date);
-
-                    if (betTransactionInfos != null && betTransactionInfos.Any())
-                    {
-                        _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                        await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos));
-                    }
-                }
-
-                return true;
-
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace summary bet tickets job execute exeption message: ");
-            }
-
-            return false;
-        }
-
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
         {
             try
@@ -381,7 +352,7 @@
 
         private IEnumerable<BetTransactionInfoDto> TransformBetTransactionInfo(IEnumerable<BetTransactionInfo> model)
         {
-            return model.Select(x => new BetTransactionInfoDto
+            return model.OrderBy(x => x.CustID).Select(x => new BetTransactionInfoDto
             {
                 TransDate = x.TransDate,
                 CustID = x.CustID,
@@ -391,7 +362,7 @@
             });
         }
 
-        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfoDto> betTransactionInfos)
+        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfoDto> betTransactionInfos, int batchSize)
         {
             var tasks = new List<Task>();
 
