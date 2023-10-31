@@ -29,21 +29,15 @@
         }
 
         [HttpPost("summarymissingbettransaction")]
-        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingBetTransactionAsync(transDate, batchSize);
+            return await dataTraceJobService.SummaryMissingBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]
-        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(transDate, batchSize);
-        }
-
-        [HttpPost("deletemissingtransactionbydate")]
-        public async Task<bool> DeleteMissingTransactionByDate([FromForm] DateTime transDate, [FromForm] int missingType)
-        {
-            return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
+            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(fromDate, toDate, batchSize);
         }
         
         [HttpGet("report-login-transaction-daily")]

@@ -19,13 +19,11 @@
 
         Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
-        Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? transDate, int batchSize);
+        Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
-        Task<bool> ProcessSummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize);
+        Task<bool> ProcessSummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
-
-        Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
         Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
 
@@ -46,6 +44,8 @@
         private const int CONST_SystemSetting_maxBetTransactionDateID = 2;
         private const int CONST_SystemSetting_LastScannedLoginTransDate = 3;
         private const int CONST_SystemSetting_LastScannedBetTransDate = 4;
+        private const int CONST_MissingTransaction_LoginTrans = 1;
+        private const int CONST_MissingTransaction_BetTrans = 2;
 
         public DataTraceServices(IDataTraceDataAccess dataAccess, ISentryClient sentryClient)
         {
@@ -125,14 +125,41 @@
             return false;
         }
 
-        public async Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? specificDate, int batchSize)
+        public async Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            if (specificDate is not null)
+            var isUpdateSystemSetting = true;
+            if (fromDate != null && toDate != null)
             {
-                var missingBetTransactionIDPackages = await dataAccess.GetMissingBetTransactionPackageAsync((DateTime)specificDate, batchSize);
+                isUpdateSystemSetting = false;
+            }
+            else
+            {
+                var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate);
+                DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                fromDate = lastScannedLoginTransDate.AddDays(1);
+
+                var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
+                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                if (toDate == null || toDate > maxBetTicketDate)
+                {
+                    toDate = maxBetTicketDate;
+                }
+            }
+
+            if (fromDate > toDate)
+            {
+                return true;
+            }
+
+            for (var transDate = (DateTime)fromDate; transDate <= toDate; transDate = transDate.AddDays(1))
+            {
+                var missingBetTransactionIDPackages = await dataAccess.GetMissingBetTransactionPackageAsync(transDate, batchSize);
                 if (missingBetTransactionIDPackages != null && missingBetTransactionIDPackages.Any())
                 {
                     var tasks = new List<Task>();
+
+                    await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_BetTrans);
 
                     foreach (var package in missingBetTransactionIDPackages)
                     {
@@ -140,7 +167,7 @@
                         {
                             try
                             {
-                                await dataAccess.InsertMissingBetTransactionAsync((DateTime)specificDate, package.MinID, package.MaxID);
+                                await dataAccess.InsertMissingBetTransactionAsync(transDate, package.MinID, package.MaxID);
                             }
                             catch (Exception ex)
                             {
@@ -155,35 +182,114 @@
                     }
 
                     await Task.WhenAll(tasks);
+
+                    if (isUpdateSystemSetting)
+                    {
+                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate, transDate.ToString("yyyy-MM-dd"));
+                    }
                 }
+                else
+                {
+                    LogService.Error($"DCS - GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ProcessSummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
+        {
+            var isUpdateSystemSetting = true;
+            if (fromDate != null && toDate != null)
+            {
+                isUpdateSystemSetting = false;
             }
             else
             {
-                var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate);
+                var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate);
                 DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                fromDate = lastScannedLoginTransDate.AddDays(1);
 
                 var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
                 DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-                if (lastScannedLoginTransDate >= maxBetTicketDate)
+                if (toDate == null || toDate > maxBetTicketDate)
+                {
+                    toDate = maxBetTicketDate;
+                }
+            }
+
+            if (fromDate > toDate)
+            {
+                return true;
+            }
+
+            for (var transDate = (DateTime)fromDate; transDate <= toDate; transDate = transDate.AddDays(1))
+            {
+                var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync(transDate, batchSize);
+                if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
+                {
+                    var tasks = new List<Task>();
+
+                    await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
+
+                    foreach (var package in missingLoginIDPackages)
+                    {
+                        var task = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
+                            }
+                            catch (Exception ex)
+                            {
+                                sentryClient.CaptureException(ex);
+                                throw;
+                            }
+                        });
+
+                        await Task.Delay(delayTime);
+
+                        tasks.Add(task);
+                    }
+
+                    await Task.WhenAll(tasks);
+
+                    if (isUpdateSystemSetting)
+                    {
+                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString("yyyy-MM-dd"));
+                    }
+                }
+                else
+                {
+                    LogService.Error($"DCS - GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                }
+            }
+
+
+            if (fromDate != null && toDate != null)
+            {
+                if (fromDate > toDate)
                 {
                     return true;
                 }
 
-                for (var transDate = lastScannedLoginTransDate; transDate <= maxBetTicketDate; transDate = transDate.AddDays(1))
+                for (var transDate = (DateTime)fromDate; transDate <= toDate; transDate = transDate.AddDays(1))
                 {
-                    var missingBetTransactionIDPackages = await dataAccess.GetMissingBetTransactionPackageAsync(transDate, batchSize);
-                    if (missingBetTransactionIDPackages != null && missingBetTransactionIDPackages.Any())
+                    var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync(transDate, batchSize);
+                    if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
                     {
                         var tasks = new List<Task>();
 
-                        foreach (var package in missingBetTransactionIDPackages)
+                        await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
+
+                        foreach (var package in missingLoginIDPackages)
                         {
                             var task = Task.Run(async () =>
                             {
                                 try
                                 {
-                                    await dataAccess.InsertMissingBetTransactionAsync(transDate, package.MinID, package.MaxID);
+                                    await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
                                 }
                                 catch (Exception ex)
                                 {
@@ -201,55 +307,23 @@
                     }
                     else
                     {
-                        LogService.Error($"DCS - GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                        LogService.Error($"DCS - GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                     }
-
-                    await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate, transDate.ToString("yyyy-MM-dd"));
-                }
-            }
-
-            return true;
-        }
-
-        public async Task<bool> ProcessSummaryMissingLoginTransactionAsync(DateTime? specificDate, int batchSize)
-        {
-            if (specificDate is not null)
-            {
-                var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync((DateTime)specificDate, batchSize);
-                if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
-                {
-                    var tasks = new List<Task>();
-
-                    foreach (var package in missingLoginIDPackages)
-                    {
-                        var task = Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await dataAccess.InsertMissingLoginTransactionAsync((DateTime)specificDate, package.MinID, package.MaxID);
-                            }
-                            catch (Exception ex)
-                            {
-                                sentryClient.CaptureException(ex);
-                                throw;
-                            }
-                        });
-
-                        await Task.Delay(delayTime);
-
-                        tasks.Add(task);
-                    }
-
-                    await Task.WhenAll(tasks);
                 }
             }
             else
             {
                 var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate);
                 DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                lastScannedLoginTransDate = lastScannedLoginTransDate.AddDays(1);
 
                 var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
                 DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                if (toDate != null && toDate < maxBetTicketDate)
+                {
+                    maxBetTicketDate = (DateTime)toDate;
+                }
 
                 if (lastScannedLoginTransDate >= maxBetTicketDate)
                 {
@@ -262,6 +336,8 @@
                     if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
                     {
                         var tasks = new List<Task>();
+
+                        await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
 
                         foreach (var package in missingLoginIDPackages)
                         {
