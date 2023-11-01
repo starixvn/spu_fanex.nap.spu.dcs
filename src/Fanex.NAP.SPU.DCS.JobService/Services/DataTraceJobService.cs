@@ -31,6 +31,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<int> CountDWBetTransactionByDate(DateTime transDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -53,13 +55,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary login transaction job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace SummaryLoginTransactionsAsync execute exeption message: ");
 
                 return false;
             }
@@ -67,7 +63,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate, batchSize);
+            try
+            {
+                return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate, batchSize);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace SummaryBetTransactionAsync execute exeption message: ");
+
+                return false;
+            }
         }
 
         public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -78,13 +83,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary missing bet ticket job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace SummaryMissingBetTransactionAsync execute exeption message: ");
 
                 return false;
             }
@@ -98,13 +97,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary missing login transaction job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace ProcessSummaryMissingLoginTransactionAsync execute exeption message: ");
 
                 return false;
             }
@@ -112,7 +105,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
         {
-            return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+            try
+            {
+                return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace UpdateSystemSetting job execute exeption message: ");
+            }
+
+            return false;
         }
 
         public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
@@ -200,6 +202,29 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             //}
 
             return new MemoryStream(package.GetAsByteArray());
+        }
+
+        public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
+        {
+            try
+            {
+                return await dataTraceServices.CountDWBetTransactionByDate(transDate);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CountDWBetTransactionByDate execute exeption message: ");
+
+                return 0;
+            }
+        }
+
+        private void HandleException(Exception ex, string extraLogMessage)
+        {
+            string logMessage = new LogMessage(ex.Message)
+                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+            LogService.Error(extraLogMessage + logMessage);
         }
     }
 }

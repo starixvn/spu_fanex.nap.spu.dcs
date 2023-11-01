@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
     using Fanex.Logging;
-    using Fanex.Logging.Extensions;
-    using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
     using Newtonsoft.Json;
@@ -32,6 +30,8 @@
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<int> CountDWBetTransactionByDate(DateTime transDate);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -61,68 +61,59 @@
 
         public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            try
+            if (!await IsDailyTaskReadyAsync())
+                return false;
+
+            if (fromDate != null && toDate != null)
             {
-                if (!await IsDailyTaskReadyAsync())
-                    return false;
-
-                if (fromDate != null && toDate != null)
+                if (fromDate > toDate)
                 {
-                    if (fromDate > toDate)
-                    {
-                        return true;
-                    }
+                    return true;
+                }
 
-                    for (var date = (DateTime)fromDate; date <= toDate; date = date.AddDays(1))
+                for (var date = (DateTime)fromDate; date <= toDate; date = date.AddDays(1))
+                {
+                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
+                    if (betTransactionInfos != null && betTransactionInfos.Any())
                     {
-                        var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
-                        if (betTransactionInfos != null && betTransactionInfos.Any())
+                        _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                        _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+                    }
+                }
+            }
+            else
+            {
+                var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
+                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime yesterday = DateTime.Now.Date.AddDays(-1);
+
+                maxBetTicketDate = maxBetTicketDate.AddDays(1);
+                if (maxBetTicketDate > yesterday)
+                {
+                    return true;
+                }
+
+                for (var date = maxBetTicketDate; date <= yesterday; date = date.AddDays(1))
+                {
+                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
+                    if (betTransactionInfos != null && betTransactionInfos.Any())
+                    {
+                        _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+
+                        if (isSuccessful)
                         {
-                            _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                            _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+                            await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString("yyyy-MM-dd"));
+                        }
+                        else
+                        {
+                            LogService.Error($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
                         }
                     }
                 }
-                else
-                {
-                    var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
-                    DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    DateTime yesterday = DateTime.Now.Date.AddDays(-1);
-
-                    maxBetTicketDate = maxBetTicketDate.AddDays(1);
-                    if (maxBetTicketDate > yesterday)
-                    {
-                        return true;
-                    }
-
-                    for (var date = maxBetTicketDate; date <= yesterday; date = date.AddDays(1))
-                    {
-                        var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
-                        if (betTransactionInfos != null && betTransactionInfos.Any())
-                        {
-                            _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                            var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
-
-                            if (isSuccessful)
-                            {
-                                await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString("yyyy-MM-dd"));
-                            }
-                            else
-                            {
-                                LogService.Error($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace summary bet tickets job execute exeption message: ");
             }
 
-            return false;
+            return true;
         }
 
         public async Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -266,143 +257,14 @@
                 }
             }
 
-
-            if (fromDate != null && toDate != null)
-            {
-                if (fromDate > toDate)
-                {
-                    return true;
-                }
-
-                for (var transDate = (DateTime)fromDate; transDate <= toDate; transDate = transDate.AddDays(1))
-                {
-                    var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync(transDate, batchSize);
-                    if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
-                    {
-                        var tasks = new List<Task>();
-
-                        await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
-
-                        foreach (var package in missingLoginIDPackages)
-                        {
-                            var task = Task.Run(async () =>
-                            {
-                                try
-                                {
-                                    await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
-                                }
-                                catch (Exception ex)
-                                {
-                                    sentryClient.CaptureException(ex);
-                                    throw;
-                                }
-                            });
-
-                            await Task.Delay(delayTime);
-
-                            tasks.Add(task);
-                        }
-
-                        await Task.WhenAll(tasks);
-                    }
-                    else
-                    {
-                        LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
-                    }
-                }
-            }
-            else
-            {
-                var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate);
-                DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                lastScannedLoginTransDate = lastScannedLoginTransDate.AddDays(1);
-
-                var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
-                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-                if (toDate != null && toDate < maxBetTicketDate)
-                {
-                    maxBetTicketDate = (DateTime)toDate;
-                }
-
-                if (lastScannedLoginTransDate >= maxBetTicketDate)
-                {
-                    return true;
-                }
-
-                for (var transDate = lastScannedLoginTransDate; transDate <= maxBetTicketDate; transDate = transDate.AddDays(1))
-                {
-                    var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync(transDate, batchSize);
-                    if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
-                    {
-                        var tasks = new List<Task>();
-
-                        await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
-
-                        foreach (var package in missingLoginIDPackages)
-                        {
-                            var task = Task.Run(async () =>
-                            {
-                                try
-                                {
-                                    await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
-                                }
-                                catch (Exception ex)
-                                {
-                                    sentryClient.CaptureException(ex);
-                                    throw;
-                                }
-                            });
-
-                            await Task.Delay(delayTime);
-
-                            tasks.Add(task);
-                        }
-
-                        await Task.WhenAll(tasks);
-                    }
-                    else
-                    {
-                        LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
-                    }
-
-                    await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString("yyyy-MM-dd"));
-                }
-            }
-
             return true;
         }
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
         {
-            try
-            {
-                await dataAccess.UpdateSystemSettingParameterByID(SystemSettingID, SystemSettingValue);
+            await dataAccess.UpdateSystemSettingParameterByID(SystemSettingID, SystemSettingValue);
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace UpdateSystemSetting job execute exeption message: ");
-            }
-
-            return false;
-        }
-
-        public async Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
-        {
-            try
-            {
-                await dataAccess.DeleteMissingTransactionByDate(transDate, missingType);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace DeleteMissingTransactionByDate job execute exeption message: ");
-            }
-
-            return false;
+            return true;
         }
 
         public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
@@ -423,6 +285,20 @@
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
             return await dataAccess.GetReportMissingTransaction(fromDate, toDate);
+        }
+
+        public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
+        {
+            if (!await IsDailyTaskReadyAsync())
+                return 0;
+
+            var betTransactionInfos = await dataAccess.GetBetTransactionAsync(transDate);
+            if (betTransactionInfos != null && betTransactionInfos.Any())
+            {
+                return betTransactionInfos.Count();
+            }
+
+            return 0;
         }
 
 
@@ -473,16 +349,6 @@
         private async Task<bool> IsDailyTaskReadyAsync()
         {
             return await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
-        }
-
-        private void HandleException(Exception ex, string extraLogMessage)
-        {
-            sentryClient.CaptureException(ex);
-            string logMessage = new LogMessage(ex.Message)
-                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-            LogService.Error(extraLogMessage + logMessage);
         }
     }
 }

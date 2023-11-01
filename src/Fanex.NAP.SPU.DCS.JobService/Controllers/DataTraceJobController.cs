@@ -39,7 +39,13 @@
         {
             return await dataTraceJobService.SummaryMissingLoginTransactionAsync(fromDate, toDate, batchSize);
         }
-        
+
+        [HttpPost("count-dw-bet-transaction-by-date")]
+        public async Task<int> CountDWBetTransactionByDate([FromForm] DateTime transDate)
+        {
+            return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
+        }
+
         [HttpGet("report-login-transaction-daily")]
         public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
         {
