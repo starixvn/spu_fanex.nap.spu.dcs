@@ -109,7 +109,7 @@
                             }
                             else
                             {
-                                LogService.Error($"DCS - InsertSummaryBetTransactionByBatchAsync is not success!");
+                                LogService.Error($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
                             }
                         }
                     }
@@ -190,7 +190,7 @@
                 }
                 else
                 {
-                    LogService.Error($"DCS - GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                    LogService.Error($"DCS - DataTrace GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                 }
             }
 
@@ -262,7 +262,7 @@
                 }
                 else
                 {
-                    LogService.Error($"DCS - GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                    LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                 }
             }
 
@@ -307,7 +307,7 @@
                     }
                     else
                     {
-                        LogService.Error($"DCS - GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                        LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                     }
                 }
             }
@@ -363,7 +363,7 @@
                     }
                     else
                     {
-                        LogService.Error($"DCS - GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                        LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                     }
 
                     await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString("yyyy-MM-dd"));
