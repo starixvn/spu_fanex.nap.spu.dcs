@@ -32,6 +32,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
 
+        Task<bool> InitBetTransactionAsync(DateTime transDate);
+
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
@@ -183,27 +185,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        public async Task<bool> InitBetTransactionAsync(DateTime transDate)
         {
-            var dataWorksheet = package.Workbook.Worksheets["Data"];
-
-            dataWorksheet.Cells["A" + firstRowData].LoadFromCollection(data, true);
-            var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
-
-            foreach (var pivotTable in pivotWorksheet.PivotTables)
-            {
-                pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
-            }
-
-            //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
-
-            //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
-            //{
-            //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
-            //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
-            //}
-
-            return new MemoryStream(package.GetAsByteArray());
+            return await dataTraceServices.ProcessInitBetTransactionAsync(transDate);
         }
 
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
@@ -232,6 +216,29 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 return 0;
             }
+        }
+
+        private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        {
+            var dataWorksheet = package.Workbook.Worksheets["Data"];
+
+            dataWorksheet.Cells["A" + firstRowData].LoadFromCollection(data, true);
+            var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
+
+            foreach (var pivotTable in pivotWorksheet.PivotTables)
+            {
+                pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
+            }
+
+            //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
+
+            //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
+            //{
+            //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
+            //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
+            //}
+
+            return new MemoryStream(package.GetAsByteArray());
         }
 
         private void HandleException(Exception ex, string extraLogMessage)

@@ -1,6 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
     using Fanex.Logging;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.Logging.Extensions;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
     using Newtonsoft.Json;
@@ -30,6 +32,8 @@
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<bool> ProcessInitBetTransactionAsync(DateTime transDate);
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
@@ -287,6 +291,18 @@
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
             return await dataAccess.GetReportMissingTransaction(fromDate, toDate);
+        }
+
+        public async Task<bool> ProcessInitBetTransactionAsync(DateTime transDate)
+        {
+            var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(transDate);
+            if (betTransactionInfos != null && betTransactionInfos.Any())
+            {
+                _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(transDate);
+                _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), 25000);
+            }
+
+            return true;
         }
 
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
