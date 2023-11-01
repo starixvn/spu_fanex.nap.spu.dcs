@@ -32,6 +32,8 @@
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -292,10 +294,24 @@
             if (!await IsDailyTaskReadyAsync())
                 return 0;
 
-            var betTransactionInfos = await dataAccess.GetBetTransactionAsync(transDate);
-            if (betTransactionInfos != null && betTransactionInfos.Any())
+            var data = await dataAccess.GetBetTransactionAsync(transDate);
+            if (data != null && data.Any())
             {
-                return betTransactionInfos.Count();
+                return data.Count();
+            }
+
+            return 0;
+        }
+
+        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
+        {
+            if (!await IsDailyTaskReadyAsync())
+                return 0;
+
+            var data = await dataAccess.GetInitBetTransactionAsync(transDate);
+            if (data != null && data.Any())
+            {
+                return data.Count();
             }
 
             return 0;

@@ -33,6 +33,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -213,6 +215,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace CountDWBetTransactionByDate execute exeption message: ");
+
+                return 0;
+            }
+        }
+
+        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
+        {
+            try
+            {
+                return await dataTraceServices.CountInitDWBetTransactionByDate(transDate);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CountInitDWBetTransactionByDate execute exeption message: ");
 
                 return 0;
             }

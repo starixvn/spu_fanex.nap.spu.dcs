@@ -46,6 +46,12 @@
             return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
         }
 
+        [HttpPost("count-init-dw-bet-transaction-by-date")]
+        public async Task<int> CountInitDWBetTransactionByDate([FromForm] DateTime transDate)
+        {
+            return await dataTraceJobService.CountInitDWBetTransactionByDate(transDate);
+        }
+
         [HttpGet("report-login-transaction-daily")]
         public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
         {
