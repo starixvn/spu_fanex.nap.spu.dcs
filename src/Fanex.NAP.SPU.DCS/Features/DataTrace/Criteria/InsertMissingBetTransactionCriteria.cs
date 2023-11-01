@@ -9,17 +9,17 @@
         [SpParam(SqlParamName = "ip_TransDate")]
         public DateTime TransDate { get; set; }
 
-        [SpParam(SqlParamName = "ip_FromID")]
-        public int MinID { get; set; }
-
-        [SpParam(SqlParamName = "ip_ToID")]
-        public int MaxID { get; set; }
+        [SpParam(SqlParamName = "ip_ListAccountID")]
+        public string ListAccountID { get; set; }
 
         public override string GetSettingKey()
         {
             return "DCS_DT_Summary_MissingBetTransaction_Insert";
         }
 
-        public override bool IsValid() => MaxID >= MinID;
+        public override bool IsValid()
+        {
+            return true;
+        }
     }
 }

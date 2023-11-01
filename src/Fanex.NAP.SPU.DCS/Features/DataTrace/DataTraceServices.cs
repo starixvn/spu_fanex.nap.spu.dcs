@@ -151,20 +151,20 @@
 
             for (var transDate = (DateTime)fromDate; transDate <= toDate; transDate = transDate.AddDays(1))
             {
-                var missingBetTransactionIDPackages = await dataAccess.GetMissingBetTransactionPackageAsync(transDate, batchSize);
-                if (missingBetTransactionIDPackages != null && missingBetTransactionIDPackages.Any())
+                var listAccountIDByBatch = await dataAccess.GetMissingBetTransactionPackageAsync(transDate, batchSize);
+                if (listAccountIDByBatch != null && listAccountIDByBatch.Any())
                 {
                     var tasks = new List<Task>();
 
                     await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_BetTrans);
 
-                    foreach (var package in missingBetTransactionIDPackages)
+                    foreach (var listAccountID in listAccountIDByBatch)
                     {
                         var task = Task.Run(async () =>
                         {
                             try
                             {
-                                await dataAccess.InsertMissingBetTransactionAsync(transDate, package.MinID, package.MaxID);
+                                await dataAccess.InsertMissingBetTransactionAsync(transDate, listAccountID);
                             }
                             catch (Exception ex)
                             {
