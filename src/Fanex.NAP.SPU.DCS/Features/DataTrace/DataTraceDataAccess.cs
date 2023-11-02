@@ -26,9 +26,9 @@
 
         Task<int> UpdateSystemSettingParameterByID(int id, string value);
 
-        Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize);
+        Task<IEnumerable<string>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize);
 
-        Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID);
+        Task<int> InsertMissingBetTransactionAsync(DateTime transDate, string listAccountID);
 
         Task<IEnumerable<RangeIDPackage>> GetMissingLoginTranPackageAsync(DateTime transDate, int batchSize);
 
@@ -127,7 +127,7 @@
         }
 
 
-        public async Task<IEnumerable<RangeIDPackage>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize)
+        public async Task<IEnumerable<string>> GetMissingBetTransactionPackageAsync(DateTime transDate, int batchSize)
         {
             var criteria = new GetMissingBetTransactionPackageCriteria
             {
@@ -135,16 +135,15 @@
                 BatchSize = batchSize,
             };
 
-            return await repository.FetchAsync<RangeIDPackage>(criteria);
+            return await repository.FetchAsync<string>(criteria);
         }
 
-        public async Task<int> InsertMissingBetTransactionAsync(DateTime transDate, int minID, int maxID)
+        public async Task<int> InsertMissingBetTransactionAsync(DateTime transDate, string listAccountID)
         {
             var criteria = new InsertMissingBetTransactionCriteria
             {
                 TransDate = transDate,
-                MinID = minID,
-                MaxID = maxID
+                ListAccountID = listAccountID
             };
 
             return await repository.ExecuteAsync(criteria);

@@ -23,29 +23,41 @@
         }
 
         [HttpPost("summarybettransaction")]
-        public async Task<bool> SummaryBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        public async Task<bool> SummaryBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate);
+            return await dataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         [HttpPost("summarymissingbettransaction")]
-        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingBetTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingBetTransactionAsync(transDate, batchSize);
+            return await dataTraceJobService.SummaryMissingBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         [HttpPost("summarymissinglogintransaction")]
-        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? transDate, [FromForm] int batchSize = 25000)
+        public async Task<bool> SummaryMissingLoginTransaction([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate, [FromForm] int batchSize = 25000)
         {
-            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(transDate, batchSize);
+            return await dataTraceJobService.SummaryMissingLoginTransactionAsync(fromDate, toDate, batchSize);
         }
 
-        [HttpPost("deletemissingtransactionbydate")]
-        public async Task<bool> DeleteMissingTransactionByDate([FromForm] DateTime transDate, [FromForm] int missingType)
+        [HttpPost("count-dw-bet-transaction-by-date")]
+        public async Task<int> CountDWBetTransactionByDate([FromForm] DateTime transDate)
         {
-            return await dataTraceJobService.DeleteMissingTransactionByDate(transDate, missingType);
+            return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
         }
-        
+
+        [HttpPost("init-summary-bet-transaction")]
+        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime transDate)
+        {
+            return await dataTraceJobService.InitBetTransactionAsync(transDate);
+        }
+
+        [HttpPost("count-init-dw-bet-transaction-by-date")]
+        public async Task<int> CountInitDWBetTransactionByDate([FromForm] DateTime transDate)
+        {
+            return await dataTraceJobService.CountInitDWBetTransactionByDate(transDate);
+        }
+
         [HttpGet("report-login-transaction-daily")]
         public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
         {

@@ -16,17 +16,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         Task<bool> SummaryLoginTransactionsAsync(int batchSize);
 
-        Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate);
+        Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
-        Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDateint, int batchSize);
+        Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
-        Task<bool> SummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize);
-
-        Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate);
+        Task<bool> SummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
-
-        Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
         Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate);
 
@@ -35,6 +31,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
+
+        Task<bool> InitBetTransactionAsync(DateTime transDate);
+
+        Task<int> CountDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -57,76 +59,66 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary login transaction job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace SummaryLoginTransactionsAsync execute exeption message: ");
 
                 return false;
             }
         }
 
-        public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate)
-        {
-            return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate);
-        }
-
-        public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? transDate, int batchSize)
+        public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
             try
             {
-                return await dataTraceServices.ProcessSummaryMissingBetTransactionAsync(transDate, batchSize);
+                return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate, batchSize);
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary missing bet ticket job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace SummaryBetTransactionAsync execute exeption message: ");
 
                 return false;
             }
         }
 
-        public async Task<bool> SummaryMissingLoginTransactionAsync(DateTime? transDate, int batchSize)
+        public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
             try
             {
-                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(transDate, batchSize);
+                return await dataTraceServices.ProcessSummaryMissingBetTransactionAsync(fromDate, toDate, batchSize);
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-                LogService.Error($"DCS - DataTrace summary missing login transaction job execute exeption message:  {logMessage}");
+                HandleException(ex, "DCS - DataTrace SummaryMissingBetTransactionAsync execute exeption message: ");
 
                 return false;
             }
         }
 
-        public async Task<bool> InitBetTransactionAsync(DateTime fromDate, DateTime toDate)
+        public async Task<bool> SummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            return await dataTraceServices.ProcessInitBetTransactionAsync(fromDate, toDate);
+            try
+            {
+                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(fromDate, toDate, batchSize);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace ProcessSummaryMissingLoginTransactionAsync execute exeption message: ");
+
+                return false;
+            }
         }
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
         {
-            return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
-        }
+            try
+            {
+                return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace UpdateSystemSetting job execute exeption message: ");
+            }
 
-        public async Task<bool> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
-        {
-            return await dataTraceServices.DeleteMissingTransactionByDate(transDate, missingType);
+            return false;
         }
 
         public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
@@ -193,6 +185,39 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        public async Task<bool> InitBetTransactionAsync(DateTime transDate)
+        {
+            return await dataTraceServices.ProcessInitBetTransactionAsync(transDate);
+        }
+
+        public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
+        {
+            try
+            {
+                return await dataTraceServices.CountDWBetTransactionByDate(transDate);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CountDWBetTransactionByDate execute exeption message: ");
+
+                return 0;
+            }
+        }
+
+        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
+        {
+            try
+            {
+                return await dataTraceServices.CountInitDWBetTransactionByDate(transDate);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CountInitDWBetTransactionByDate execute exeption message: ");
+
+                return 0;
+            }
+        }
+
         private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
         {
             var dataWorksheet = package.Workbook.Worksheets["Data"];
@@ -214,6 +239,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             //}
 
             return new MemoryStream(package.GetAsByteArray());
+        }
+
+        private void HandleException(Exception ex, string extraLogMessage)
+        {
+            string logMessage = new LogMessage(ex.Message)
+                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+            LogService.Error(extraLogMessage + logMessage);
         }
     }
 }

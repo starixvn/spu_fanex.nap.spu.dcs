@@ -14,7 +14,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DT_Summary_MissingTransaction_DeleteByDate";
+            return "DCS_DT_Summary_MemberMissingTransaction_DeleteByDate";
         }
 
         public override bool IsValid()
