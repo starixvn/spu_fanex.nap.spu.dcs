@@ -73,5 +73,11 @@
         {
             return await archiveJobServices.Execute(batchSize, false);
         }
+
+        [HttpPost("deletebotcomponent")]
+        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
+        {
+            return await archiveJobServices.DeleteBotComponent(retentionDays, false);
+        }
     }
 }
