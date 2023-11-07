@@ -63,5 +63,11 @@
         {
             return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);
         }
+
+        [HttpPost("deletebotcomponent")]
+        public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
+        {
+            return await archiveJobServices.DeleteBotComponent(retentionDays, true);
+        }
     }
 }
