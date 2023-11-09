@@ -112,7 +112,7 @@
         [HttpGet("report-login-transaction-detail")]
         public async Task<IActionResult> ReportLoginTransactionDetail(DateTime transDate)
         {
-            var stream = await dataTraceJobService.GetReportLoginTransactionDetail(transDate);
+            var stream = await dataTraceJobService.ReportLoginTransactionDetail(transDate);
 
             if(stream != null)
             {

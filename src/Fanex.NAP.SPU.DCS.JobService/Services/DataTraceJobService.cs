@@ -5,11 +5,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using OfficeOpenXml;
     using Sentry;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public interface IDataTraceJobService
@@ -30,7 +33,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
-        Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate);
+        Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate);
 
         Task<bool> InitBetTransactionAsync(DateTime transDate);
 
@@ -123,43 +126,41 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransaction_Template.xlsx")))
-                {
-                    var data = await dataTraceServices.GetReportLoginTransaction(fromDate, toDate);
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransaction);
         }
 
         public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportBotDTransaction_Template.xlsx")))
-                {
-                    var data = await dataTraceServices.GetReportBotDTransaction(fromDate, toDate);
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            return await GenerateReport(fromDate, toDate, "ReportBotDTransaction_Template.xlsx", dataTraceServices.GetReportBotDTransaction);
         }
 
         public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
+            return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
+        }
+
+        private async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
+        {
             try
             {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportMissingTransaction_Template.xlsx")))
+                using (var package = new ExcelPackage(new FileInfo($"Template/{templateFileName}")))
                 {
-                    var data = await dataTraceServices.GetReportMissingTransaction(fromDate, toDate);
+                    var weekRanges = GetWeekRanges(fromDate, toDate);
+                    var data = new List<TModel>();
+
+                    var tasks = weekRanges.Select(async weekRange =>
+                    {
+                        var result = await getDataFunc(weekRange.Item1, weekRange.Item2);
+                        lock (data)
+                        {
+                            data.AddRange(result);
+                        }
+                    });
+
+                    await Task.WhenAll(tasks);
+
+                    data = data.OrderBy(x => ((dynamic)x).TransDate).ToList();
+
                     return GenerateMemoryStream(package, data);
                 }
             }
@@ -169,7 +170,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionDetail(DateTime transDate)
+        public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
         {
             try
             {
@@ -216,6 +217,26 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 return 0;
             }
+        }
+
+        private List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
+        {
+            var weekRanges = new List<Tuple<DateTime, DateTime>>();
+
+            DateTime currentDate = fromDate;
+            while (currentDate <= toDate)
+            {
+                DateTime weekStart = currentDate.AddDays(-(int)currentDate.DayOfWeek);
+                DateTime weekEnd = weekStart.AddDays(6);
+
+                weekStart = weekStart < fromDate ? fromDate : weekStart;
+                weekEnd = weekEnd > toDate ? toDate : weekEnd;
+
+                weekRanges.Add(new Tuple<DateTime, DateTime>(weekStart, weekEnd));
+                currentDate = currentDate.AddDays(7);
+            }
+
+            return weekRanges;
         }
 
         private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
