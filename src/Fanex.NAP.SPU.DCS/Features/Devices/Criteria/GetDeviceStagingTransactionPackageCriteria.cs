@@ -26,9 +26,6 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices
             }
         }
 
-        public override bool IsValid()
-        {
-            return true;
-        }
+        public override bool IsValid() => true;
     }
 }

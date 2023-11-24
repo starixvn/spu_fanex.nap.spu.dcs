@@ -30,42 +30,42 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Devices
         {
             var isReadyDbExtra = false;
 
-            var stagingTransIdEntity = new List<StagingTransIdEntity> {
-                new StagingTransIdEntity
+            var stagingTransIdEntity = new List<StagingTransId> {
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 100
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 200
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 300
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 2,
                     TransId = 102
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 2,
                     TransId = 202
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 2,
                     TransId = 302
                 }
             };
 
-            deviceDataAccess.GetStagingTransIdForDevice(100, 2, isReadyDbExtra).Returns(stagingTransIdEntity);
+            deviceDataAccess.GetStagingTransIdForDeviceAsync(100, 2, isReadyDbExtra).Returns(stagingTransIdEntity);
 
-            var result = deviceServices.GetStagingTransIdForDevice(100, 2, isReadyDbExtra);
+            var result = deviceServices.GetStagingTransIdForDeviceAsync(100, 2, isReadyDbExtra);
 
             result.Should().BeEquivalentTo(stagingTransIdEntity);
         }
@@ -79,12 +79,12 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Devices
         [InlineData(-1, 0)]
         public void GetStagingTransIdForDevice_WhenFailed_ReturnTransIdList(int size, int batchSize)
         {
-            var expectedResult = new List<StagingTransIdEntity>();
+            var expectedResult = new List<StagingTransId>();
             var isReadyDbExtra = false;
 
-            deviceDataAccess.GetStagingTransIdForDevice(size, batchSize, isReadyDbExtra).Returns(expectedResult);
+            deviceDataAccess.GetStagingTransIdForDeviceAsync(size, batchSize, isReadyDbExtra).Returns(expectedResult);
 
-            var result = deviceServices.GetStagingTransIdForDevice(size, batchSize, isReadyDbExtra);
+            var result = deviceServices.GetStagingTransIdForDeviceAsync(size, batchSize, isReadyDbExtra);
 
             result.Should().BeEmpty();
             result.Should().BeEquivalentTo(expectedResult);
@@ -95,18 +95,18 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Devices
         public void UpdateDevice_WhenSucess_ReturnDataResult()
         {
             var isReadyDbExtra = false;
-            var stagingTransIdEntity = new List<StagingTransIdEntity> {
-                new StagingTransIdEntity
+            var stagingTransIdEntity = new List<StagingTransId> {
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 100
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 200
                 },
-                new StagingTransIdEntity
+                new StagingTransId
                 {
                     BatchId = 1,
                     TransId = 300
@@ -118,7 +118,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Devices
             };
             var jsonResult = JsonConvert.SerializeObject(stagingTransIdEntity);
 
-            deviceDataAccess.UpdateDevice(jsonResult, isReadyDbExtra).Returns(dataResult);
+            deviceDataAccess.UpdateDeviceAsync(jsonResult, isReadyDbExtra).Returns(dataResult);
 
             var result = deviceServices.UpdateDevices(stagingTransIdEntity, isReadyDbExtra);
 
@@ -136,7 +136,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Devices
                 ErrorMessage = "Parameter is empty."
             };
 
-            deviceDataAccess.UpdateDevice(null, isReadyDbExtra).Returns(dataResult);
+            deviceDataAccess.UpdateDeviceAsync(null, isReadyDbExtra).Returns(dataResult);
             var result = deviceServices.UpdateDevices(null, isReadyDbExtra);
                        
             result.ErrorCode.Should().Be(-1);

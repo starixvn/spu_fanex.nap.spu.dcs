@@ -1,22 +1,36 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Fanex.NAP.SPU.DCS.Shares;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IDeviceDataAccess
     {
-        IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra);
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        DataResult UpdateDevice(string transIdJson, bool isReadyDbExtra);
+        Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+
+        Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
+
+        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode);
+
+        Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId);
     }
 
     public class DeviceDataAccess : IDeviceDataAccess
     {
-        public IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra)
+        private readonly IDynamicRepository repository;
+
+        public DeviceDataAccess()
+        {
+            repository = new DynamicRepository();
+        }
+
+
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
         {
             var criteria = new GetDeviceStagingTransactionPackageCriteria
             {
@@ -25,28 +39,51 @@
                 IsReadyDbExtra = isReadyDbExtra
             };
 
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
-            {
-                return db.Query<StagingTransIdEntity>(criteria);
-            }
+            return await repository.FetchAsync<StagingTransId>(criteria);
         }
 
-        public DataResult UpdateDevice(string transIdJson, bool isReadyDbExtra)
+        public async Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
         {
-            var repository = new DynamicRepository();
+            var transIdJson = JsonConvert.SerializeObject(stagingTransId);
 
-            var criteria = new UpdateDeviceIdCriteria
+            var criteria = new TransformDeviceInsertCriteria
             {
                 TransIdJson = transIdJson,
                 IsReadyDbExtra = isReadyDbExtra
             };
-
-            var errCode = repository.Execute(criteria);
-
-            return new DataResult
-            {
-                ErrorCode = errCode
-            };
+            return await repository.GetAsync<IdentityDevice>(criteria);
         }
+
+        public async Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
+        {
+            var criteria = new GetIdentityDeviceRecoverCriteria
+            {
+               TransIds = transIds
+            };
+
+            return await repository.FetchMultipleAsync<Transaction, TransactionEvolution>(criteria);
+        }
+
+        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode)
+        {
+            var criteria = new GetIdentityEvolutionAttributesCriteria
+            {
+                RawFingerPrintIDs = rawFingerPrintIDs,
+                BrowserFamilyCode = browserFamilyCode
+            };
+
+            return await repository.FetchAsync<TransactionEvolutionAttributes>(criteria);
+        }
+
+        public async Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId)
+        {
+            var criteria = new IdentityDeviceInsertCriteria
+            {
+                transIdJson = transId
+            };
+
+            return await repository.FetchAsync<Transaction>(criteria);
+        }
+
     }
 }

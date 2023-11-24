@@ -36,6 +36,8 @@
 		<Setting Key="DCS_FPS_GetLastDeviceFingerprint" SpName="DCS_FPS_GetLastDeviceFingerprint" DbName="SQLServer.FPS_DeviceFingerprint.fpsWinService"/>
 		<Setting Key="DCS_FPS_GetRawTransaction_CTMax" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_CTMax.fpsWinService"/>
 		<Setting Key="DCS_FPS_GetRawTransaction_Velki" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_Velki.fpsWinService"/>
+
+        <Setting Key="DCS_DC_Identity_Device_Recover" SpName="DCS_DC_Identity_Device_Recover" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 	</Function>
 
 	<Function Name="DCS_Extra">
@@ -60,7 +62,7 @@
 
 		<Setting Key="DCS_ET_ArchiveData_ModifiedDate_Update" SpName="DCS_ET_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 		<Setting Key="DCS_ET_ArchiveData_BotComponent_Delete" SpName="DCS_ET_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-	</Function>
+    </Function>
 
 	<Function Name="Extra_Initial_TransactionIPInfo">
 		<Setting Key="GetLocationByIPList" SpName="GetLocationByIPList" DbName="SQLServer.IPDB.fpsWinService"/>

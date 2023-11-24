@@ -1,16 +1,21 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Fanex.NAP.SPU.DCS.Shares;
     using Newtonsoft.Json;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Threading.Tasks;
 
     public interface IDeviceServices
     {
-        IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra);
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        DataResult UpdateDevices(IEnumerable<StagingTransIdEntity> stagingTransId, bool isReadyDbExtra);
+        Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+
+        Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
+
+        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode);
+
+        Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId);
     }
 
     public class DeviceServices : IDeviceServices
@@ -22,30 +27,36 @@
             this.deviceDataAcess = deviceDataAcess;
         }
 
-        public IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra)
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
         {
             if(size != 0 && noOfBatch != 0)
             {
-                return this.deviceDataAcess.GetStagingTransIdForDevice(size, noOfBatch, isReadyDbExtra);
+                return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch, isReadyDbExtra);
             }
 
-            return new List<StagingTransIdEntity>();
+            return new List<StagingTransId>();
         }
 
-        public DataResult UpdateDevices(IEnumerable<StagingTransIdEntity> stagingTransId, bool isReadyDbExtra)
-        {            
-            if(stagingTransId != null && stagingTransId.Any())
-            {
-                var transIdJson = JsonConvert.SerializeObject(stagingTransId);
+        public async Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        {
+            return await deviceDataAcess.TransformDeviceInsertAsync(stagingTransId, isReadyDbExtra);
+        }
 
-                return this.deviceDataAcess.UpdateDevice(transIdJson, isReadyDbExtra);
-            }
+        public async Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
+        {
+            if(!string.IsNullOrEmpty(transIds)) return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
 
-            return new DataResult
-            {
-                ErrorCode = -1,
-                ErrorMessage = "Parameter is empty."
-            };            
+            return (new List<Transaction>(), new List<TransactionEvolution>());
+        }
+
+        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode)
+        {
+            return await deviceDataAcess.GetIdentityEvolutionAttributesAsync(rawFingerPrintIDs, browserFamilyCode);
+        }
+
+        public async Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId)
+        {
+            return await deviceDataAcess.IdentityDeviceInsertAsync(transId);
         }
     }
 }

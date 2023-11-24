@@ -23,6 +23,8 @@
         string DCSExtraSite { get; }
 
         bool IsReadyDbExtra { get; }
+
+        string RatioUrl { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -37,6 +39,7 @@
         private readonly string telegramGroupIDMonitorTransaction;
         private readonly bool isReadyDbExtra;
         private readonly string dcsExtraSite;
+        private readonly string ratioUrl;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -57,6 +60,8 @@
             isReadyDbExtra = GetValue<bool>("IsReadyDbExtra");
 
             dcsExtraSite = GetValue<string>("DCSExtra:Site");
+
+            ratioUrl = GetValue<string>("RatioUrl");
         }
 
         public int Environment
@@ -96,6 +101,8 @@
         public bool IsReadyDbExtra => isReadyDbExtra;
 
         public string DCSExtraSite => dcsExtraSite;
+
+        public string RatioUrl => dcsExtraSite;
 
         public T GetValue<T>(string key)
         {
