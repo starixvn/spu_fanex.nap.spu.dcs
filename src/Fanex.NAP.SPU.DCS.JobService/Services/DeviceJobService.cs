@@ -92,27 +92,26 @@
 
                 var identityDevices = (await Task.WhenAll(taskDevices)).Where(result => result != null).Select(result => result);
 
-                var identityDeviceRecovers = (await Task.WhenAll(taskRecovers))
-                                            .Where(result => (result.Item1.Any() || result.Item2.Any()))
+                var deviceRecovers = (await Task.WhenAll(taskRecovers)).Where(result => (result.Item1.Any() || result.Item2.Any()))
                                             .Select(result => result);
 
-                await ProcessEvolution(identityDevices, identityDeviceRecovers);
+                await ProcessEvolution(identityDevices, deviceRecovers);
             }
         }
 
         private async Task ProcessEvolution(
             IEnumerable<IdentityDevice> identityDevices,
-            IEnumerable<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> identityDeviceRecovers
+            IEnumerable<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> deviceRecovers
         )
         {
-            var taskEvolutionDevices = identityDeviceRecovers.Select(x =>
+            var taskEvolutionDevices = deviceRecovers.Select(x =>
             {
                 return Task.Run(() => EvolutionDeviceAsync(x.Item2));
             });
 
             var evolutionDevices = (await Task.WhenAll(taskEvolutionDevices)).Where(result => result != null).Select(result => result);
 
-            IEnumerable<TransactionRecover> allTransactionRecovers = identityDeviceRecovers.SelectMany(tuple => tuple.Item1);
+            IEnumerable<TransactionRecover> allTransactionRecovers = deviceRecovers.SelectMany(tuple => tuple.Item1);
 
             var taskInsertTran07s = evolutionDevices.Select(evolutionDevice =>
             {
@@ -300,14 +299,14 @@
 
         #region "Evolution"
 
-        private bool CheckVersion(string browserVersion1, string browserVersion2)
+        private bool CheckVersion(string browserVersionSrc, string browserVersionDestination)
         {
-            var version1 = GetVersion(browserVersion1);
-            var version2 = GetVersion(browserVersion2);
+            var versionSrc = GetVersion(browserVersionSrc);
+            var versionDestination = GetVersion(browserVersionDestination);
 
-            return version1 != null &&
-                   version2 != null &&
-                   version1.CompareTo(version2) >= 0;
+            return versionSrc != null &&
+                   versionDestination != null &&
+                   versionSrc.CompareTo(versionDestination) >= 0;
         }
 
         private Version GetVersion(string version)
@@ -360,10 +359,10 @@
         {
             if (string.IsNullOrEmpty(fontsSource) || string.IsNullOrEmpty(fontsDestination)) return fontsSource == fontsDestination;
 
-            var arr1 = JsonSerializer.Deserialize<string[]>(fontsSource);
-            var arr2 = JsonSerializer.Deserialize<string[]>(fontsDestination);
+            var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
+            var arrDestination = JsonSerializer.Deserialize<string[]>(fontsDestination);
 
-            return arr1.All(arr2.Contains) || arr2.All(arr1.Contains);
+            return arrSrc.All(arrDestination.Contains) || arrDestination.All(arrSrc.Contains);
         }
 
         private bool CheckAllowChangesWithSimilar(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination, ref int counter)
