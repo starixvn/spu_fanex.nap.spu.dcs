@@ -54,15 +54,7 @@
 
         private async Task JobRun(int size, int numberOfBatch, bool isTransformExtra)
         {
-            if (isTransformExtra)
-            {
-                if(appSettings.IsReadyDbExtra)
-                    await TransformDevice(size, numberOfBatch, true);
-            }
-            else
-            {
-                await TransformDevice(size, numberOfBatch, false);
-            }          
+            await TransformDevice(size, numberOfBatch, isTransformExtra && appSettings.IsReadyDbExtra);
         }
 
         private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
@@ -133,7 +125,7 @@
                 {
                     TransID = x.TransID,
                     DeviceID = x.DeviceID,
-                    FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == x.TransID).FPDeviceID,
+                    FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == x.TransID)?.FPDeviceID,
                     DeviceCodeID = x.DeviceCodeID,
                     FirstDeviceCode = x.FirstDeviceCode,
                     DeviceStatus = x.DeviceStatus,
