@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -57,7 +58,7 @@
             await TransformDevice(size, numberOfBatch, isTransformExtra && appSettings.IsReadyDbExtra);
         }
 
-        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        public async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
         {
             var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
 
@@ -65,54 +66,89 @@
             {
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
 
-                var taskDevices = new List<Task<IdentityDevice>>();
-                var taskRecovers = new List<Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)>>();
+                var taskDevices = TaskDeviceIdentity(groupTrans, isReadyDbExtra);
+                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans);
 
-                foreach (var trans in groupTrans)
-                {
-                    if (trans != null && trans.Any())
-                    {
-                        var taskDevice = TaskTransformDeviceInsert(isReadyDbExtra, trans);
-                        var taskRecover = TaskIdentityDeviceRecover(string.Join(",", trans.Select(x => x.TransId)));
+                await Task.WhenAll(taskDevices, taskRecovers);
 
-                        await Task.Delay(delayTime);
+                var identityDevices = taskDevices.Result.Where(result => result != null).Select(result => result.Result);
+                var evolutionDevices = taskRecovers.Result.Where(result => result != null).Select(result => result.Result);
 
-                        taskDevices.Add(taskDevice);
-                        taskRecovers.Add(taskRecover);
-                    }
-                }
-
-                var identityDevices = (await Task.WhenAll(taskDevices)).Where(result => result != null).Select(result => result);
-
-                var deviceRecovers = (await Task.WhenAll(taskRecovers)).Where(result => (result.Item1.Any() || result.Item2.Any()))
-                                            .Select(result => result);
-
-                await ProcessEvolution(identityDevices, deviceRecovers);
+                await InsertTransfromTransaction(identityDevices, evolutionDevices);
             }
         }
 
-        private async Task ProcessEvolution(
-            IEnumerable<IdentityDevice> identityDevices,
-            IEnumerable<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> deviceRecovers
-        )
+        private async Task InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<IEnumerable<TransactionRecover>> evolutionDevices)
         {
-            var taskEvolutionDevices = deviceRecovers.Select(x =>
+            var task = evolutionDevices.Select(evolutionDevice =>
             {
-                return Task.Run(() => EvolutionDeviceAsync(x.Item2));
+                return Task.Run(() => InsertTransformTransaction07(identityDevices, evolutionDevice));
             });
 
-            var evolutionDevices = (await Task.WhenAll(taskEvolutionDevices)).Where(result => result != null).Select(result => result);
+            await Task.WhenAll(task);
+        }
 
-            IEnumerable<TransactionRecover> allTransactionRecovers = deviceRecovers.SelectMany(tuple => tuple.Item1);
+        private async Task<List<Task<IdentityDevice>>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
+        {
+            var taskDevices = new List<Task<IdentityDevice>>();
 
-            var taskInsertTran07s = evolutionDevices.Select(evolutionDevice =>
+            foreach (var trans in groupTrans)
             {
-                var combineEvolutionDevices = evolutionDevice.Concat(allTransactionRecovers);
+                var taskDevice = Task.Run(() =>
+                {
+                    try
+                    {
+                        return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                    }
+                    catch (Exception ex)
+                    {
+                        sentryClient.CaptureException(ex);
+                        throw;
+                    }
+                });
 
-                return Task.Run(() => InsertTransformTransaction07(identityDevices, combineEvolutionDevices));
-            });
+                await Task.Delay(delayTime);
 
-            await Task.WhenAll(taskInsertTran07s);
+                taskDevices.Add(taskDevice);
+            }
+
+            return taskDevices;
+        }
+
+        private async Task<List<Task<IEnumerable<TransactionRecover>>>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
+        {
+            var taskRecovers = new List<Task<IEnumerable<TransactionRecover>>>();
+
+            foreach (var trans in groupTrans)
+            {
+                var taskRecover = Task.Run(() =>
+                {
+                    try
+                    {
+                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
+                    }
+                    catch (Exception ex)
+                    {
+                        sentryClient.CaptureException(ex);
+                        throw;
+                    }
+                });
+
+                await Task.Delay(delayTime);
+
+                taskRecovers.Add(taskRecover);
+            }
+
+            return taskRecovers;
+        }
+
+        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds)
+        {
+            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds);
+
+            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions);
+
+            return evolutionDevices.Concat(transactionRecovers);
         }
 
         private async Task<int> InsertTransformTransaction07(
@@ -139,38 +175,6 @@
                 sentryClient.CaptureException(ex);
                 throw;
             }
-        }
-
-        private Task<IdentityDevice> TaskTransformDeviceInsert(bool isReadyDbExtra, IGrouping<int, StagingTransId> trans)
-        {
-            return Task.Run(() =>
-            {
-                try
-                {
-                    return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
-                }
-                catch (Exception ex)
-                {
-                    sentryClient.CaptureException(ex);
-                    throw;
-                }
-            });
-        }
-
-        private Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> TaskIdentityDeviceRecover(string transId)
-        {
-            return Task.Run(() =>
-            {
-                try
-                {
-                    return deviceService.GetIdentityDeviceRecoverAsync(transId);
-                }
-                catch (Exception ex)
-                {
-                    sentryClient.CaptureException(ex);
-                    throw;
-                }
-            });
         }
 
         private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
