@@ -2,7 +2,7 @@
 {
     using Fanex.Data.Repository;
     using Fanex.Data;
-    public class IdentityDeviceInsertCriteria : NonQueryCommand
+    public class IdentityDeviceInsertCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_TransIDs")]
         public string transIdJson { get; set; }

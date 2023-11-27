@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices.Entities
 {
-    public class Transaction
+    public class TransactionRecover
     {
         public ulong TransID { get; set; }
 

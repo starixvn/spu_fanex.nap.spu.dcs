@@ -3,7 +3,6 @@
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -11,13 +10,17 @@
     {
         Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+        Task<IdentityDevice> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra);
 
-        Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
+        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
 
         Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode);
 
-        Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId);
+        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId);
+
+        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson);
+
+        Task<int> TransformTransaction07InsertAsync(string transJson);
     }
 
     public class DeviceDataAccess : IDeviceDataAccess
@@ -42,10 +45,8 @@
             return await repository.FetchAsync<StagingTransId>(criteria);
         }
 
-        public async Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        public async Task<IdentityDevice> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra)
         {
-            var transIdJson = JsonConvert.SerializeObject(stagingTransId);
-
             var criteria = new TransformDeviceInsertCriteria
             {
                 TransIdJson = transIdJson,
@@ -54,14 +55,14 @@
             return await repository.GetAsync<IdentityDevice>(criteria);
         }
 
-        public async Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
+        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
         {
             var criteria = new GetIdentityDeviceRecoverCriteria
             {
                TransIds = transIds
             };
 
-            return await repository.FetchMultipleAsync<Transaction, TransactionEvolution>(criteria);
+            return await repository.FetchMultipleAsync<TransactionRecover, TransactionEvolution>(criteria);
         }
 
         public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode)
@@ -75,15 +76,34 @@
             return await repository.FetchAsync<TransactionEvolutionAttributes>(criteria);
         }
 
-        public async Task<IEnumerable<Transaction>> IdentityDeviceInsertAsync(string transId)
+        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId)
         {
             var criteria = new IdentityDeviceInsertCriteria
             {
                 transIdJson = transId
             };
 
-            return await repository.FetchAsync<Transaction>(criteria);
+            return await repository.FetchAsync<TransactionRecover>(criteria);
         }
 
+        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson)
+        {
+            var criteria = new IdentityEvolutionInsertCriteria
+            {
+                transJson = transJson
+            };
+
+            return await repository.FetchAsync<TransactionRecover>(criteria);
+        }
+
+        public async Task<int> TransformTransaction07InsertAsync(string transJson)
+        {
+            var criteria = new TransformTransaction07InsertCommand
+            {
+                transJson = transJson
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
     }
 }

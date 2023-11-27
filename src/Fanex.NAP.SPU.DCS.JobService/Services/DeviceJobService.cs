@@ -1,17 +1,15 @@
-﻿using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
-using Fanex.NAP.SPU.DCS.Features.Devices;
-using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
-using Sentry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.Devices;
+    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
+    using Sentry;
+
     public interface IDeviceJobService
     {
         Task<bool> Execute(int size, int numberOfBatch, bool isTransformExtra);
@@ -24,7 +22,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly IAppSettings appSettings;
 
         private const int delayTime = 100; // milliseconds
-
 
         private readonly int maxChangesRule5 = 2;
         private readonly int maxChangesRule6 = 1;
@@ -42,7 +39,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 if (size > 0 && numberOfBatch > 0)
                 {                    
-                    JobRun(size, numberOfBatch, isTransformExtra);    
+                    await JobRun(size, numberOfBatch, isTransformExtra);    
                 }              
             }
             catch (Exception ex)
@@ -55,16 +52,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
-        private void JobRun(int size, int numberOfBatch, bool isTransformExtra)
+        private async Task JobRun(int size, int numberOfBatch, bool isTransformExtra)
         {
             if (isTransformExtra)
             {
                 if(appSettings.IsReadyDbExtra)
-                    TransformDevice(size, numberOfBatch, true).Wait();
+                    await TransformDevice(size, numberOfBatch, true);
             }
             else
             {
-                TransformDevice(size, numberOfBatch, false).Wait();
+                await TransformDevice(size, numberOfBatch, false);
             }          
         }
 
@@ -76,34 +73,80 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
 
-                var tasksIdentityDevice = new List<Task<IdentityDevice>>();
-                var tasksIdentityDeviceRecover = new List<Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)>>();
+                var taskDevices = new List<Task<IdentityDevice>>();
+                var taskRecovers = new List<Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)>>();
 
                 foreach (var trans in groupTrans)
                 {
                     if (trans != null && trans.Any())
                     {
-                        var taskIdentityDevice = TaskTransformDeviceInsert(isReadyDbExtra, trans);
-                        var taskIdentityDeviceRecover = TaskIdentityDeviceRecover(string.Join(",", trans.Select(x => x.TransId)));
+                        var taskDevice = TaskTransformDeviceInsert(isReadyDbExtra, trans);
+                        var taskRecover = TaskIdentityDeviceRecover(string.Join(",", trans.Select(x => x.TransId)));
 
                         await Task.Delay(delayTime);
 
-                        tasksIdentityDevice.Add(taskIdentityDevice);
-                        tasksIdentityDeviceRecover.Add(taskIdentityDeviceRecover);
+                        taskDevices.Add(taskDevice);
+                        taskRecovers.Add(taskRecover);
                     }
                 }
 
-                var identityDevices = (await Task.WhenAll(tasksIdentityDevice)).Where(result => result != null).Select(result => result);
+                var identityDevices = (await Task.WhenAll(taskDevices)).Where(result => result != null).Select(result => result);
 
-                var identityDeviceRecovers = (await Task.WhenAll(tasksIdentityDeviceRecover))
+                var identityDeviceRecovers = (await Task.WhenAll(taskRecovers))
                                             .Where(result => (result.Item1.Any() || result.Item2.Any()))
                                             .Select(result => result);
 
-                var taskEvolutionDevices = identityDeviceRecovers.Select(x =>
+                await ProcessEvolution(identityDevices, identityDeviceRecovers);
+            }
+        }
+
+        private async Task ProcessEvolution(
+            IEnumerable<IdentityDevice> identityDevices,
+            IEnumerable<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> identityDeviceRecovers
+        )
+        {
+            var taskEvolutionDevices = identityDeviceRecovers.Select(x =>
+            {
+                return Task.Run(() => EvolutionDeviceAsync(x.Item2));
+            });
+
+            var evolutionDevices = (await Task.WhenAll(taskEvolutionDevices)).Where(result => result != null).Select(result => result);
+
+            IEnumerable<TransactionRecover> allTransactionRecovers = identityDeviceRecovers.SelectMany(tuple => tuple.Item1);
+
+            var taskInsertTran07s = evolutionDevices.Select(evolutionDevice =>
+            {
+                var combineEvolutionDevices = evolutionDevice.Concat(allTransactionRecovers);
+
+                return Task.Run(() => InsertTransformTransaction07(identityDevices, combineEvolutionDevices));
+            });
+
+            await Task.WhenAll(taskInsertTran07s);
+        }
+
+        private async Task<int> InsertTransformTransaction07(
+            IEnumerable<IdentityDevice> identityDevices,
+            IEnumerable<TransactionRecover> evolutionDevices)
+        {
+            try
+            {
+                var mergeDevices = identityDevices.Select(x => new TransformTransactionModel
                 {
-                    return Task.Run(() => EvolutionDeviceAsync(x.Item2));
+                    TransID = x.TransID,
+                    DeviceID = x.DeviceID,
+                    FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == x.TransID).FPDeviceID,
+                    DeviceCodeID = x.DeviceCodeID,
+                    FirstDeviceCode = x.FirstDeviceCode,
+                    DeviceStatus = x.DeviceStatus,
+                    DeviceFingerprintID = x.DeviceFingerprintID
                 });
 
+                return await deviceService.TransformTransaction07InsertAsync(mergeDevices);
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                throw;
             }
         }
 
@@ -123,7 +166,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             });
         }
 
-        private Task<(IEnumerable<Transaction>, IEnumerable<TransactionEvolution>)> TaskIdentityDeviceRecover(string transId)
+        private Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> TaskIdentityDeviceRecover(string transId)
         {
             return Task.Run(() =>
             {
@@ -139,29 +182,44 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             });
         }
 
-        private async Task<IEnumerable<Transaction>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
+        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
         {
-            if (transactionEvolutions.Any())
+            try
             {
-                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
-
-                // NewDevice
-                if (newDeviceTransIds != null && newDeviceTransIds.Any())
+                if (transactionEvolutions.Any())
                 {
-                    var transIds = string.Join(",", newDeviceTransIds);
-                    return await deviceService.IdentityDeviceInsertAsync(transIds);
+                    var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
+
+                    // NewDevice
+                    if (newDeviceTransIds != null && newDeviceTransIds.Any())
+                    {
+                        var transIds = string.Join(",", newDeviceTransIds);
+                        return await deviceService.IdentityDeviceInsertAsync(transIds);
+                    }
+
+                    // FPS Evolution
+                    if (evolutionModel != null && evolutionModel.Any())
+                    {
+                        var identityEvolutions = transactionEvolutions.Where(t =>
+                                                evolutionModel.Any(e => e.Id == t.TransID))?.Select(x =>
+                                                new IdentifyEvolutionModel
+                                                {
+                                                    TransID = x.TransID,
+                                                    RawFingerPrintID = x.RawFingerPrintID,
+                                                    RecoverRawFingerPrintID = evolutionModel.First(e => e.Id == x.TransID).RecoverFingerPrintId
+                                                });
+
+                        return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
+                    };
                 }
 
-                // FPS Evolution
-                if (evolutionModel != null && evolutionModel.Any())
-                {
-                    var transJson = JsonConvert.SerializeObject(evolutionModel);
-                    return await deviceService.IdentityDeviceInsertAsync(transJson);
-                    //transactionService.EvolutionRecoverDevice(transJson);
-                }
+                return new List<TransactionRecover>();
             }
-
-            return new List<Transaction>();
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                throw;
+            }
         }
 
         private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans)
@@ -302,8 +360,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             if (string.IsNullOrEmpty(fontsSource) || string.IsNullOrEmpty(fontsDestination)) return fontsSource == fontsDestination;
 
-            var arr1 = JsonConvert.DeserializeObject<string[]>(fontsSource);
-            var arr2 = JsonConvert.DeserializeObject<string[]>(fontsDestination);
+            var arr1 = JsonSerializer.Deserialize<string[]>(fontsSource);
+            var arr2 = JsonSerializer.Deserialize<string[]>(fontsDestination);
 
             return arr1.All(arr2.Contains) || arr2.All(arr1.Contains);
         }
@@ -343,7 +401,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             if ((string.IsNullOrEmpty(source) || string.IsNullOrEmpty(destination)) && source != destination) return false;
 
-            var content = new StringContent(JsonConvert.SerializeObject(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
             var client = new HttpClient();
             var response = await client.PostAsync(appSettings.RatioUrl, content);
 
