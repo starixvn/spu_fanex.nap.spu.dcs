@@ -39,8 +39,8 @@
             try
             {
                 if (size > 0 && numberOfBatch > 0)
-                {                    
-                    await JobRun(size, numberOfBatch, isTransformExtra);    
+                {
+                    await TransformDevice(size, numberOfBatch, isTransformExtra && appSettings.IsReadyDbExtra);
                 }              
             }
             catch (Exception ex)
@@ -53,12 +53,7 @@
             return await Task.FromResult(true);
         }
 
-        private async Task JobRun(int size, int numberOfBatch, bool isTransformExtra)
-        {
-            await TransformDevice(size, numberOfBatch, isTransformExtra && appSettings.IsReadyDbExtra);
-        }
-
-        public async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
         {
             var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
 
@@ -74,18 +69,12 @@
                 var identityDevices = taskDevices.Result.Where(result => result != null).Select(result => result.Result);
                 var evolutionDevices = taskRecovers.Result.Where(result => result != null).Select(result => result.Result);
 
-                await InsertTransfromTransaction(identityDevices, evolutionDevices);
+                if(identityDevices.Any())
+                {
+                    await InsertTransfromTransaction(identityDevices, evolutionDevices);
+                }
             }
-        }
-
-        private async Task InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<IEnumerable<TransactionRecover>> evolutionDevices)
-        {
-            var task = evolutionDevices.Select(evolutionDevice =>
-            {
-                return Task.Run(() => InsertTransformTransaction07(identityDevices, evolutionDevice));
-            });
-
-            await Task.WhenAll(task);
+            
         }
 
         private async Task<List<Task<IdentityDevice>>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
@@ -94,11 +83,11 @@
 
             foreach (var trans in groupTrans)
             {
-                var taskDevice = Task.Run(() =>
+                var taskDevice = Task.Run(async () =>
                 {
                     try
                     {
-                        return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                        return await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
                     }
                     catch (Exception ex)
                     {
@@ -121,11 +110,11 @@
 
             foreach (var trans in groupTrans)
             {
-                var taskRecover = Task.Run(() =>
+                var taskRecover = Task.Run(async () =>
                 {
                     try
                     {
-                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
+                        return await ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
                     }
                     catch (Exception ex)
                     {
@@ -149,6 +138,17 @@
             var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions);
 
             return evolutionDevices.Concat(transactionRecovers);
+        }
+
+
+        private async Task InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<IEnumerable<TransactionRecover>> evolutionDevices)
+        {
+            var task = evolutionDevices.Select(evolutionDevice =>
+            {
+                return Task.Run(() => InsertTransformTransaction07(identityDevices, evolutionDevice));
+            });
+
+            await Task.WhenAll(task);
         }
 
         private async Task<int> InsertTransformTransaction07(
@@ -179,42 +179,33 @@
 
         private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
         {
-            try
+            if (transactionEvolutions.Any())
             {
-                if (transactionEvolutions.Any())
+                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
+
+                // NewDevice
+                if (newDeviceTransIds != null && newDeviceTransIds.Any())
                 {
-                    var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
-
-                    // NewDevice
-                    if (newDeviceTransIds != null && newDeviceTransIds.Any())
-                    {
-                        var transIds = string.Join(",", newDeviceTransIds);
-                        return await deviceService.IdentityDeviceInsertAsync(transIds);
-                    }
-
-                    // FPS Evolution
-                    if (evolutionModel != null && evolutionModel.Any())
-                    {
-                        var identityEvolutions = transactionEvolutions.Where(t =>
-                                                evolutionModel.Any(e => e.Id == t.TransID))?.Select(x =>
-                                                new IdentifyEvolutionModel
-                                                {
-                                                    TransID = x.TransID,
-                                                    RawFingerPrintID = x.RawFingerPrintID,
-                                                    RecoverRawFingerPrintID = evolutionModel.First(e => e.Id == x.TransID).RecoverFingerPrintId
-                                                });
-
-                        return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
-                    };
+                    var transIds = string.Join(",", newDeviceTransIds);
+                    return await deviceService.IdentityDeviceInsertAsync(transIds);
                 }
 
-                return new List<TransactionRecover>();
+                // FPS Evolution
+                if (evolutionModel != null && evolutionModel.Any())
+                {
+                    var identityEvolutions = transactionEvolutions.Where(t =>
+                                            evolutionModel.Any(e => e.Id == t.TransID))?.Select(x =>
+                                            new IdentifyEvolutionModel
+                                            {
+                                                TransID = x.TransID,
+                                                RawFingerPrintID = x.RawFingerPrintID,
+                                                RecoverRawFingerPrintID = evolutionModel.First(e => e.Id == x.TransID).RecoverFingerPrintId
+                                            });
+
+                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
+                };
             }
-            catch (Exception ex)
-            {
-                sentryClient.CaptureException(ex);
-                throw;
-            }
+            return new List<TransactionRecover>();
         }
 
         private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans)
