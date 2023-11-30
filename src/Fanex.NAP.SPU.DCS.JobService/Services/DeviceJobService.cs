@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -66,8 +65,8 @@
 
                 await Task.WhenAll(taskDevices, taskRecovers);
 
-                var identityDevices = taskDevices.Result.Where(result => result != null).Select(result => result.Result);
-                var evolutionDevices = taskRecovers.Result.Where(result => result != null).Select(result => result.Result);
+                var identityDevices = (await taskDevices).Where(result => result != null).Select(result => result.Result);
+                var evolutionDevices = (await taskRecovers).Where(result => result != null).Select(result => result.Result);
 
                 if(identityDevices.Any())
                 {
@@ -203,7 +202,7 @@
                                             });
 
                     return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
-                };
+                }
             }
 
             return new List<TransactionRecover>();
@@ -220,7 +219,7 @@
 
                 if (recoverFingerPrintId > 0)
                 {
-                    var model = new TransactionEvolutionModel()
+                    var model = new TransactionEvolutionModel
                     {
                         Id = tran.TransID,
                         RecoverFingerPrintId = recoverFingerPrintId
@@ -239,9 +238,6 @@
 
         private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source)
         {
-
-            ulong result = 0;
-
             if (source != null && !string.IsNullOrEmpty(source.RawFingerPrintIDs) && !string.IsNullOrEmpty(source.BrowserFamilyCode))
             {
                 var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode);
@@ -250,13 +246,12 @@
                 {
                     if (CompareRules(source, destination))
                     {
-                        result = destination.RawFingerPrintID;
-                        break;
+                        return destination.RawFingerPrintID;
                     }
                 }
             }
 
-            return result;
+            return 0;
         }
 
         private bool CompareRules(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
@@ -297,7 +292,7 @@
                    versionSrc.CompareTo(versionDestination) >= 0;
         }
 
-        private Version GetVersion(string version)
+        private static Version GetVersion(string version)
         {
             if (ValidateVersion(version))
             {
@@ -340,12 +335,15 @@
                 new ValuePair { Source = source.Canvas, Destination = destination.Canvas }
             };
 
-            return values.All(value => value.Source.Equals(value.Destination));
+            return values.TrueForAll(value => value.Source.Equals(value.Destination));
         }
 
-        private bool CheckFonts(string fontsSource, string fontsDestination)
+        private static bool CheckFonts(string fontsSource, string fontsDestination)
         {
-            if (string.IsNullOrEmpty(fontsSource) || string.IsNullOrEmpty(fontsDestination)) return fontsSource == fontsDestination;
+            if (string.IsNullOrEmpty(fontsSource) || string.IsNullOrEmpty(fontsDestination))
+            {
+                return fontsSource == fontsDestination;
+            };
 
             var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
             var arrDestination = JsonSerializer.Deserialize<string[]>(fontsDestination);
@@ -390,7 +388,7 @@
 
             var content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
             var client = new HttpClient();
-            var response = await client.PostAsync(appSettings.RatioUrl, content);
+            var response = await client.PostAsync(new System.Uri(appSettings.RatioUrl), content);
 
             if (response.Content != null)
             {

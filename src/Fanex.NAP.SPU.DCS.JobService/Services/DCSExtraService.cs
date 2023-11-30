@@ -1,20 +1,19 @@
-﻿using Fanex.NAP.SPU.DCS.Features.DCSExtra;
-using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
-using Fanex.NAP.SPU.DCS.JobService.Models;
-using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
-using Fanex.NAP.SPU.DCS.JobService.Ultilities;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Sentry;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.DCSExtra;
+    using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
+    using Fanex.NAP.SPU.DCS.JobService.Models;
+    using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
+    using Fanex.NAP.SPU.DCS.JobService.Ultilities;
+    using Microsoft.Extensions.Configuration;
+    using Newtonsoft.Json;
+    using Sentry;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public interface IDCSExtraService
     {
         Task<bool> MigrateDCSExtra(int rangeMinutes, int stopMinutes, int batchSizeGetData);
@@ -44,7 +43,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 var lastTransTime = DateTime.ParseExact(parameterValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
                 var toTransTime = lastTransTime.AddMinutes(rangeMinutes);
-                var stopTime = DateTime.Now.AddMinutes(-stopMinutes);
+                var stopTime = DateTimeOffset.Now.AddMinutes(-stopMinutes);
                 if (stopMinutes == 0 || toTransTime <= stopTime)
                 {
                     var mergedList = await GetMergedListAsync(lastTransTime, toTransTime, batchSizeGetData);
@@ -123,7 +122,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             foreach (var batch in batches)
             {
-                var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
+                var deviceIDList = string.Join(",", batch.Select(x => x));
                 tasks.Add(Task.Run(() =>
                 {
                     try
@@ -216,21 +215,30 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     .OrderBy(x => x.TransTime);
         }
 
-        private string MappingFlaggedCode(int? flagged)
+        private static string MappingFlaggedCode(int? flagged)
         {
             if (flagged == null) return Flagged.Human.ToString();
 
-            if (flagged == 5) return Flagged.EmptyToken.ToString();
-            if (flagged == 6) return Flagged.EmptyAnalysis.ToString();
-            if (flagged == 7) return Flagged.EmptyDevice.ToString();
-            if (flagged == 8) return Flagged.InvalidAnalysis.ToString();
-            if (flagged == 9) return Flagged.InvalidToken.ToString();
-            if (flagged == 10) return Flagged.InvalidDevice.ToString();
+            var mapping = new Dictionary<int, string>
+            {
+                { 5, Flagged.EmptyToken.ToString() },
+                { 6, Flagged.EmptyAnalysis.ToString() },
+                { 7, Flagged.EmptyDevice.ToString() },
+                { 8, Flagged.InvalidAnalysis.ToString() },
+                { 9, Flagged.InvalidToken.ToString() },
+                { 10, Flagged.InvalidDevice.ToString() },
+                { 212, Flagged.Human.ToString() },
+                { 215, Flagged.EmptyDevice.ToString() },
+                { 216, Flagged.InvalidDevice.ToString() }
+            };
+
+            if (mapping.TryGetValue(flagged.Value, out var result))
+            {
+                return result;
+            }
+
             if (flagged % 10 == 3) return Flagged.Human.ToString();
-            if (flagged == 212) return Flagged.Human.ToString();
             if (flagged % 10 == 4) return Flagged.Headless.ToString();
-            if (flagged == 215) return Flagged.EmptyDevice.ToString();
-            if (flagged == 216) return Flagged.InvalidDevice.ToString();
 
             return Flagged.Human.ToString();
         }
@@ -239,56 +247,30 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                var initialDataConfig = settingDCSExtra.GetSection("InitialData");
-                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");                
-
-                sentryClient.CaptureMessage("Start InitialTransIpInfo!");
-                if (batchSize > 0 && numberOfBatch > 0)
-                {
-                    var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID);
-
-                    sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
-                    if (trans != null && trans.Any())
-                    {
-                        var listIpID = trans.Where(t => t.IPID.HasValue)
-                                                .Select(t => t.IPID)
-                                                .Distinct()
-                                                .ToList();
-
-                        if (listIpID != null && listIpID.Any())
-                        {
-                            var ipIDs = string.Join(",", listIpID);
-
-                            var locationByIP = await dcsExtraService.GetLocationByIPList(ipIDs);
-                            var ipInfo = HashIPInfoCode(locationByIP);
-
-                            sentryClient.CaptureMessage("GetLocationByIPList Finished!");
-                            if (ipInfo != null && ipInfo.Any())
-                            {
-                                await InsertIPInfo(ipInfo);
-                                sentryClient.CaptureMessage("InsertIPInfo Finished!");
-
-                                // UPDATE Trans
-                                var mappingTransID = MergeTransactionInitial(trans, ipInfo);
-                                await UpdateTransactionInitialData(mappingTransID, batchSize);
-
-                                sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
-                                // UPDATE Parameter
-                                var lastTransID = mappingTransID.Min(x => x.TransID);
-                                var partitionName = trans.FirstOrDefault(x => !string.IsNullOrEmpty(x.PartitionName))?.PartitionName;
-
-                                await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
-
-                                sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
-                            }
-                        }
-                    }
-                }
-                else
+                if(!ValidateBatchParameters(batchSize, numberOfBatch))
                 {
                     sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
                     return false;
                 }
+
+                var initialDataConfig = settingDCSExtra.GetSection("InitialData");
+                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");                
+
+                sentryClient.CaptureMessage("Start InitialTransIpInfo!");
+
+                var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID);
+
+                sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
+                if (trans != null && trans.Any())
+                {
+                    var listIpID = trans.Where(t => t.IPID.HasValue)
+                                            .Select(t => t.IPID)
+                                            .Distinct()
+                                            .ToList();
+
+                    await ProcessTransactionByIps(batchSize, lastTransID_ParameterID, trans, listIpID);
+                }
+
             }
             catch (Exception ex)
             {
@@ -299,7 +281,39 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return true;
         }
 
-        private IEnumerable<LocationByIPModel> HashIPInfoCode(IEnumerable<LocationByIPModel> ipInfo)
+        private async Task ProcessTransactionByIps(int batchSize, int lastTransID_ParameterID, IEnumerable<TransactionInitialDataModel> trans, List<decimal?> listIpID)
+        {
+            if (listIpID != null && listIpID.Any())
+            {
+                var ipIDs = string.Join(",", listIpID);
+
+                var locationByIP = await dcsExtraService.GetLocationByIPList(ipIDs);
+                var ipInfo = HashIPInfoCode(locationByIP);
+
+                sentryClient.CaptureMessage("GetLocationByIPList Finished!");
+                if (ipInfo != null && ipInfo.Any())
+                {
+                    await InsertIPInfo(ipInfo);
+                    sentryClient.CaptureMessage("InsertIPInfo Finished!");
+
+                    // UPDATE Trans
+                    var mappingTransID = MergeTransactionInitial(trans, ipInfo);
+                    await UpdateTransactionInitialData(mappingTransID, batchSize);
+
+                    sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
+                    // UPDATE Parameter
+                    var lastTransID = mappingTransID.Min(x => x.TransID);
+
+                    await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
+
+                    sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
+                }
+            }
+        }
+
+        private bool ValidateBatchParameters(int batchSize, int numberOfBatch) => batchSize > 0 && numberOfBatch > 0;
+
+        private static IEnumerable<LocationByIPModel> HashIPInfoCode(IEnumerable<LocationByIPModel> ipInfo)
         {
             foreach (var item in ipInfo)
             {

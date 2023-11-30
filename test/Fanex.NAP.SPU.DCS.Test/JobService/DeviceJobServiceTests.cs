@@ -31,7 +31,7 @@
 
             var groupTransCount = stagingTransIds.GroupBy(x => x.BatchId).Count();
 
-            var identityDevices = fixture.Create<IdentityDevice>();
+            var identityDevices = fixture.Create<IEnumerable<IdentityDevice>>();
             var transactionRecover = fixture.Create<IEnumerable<TransactionRecover>>();
             var evolutionAttributes = fixture.Create<IEnumerable<TransactionEvolutionAttributes>>();
             var transactionEvolution = fixture.Create<IEnumerable<TransactionEvolution>>();
@@ -81,7 +81,7 @@
 
             var identityDevice = fixture.Build<IdentityDevice>()
                                     .With(x => x.TransID, (ulong)1)
-                                    .Create();
+                                    .CreateMany();
 
             var deviceJobService = GetService();
 
@@ -182,7 +182,7 @@
             //Arrange
             List<StagingTransId> stagingTransIds = GetStagingTrans();
 
-            var identityDevice = fixture.Create<IdentityDevice>();
+            var identityDevice = fixture.Create<IEnumerable<IdentityDevice>>();
 
             var deviceJobService = GetService();
 
@@ -207,7 +207,7 @@
             //Arrange
             List<StagingTransId> stagingTransIds = GetStagingTrans();
 
-            var identityDevice = fixture.Create<IdentityDevice>();
+            var identityDevice = fixture.Create<IEnumerable<IdentityDevice>>();
 
             var deviceJobService = GetService();
 
@@ -240,7 +240,7 @@
 
             var deviceRecovers = (transactionRecover, transactionEvolution);
 
-            var identityDevice = fixture.Create<IdentityDevice>();
+            var identityDevice = fixture.Create<IEnumerable<IdentityDevice>>();
 
             var deviceJobService = GetService();
 

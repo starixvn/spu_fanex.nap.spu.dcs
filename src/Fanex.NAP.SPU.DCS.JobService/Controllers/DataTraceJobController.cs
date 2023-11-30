@@ -11,6 +11,10 @@
     {
         private readonly IDataTraceJobService dataTraceJobService;
 
+        private readonly string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        private readonly string keyHeader = "content-disposition";
+        private readonly string keyValue = "attachment; filename=ExcelFile.xlsx";
+
         public DataTraceJobController(IDataTraceJobService dataTraceJobService)
         {
             this.dataTraceJobService = dataTraceJobService;
@@ -65,9 +69,9 @@
 
             if(stream != null)
             {
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportLoginTransactionDaily.xlsx");
+                Response.ContentType = contentType;
+                Response.Headers.Add(keyHeader, keyValue);
+                var file = File(stream, contentType, "ReportLoginTransactionDaily.xlsx");
 
                 return file;
             }
@@ -82,9 +86,9 @@
 
             if(stream != null)
             {
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportBotDTransactionDaily.xlsx");
+                Response.ContentType = contentType;
+                Response.Headers.Add(keyHeader, keyValue);
+                var file = File(stream, contentType, "ReportBotDTransactionDaily.xlsx");
 
                 return file;
             }
@@ -99,9 +103,9 @@
 
             if(stream != null)
             {
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportMissingTransactionDaily.xlsx");
+                Response.ContentType = contentType;
+                Response.Headers.Add(keyHeader, keyValue);
+                var file = File(stream, contentType, "ReportMissingTransactionDaily.xlsx");
 
                 return file;
             }
@@ -116,9 +120,9 @@
 
             if(stream != null)
             {
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                Response.Headers.Add("content-disposition", "attachment; filename=ExcelFile.xlsx");
-                var file = File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReportLoginTransactionDetail"+ transDate.ToString("yyyymmdd")+ ".xlsx");
+                Response.ContentType = contentType;
+                Response.Headers.Add(keyHeader, keyValue);
+                var file = File(stream, contentType, "ReportLoginTransactionDetail"+ transDate.ToString("yyyymmdd")+ ".xlsx");
 
                 return file;
             }
@@ -128,9 +132,9 @@
         
         
         [HttpPost("checktimeout")]
-        public bool CheckTimeout([FromForm] int delayTime = 10000)
+        public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
         {
-            Task.Delay(delayTime).Wait();
+            await Task.Delay(delayTime);
             return true;
         }
 

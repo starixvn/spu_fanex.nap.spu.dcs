@@ -6,10 +6,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using OfficeOpenXml;
-    using Sentry;
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -42,12 +40,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     }
     public class DataTraceJobService : IDataTraceJobService
     {
-        private readonly ISentryClient sentryClient;
         private readonly IDataTraceServices dataTraceServices;
 
-        public DataTraceJobService(ISentryClient sentryClient, IDataTraceServices dataTraceServices)
+        public DataTraceJobService(IDataTraceServices dataTraceServices)
         {
-            this.sentryClient = sentryClient;
             this.dataTraceServices = dataTraceServices;
         }
 
@@ -218,9 +214,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
+        private static List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
         {
             var weekRanges = new List<Tuple<DateTime, DateTime>>();
+
+            var week = 7;
 
             DateTime currentDate = fromDate;
             while (currentDate <= toDate)
@@ -232,13 +230,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 weekEnd = weekEnd > toDate ? toDate : weekEnd;
 
                 weekRanges.Add(new Tuple<DateTime, DateTime>(weekStart, weekEnd));
-                currentDate = currentDate.AddDays(7);
+                currentDate = currentDate.AddDays(week);
             }
 
             return weekRanges;
         }
 
-        private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        private static MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
         {
             var dataWorksheet = package.Workbook.Worksheets["Data"];
 
@@ -250,18 +248,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
             }
 
-            //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
-
-            //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
-            //{
-            //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
-            //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
-            //}
-
             return new MemoryStream(package.GetAsByteArray());
         }
 
-        private void HandleException(Exception ex, string extraLogMessage)
+        private static void HandleException(Exception ex, string extraLogMessage)
         {
             string logMessage = new LogMessage(ex.Message)
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
