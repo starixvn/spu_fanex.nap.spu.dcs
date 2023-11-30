@@ -5,7 +5,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using OfficeOpenXml;
     using Sentry;
     using System;

@@ -71,15 +71,15 @@
 
                 if(identityDevices.Any())
                 {
-                    await InsertTransfromTransaction(identityDevices, evolutionDevices);
+                    await InsertTransfromTransaction(identityDevices.SelectMany(x => x), evolutionDevices);
                 }
             }
             
         }
 
-        private async Task<List<Task<IdentityDevice>>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
+        private async Task<List<Task<IEnumerable<IdentityDevice>>>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
         {
-            var taskDevices = new List<Task<IdentityDevice>>();
+            var taskDevices = new List<Task<IEnumerable<IdentityDevice>>>();
 
             foreach (var trans in groupTrans)
             {
@@ -205,6 +205,7 @@
                     return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
                 };
             }
+
             return new List<TransactionRecover>();
         }
 

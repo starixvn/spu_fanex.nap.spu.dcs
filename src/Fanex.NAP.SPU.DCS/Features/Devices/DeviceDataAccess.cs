@@ -10,7 +10,7 @@
     {
         Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        Task<IdentityDevice> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra);
+        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra);
 
         Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
 
@@ -45,14 +45,14 @@
             return await repository.FetchAsync<StagingTransId>(criteria);
         }
 
-        public async Task<IdentityDevice> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra)
+        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra)
         {
             var criteria = new TransformDeviceInsertCriteria
             {
                 TransIdJson = transIdJson,
                 IsReadyDbExtra = isReadyDbExtra
             };
-            return await repository.GetAsync<IdentityDevice>(criteria);
+            return await repository.FetchAsync<IdentityDevice>(criteria);
         }
 
         public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)

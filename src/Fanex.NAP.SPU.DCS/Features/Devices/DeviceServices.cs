@@ -10,7 +10,7 @@
     {
         Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
 
         Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
 
@@ -42,7 +42,7 @@
             return new List<StagingTransId>();
         }
 
-        public async Task<IdentityDevice> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
         {
             var transIdJson = JsonSerializer.Serialize(stagingTransId);
             return await deviceDataAcess.TransformDeviceInsertAsync(transIdJson, isReadyDbExtra);

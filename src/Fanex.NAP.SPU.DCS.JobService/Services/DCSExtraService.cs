@@ -85,7 +85,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         sentryClient.CaptureException(ex);
                     }
 
-                    return null;
+                    return Task.FromResult<IEnumerable<RawTransactionModel>>(null);
                 }));
             }
 
@@ -135,7 +135,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         sentryClient.CaptureException(ex);
                     }
 
-                    return null;
+                    return Task.FromResult<IEnumerable<DeviceInfoModel>>(null);
                 }));
             }
 
@@ -164,7 +164,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         sentryClient.CaptureException(ex);
                     }
 
-                    return null;
+                    return Task.FromResult<IEnumerable<DeviceFingerprintModel>>(null);
                 }));
             }
 
