@@ -164,7 +164,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     return GenerateMemoryStream(package, data);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -180,7 +180,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     return GenerateMemoryStream(package, data);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
