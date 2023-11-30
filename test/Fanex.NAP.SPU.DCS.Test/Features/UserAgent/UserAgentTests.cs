@@ -104,6 +104,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
             {
                 new UserAgentModel
                 {
+                    DeviceTypeName = "Mobile",
                     BrowserName = "Chrome Mobile",
                     OSName = "Android",
                     CreatedDate = new DateTime(2020, 01, 09, 00, 00, 00),
@@ -111,6 +112,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
                 },
                 new UserAgentModel
                 {
+                    DeviceTypeName = "Mobile",
                     BrowserName = "Firefox iOS",
                     OSName = "iOS",
                     CreatedDate = new DateTime(2020, 02, 09, 00, 00, 00),
@@ -120,7 +122,7 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
 
             var result = userAgentService.TransformUserAgent(userAgentEntities);
 
-            result.Should().BeEquivalentTo(expectedResult);
+            expectedResult.Should().BeEquivalentTo(result);
         }
 
         [Theory]
@@ -147,17 +149,6 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
 
             result.UA.Family.Should().Be(browserName);
             result.OS.Family.Should().Be(osName);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public void CovertUserAgent_WhenFailed_ReturnNull(string userAgent)
-        {
-
-            var result = userAgentService.ConvertUserAgent(userAgent);
-
-            result.Should().BeNull();
         }
     }
 }

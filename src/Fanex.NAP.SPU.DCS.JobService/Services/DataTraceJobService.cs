@@ -218,7 +218,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var weekRanges = new List<Tuple<DateTime, DateTime>>();
 
-            var week = 7;
+            const int week = 7;
 
             DateTime currentDate = fromDate;
             while (currentDate <= toDate)

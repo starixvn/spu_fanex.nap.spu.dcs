@@ -282,7 +282,7 @@
 
         #region "Evolution"
 
-        private bool CheckVersion(string browserVersionSrc, string browserVersionDestination)
+        private static bool CheckVersion(string browserVersionSrc, string browserVersionDestination)
         {
             var versionSrc = GetVersion(browserVersionSrc);
             var versionDestination = GetVersion(browserVersionDestination);

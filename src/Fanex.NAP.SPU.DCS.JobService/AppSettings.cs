@@ -102,7 +102,7 @@
 
         public string DCSExtraSite => dcsExtraSite;
 
-        public string RatioUrl => dcsExtraSite;
+        public string RatioUrl => ratioUrl;
 
         public T GetValue<T>(string key)
         {

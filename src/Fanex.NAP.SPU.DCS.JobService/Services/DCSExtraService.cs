@@ -151,7 +151,7 @@
 
             foreach (var batch in batches)
             {
-                var deviceIDList = string.Join(",", batch.Select(x => x.ToString()));
+                var deviceIDList = string.Join(",", batch.Select(x => x));
                 tasks.Add(Task.Run(() =>
                 {
                     try
@@ -311,7 +311,7 @@
             }
         }
 
-        private bool ValidateBatchParameters(int batchSize, int numberOfBatch) => batchSize > 0 && numberOfBatch > 0;
+        private static bool ValidateBatchParameters(int batchSize, int numberOfBatch) => batchSize > 0 && numberOfBatch > 0;
 
         private static IEnumerable<LocationByIPModel> HashIPInfoCode(IEnumerable<LocationByIPModel> ipInfo)
         {

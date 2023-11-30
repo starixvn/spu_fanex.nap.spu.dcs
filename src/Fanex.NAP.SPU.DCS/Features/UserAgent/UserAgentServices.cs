@@ -6,7 +6,6 @@
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
     using Fanex.NAP.SPU.DCS.Shares;
     using Fanex.NAP.SPU.DCS.Shares.Models;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
