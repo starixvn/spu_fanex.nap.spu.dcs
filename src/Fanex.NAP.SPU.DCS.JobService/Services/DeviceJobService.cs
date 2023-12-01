@@ -70,7 +70,7 @@
 
                 if(identityDevices.Any())
                 {
-                    await InsertTransfromTransaction(identityDevices.SelectMany(x => x), evolutionDevices);
+                    await InsertTransfromTransaction(identityDevices.SelectMany(x => x), evolutionDevices.SelectMany(x => x));
                 }
             }
             
@@ -140,40 +140,20 @@
         }
 
 
-        private async Task InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<IEnumerable<TransactionRecover>> evolutionDevices)
+        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices)
         {
-            var task = evolutionDevices.Select(evolutionDevice =>
+            var transformTransactions = identityDevices.Select(identityDevice => new TransformTransactionModel
             {
-                return Task.Run(() => InsertTransformTransaction07(identityDevices, evolutionDevice));
+                TransID = identityDevice.TransID,
+                DeviceID = identityDevice.DeviceID,
+                FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == identityDevice.TransID)?.FPDeviceID,
+                DeviceCodeID = identityDevice.DeviceCodeID,
+                FirstDeviceCode = identityDevice.FirstDeviceCode,
+                DeviceStatus = identityDevice.DeviceStatus,
+                DeviceFingerprintID = identityDevice.DeviceFingerprintID
             });
 
-            await Task.WhenAll(task);
-        }
-
-        private async Task<int> InsertTransformTransaction07(
-            IEnumerable<IdentityDevice> identityDevices,
-            IEnumerable<TransactionRecover> evolutionDevices)
-        {
-            try
-            {
-                var mergeDevices = identityDevices.Select(x => new TransformTransactionModel
-                {
-                    TransID = x.TransID,
-                    DeviceID = x.DeviceID,
-                    FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == x.TransID)?.FPDeviceID,
-                    DeviceCodeID = x.DeviceCodeID,
-                    FirstDeviceCode = x.FirstDeviceCode,
-                    DeviceStatus = x.DeviceStatus,
-                    DeviceFingerprintID = x.DeviceFingerprintID
-                });
-
-                return await deviceService.TransformTransaction07InsertAsync(mergeDevices);
-            }
-            catch (Exception ex)
-            {
-                sentryClient.CaptureException(ex);
-                throw;
-            }
+            return await deviceService.TransformTransaction07InsertAsync(transformTransactions);
         }
 
         private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
