@@ -5,5 +5,7 @@
         public ulong TransID { get; set; }
 
         public ulong FPDeviceID { get; set; }
+
+        public int RecoverType { get; set; }
     }
 }

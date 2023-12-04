@@ -3,5 +3,7 @@
     public class TransformTransactionModel : IdentityDevice
     {
         public ulong? FPDeviceID { get; set; } = null;
+
+        public int? RecoverType { get; set; } = null;
     }
 }

@@ -6,6 +6,7 @@
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
     using Sentry;
@@ -65,28 +66,27 @@
 
                 await Task.WhenAll(taskDevices, taskRecovers);
 
-                var identityDevices = (await taskDevices).Where(result => result != null).Select(result => result.Result);
-                var evolutionDevices = (await taskRecovers).Where(result => result != null).Select(result => result.Result);
+                var identityDevices = (await taskDevices).Where(result => result != null);
+                var evolutionDevices = (await taskRecovers).Where(result => result != null);
 
-                if(identityDevices.Any())
+                if (identityDevices.Any())
                 {
-                    await InsertTransfromTransaction(identityDevices.SelectMany(x => x), evolutionDevices.SelectMany(x => x));
+                    await InsertTransfromTransaction(identityDevices, evolutionDevices);
                 }
             }
-            
         }
 
-        private async Task<List<Task<IEnumerable<IdentityDevice>>>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
+        private async Task<IEnumerable<IdentityDevice>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
         {
             var taskDevices = new List<Task<IEnumerable<IdentityDevice>>>();
 
             foreach (var trans in groupTrans)
             {
-                var taskDevice = Task.Run(async () =>
+                var taskDevice = Task.Run(() =>
                 {
                     try
                     {
-                        return await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                        return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
                     }
                     catch (Exception ex)
                     {
@@ -100,20 +100,20 @@
                 taskDevices.Add(taskDevice);
             }
 
-            return taskDevices;
+            return (await Task.WhenAll(taskDevices)).Where(result => result != null).SelectMany(result => result);
         }
 
-        private async Task<List<Task<IEnumerable<TransactionRecover>>>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
+        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
         {
             var taskRecovers = new List<Task<IEnumerable<TransactionRecover>>>();
 
             foreach (var trans in groupTrans)
             {
-                var taskRecover = Task.Run(async () =>
+                var taskRecover = Task.Run(() =>
                 {
                     try
                     {
-                        return await ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
+                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
                     }
                     catch (Exception ex)
                     {
@@ -127,7 +127,9 @@
                 taskRecovers.Add(taskRecover);
             }
 
-            return taskRecovers;
+
+            var result = (await Task.WhenAll(taskRecovers)).Where(result => result != null).SelectMany(result => result);
+            return result;
         }
 
         private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds)
@@ -147,6 +149,7 @@
                 TransID = identityDevice.TransID,
                 DeviceID = identityDevice.DeviceID,
                 FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == identityDevice.TransID)?.FPDeviceID,
+                RecoverType = evolutionDevices.FirstOrDefault(e => e.TransID == identityDevice.TransID)?.RecoverType,
                 DeviceCodeID = identityDevice.DeviceCodeID,
                 FirstDeviceCode = identityDevice.FirstDeviceCode,
                 DeviceStatus = identityDevice.DeviceStatus,
