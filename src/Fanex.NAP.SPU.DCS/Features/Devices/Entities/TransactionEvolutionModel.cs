@@ -2,8 +2,8 @@
 {
     public class TransactionEvolutionModel
     {
-        public ulong Id { get; set; }
+        public ulong ID { get; set; }
 
-        public ulong RecoverFingerPrintId { get; set; }
+        public ulong RecoverFingerPrintID { get; set; }
     }
 }

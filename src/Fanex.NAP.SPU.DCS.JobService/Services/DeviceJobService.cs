@@ -175,13 +175,11 @@
                 // FPS Evolution
                 if (evolutionModel != null && evolutionModel.Any())
                 {
-                    var identityEvolutions = transactionEvolutions.Where(t =>
-                                            evolutionModel.Any(e => e.Id == t.TransID))?.Select(x =>
+                    var identityEvolutions = evolutionModel.Select(x =>
                                             new IdentifyEvolutionModel
                                             {
-                                                TransID = x.TransID,
-                                                RawFingerPrintID = x.RawFingerPrintID,
-                                                RecoverRawFingerPrintID = evolutionModel.First(e => e.Id == x.TransID).RecoverFingerPrintId
+                                                TransID = x.ID,
+                                                RecoverRawFingerPrintID = x.RecoverFingerPrintID
                                             });
 
                     return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
@@ -204,8 +202,8 @@
                 {
                     var model = new TransactionEvolutionModel
                     {
-                        Id = tran.TransID,
-                        RecoverFingerPrintId = recoverFingerPrintId
+                        ID = tran.TransID,
+                        RecoverFingerPrintID = recoverFingerPrintId
                     };
 
                     transRecover.Add(model);

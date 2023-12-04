@@ -4,8 +4,6 @@
     {
         public ulong TransID { get; set; }
 
-        public ulong RawFingerPrintID { get; set; }
-
         public ulong RecoverRawFingerPrintID { get; set; }
     }
 }
