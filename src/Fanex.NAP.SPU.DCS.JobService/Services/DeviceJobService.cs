@@ -345,24 +345,31 @@
                 new ValuePair { Source = source.Languages, Destination = destination.Languages }
             };
 
-            counter = 0;
-            foreach (var value in values)
+            try
             {
-                if (!value.Source.Equals(value.Destination))
+                counter = 0;
+                foreach (var value in values)
                 {
-                    var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
+                    if (!value.Source.Equals(value.Destination))
+                    {
+                        var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
 
-                    if (!ratioResult) return false;
+                        if (!ratioResult) return false;
 
-                    counter++;
+                        counter++;
+                    }
+
+                    if (counter > maxChangesRule5)
+                        return false;
                 }
-
-                if (counter > maxChangesRule5)
-                    return false;
+            }
+            catch (Exception ex)
+            {
+                sentryClient.CaptureException(ex);
+                return false;
             }
 
             return true;
-
         }
 
         private async Task<bool> CheckRatio(string source, string destination)
