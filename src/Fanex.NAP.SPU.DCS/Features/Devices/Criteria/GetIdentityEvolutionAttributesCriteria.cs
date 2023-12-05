@@ -12,7 +12,13 @@
         [SpParam(SqlParamName = "ip_BrowserFamilyCode")]
         public string BrowserFamilyCode { get; set; }
 
-        public override string GetSettingKey() => "DCS_DC_Identity_Evolution_GetAttributes";
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
+        public override string GetSettingKey()
+        {
+            return IsReadyDbExtra ? "DCS_ET_Identity_Evolution_GetAttributes" : "DCS_DC_Identity_Evolution_GetAttributes";
+        }
 
         public override bool IsValid() => true;
     }

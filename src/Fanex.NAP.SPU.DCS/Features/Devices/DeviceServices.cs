@@ -12,15 +12,15 @@
 
         Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
 
-        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
+        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode);
+        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId);
+        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models);
+        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra);
 
-        Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels);
+        Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra);
     }
 
     public class DeviceServices : IDeviceServices
@@ -48,38 +48,38 @@
             return await deviceDataAcess.TransformDeviceInsertAsync(transIdJson, isReadyDbExtra);
         }
 
-        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
+        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra)
         {
             if (!string.IsNullOrEmpty(transIds))
             {
-                return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
+                return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
             }
 
             return (new List<TransactionRecover>(), new List<TransactionEvolution>());
         }
 
-        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode)
+        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra)
         {
-            return await deviceDataAcess.GetIdentityEvolutionAttributesAsync(rawFingerPrintIDs, browserFamilyCode);
+            return await deviceDataAcess.GetIdentityEvolutionAttributesAsync(rawFingerPrintIDs, browserFamilyCode, isReadyDbExtra);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId)
+        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra)
         {
-            return await deviceDataAcess.IdentityDeviceInsertAsync(transId);
+            return await deviceDataAcess.IdentityDeviceInsertAsync(transId, isReadyDbExtra);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models)
+        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra)
         {
             var transJson = JsonSerializer.Serialize(models);
-            return await deviceDataAcess.IdentityEvolutionInsertAsync(transJson);
+            return await deviceDataAcess.IdentityEvolutionInsertAsync(transJson, isReadyDbExtra);
         }
 
-        public async Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels)
+        public async Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra)
         {
             if (transformTransactionModels != null && transformTransactionModels.Any())
             {
                 var transJson = JsonSerializer.Serialize(transformTransactionModels);
-                return await deviceDataAcess.TransformTransaction07InsertAsync(transJson);
+                return await deviceDataAcess.TransformTransaction07InsertAsync(transJson, isReadyDbExtra);
             }
 
             return default;

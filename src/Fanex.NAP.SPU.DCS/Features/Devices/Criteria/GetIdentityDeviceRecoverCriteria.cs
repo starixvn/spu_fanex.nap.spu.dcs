@@ -8,7 +8,13 @@
         [SpParam(SqlParamName = "ip_TransIDs")]
         public string TransIds { get; set; }
 
-        public override string GetSettingKey() => "DCS_DC_Identity_Device_Recover";
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
+
+        public override string GetSettingKey()
+        {
+            return IsReadyDbExtra ? "DCS_ET_Identity_Device_Recover" : "DCS_DC_Identity_Device_Recover";
+        }
 
         public override bool IsValid() => true;
     }

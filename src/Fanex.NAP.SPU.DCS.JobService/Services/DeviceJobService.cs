@@ -61,7 +61,7 @@
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
 
                 var taskDevices = TaskDeviceIdentity(groupTrans, isReadyDbExtra);
-                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans);
+                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans, isReadyDbExtra);
 
                 await Task.WhenAll(taskDevices, taskRecovers);
 
@@ -70,7 +70,7 @@
 
                 if (identityDevices.Any())
                 {
-                    await InsertTransfromTransaction(identityDevices, evolutionDevices);
+                    await InsertTransfromTransaction(identityDevices, evolutionDevices, isReadyDbExtra);
                 }
             }
         }
@@ -102,7 +102,7 @@
             return (await Task.WhenAll(taskDevices)).Where(result => result != null).SelectMany(result => result);
         }
 
-        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
+        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
         {
             var taskRecovers = new List<Task<IEnumerable<TransactionRecover>>>();
 
@@ -112,7 +112,7 @@
                 {
                     try
                     {
-                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
+                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)), isReadyDbExtra);
                     }
                     catch (Exception ex)
                     {
@@ -131,17 +131,17 @@
             return result;
         }
 
-        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds)
+        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds, bool isReadyDbExtra)
         {
-            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds);
+            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
 
-            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions);
+            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions, isReadyDbExtra);
 
             return evolutionDevices.Concat(transactionRecovers);
         }
 
 
-        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices)
+        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices, bool isReadyDbExtra)
         {
             var transformTransactions = identityDevices.Select(identityDevice => new TransformTransactionModel
             {
@@ -155,20 +155,20 @@
                 DeviceFingerprintID = identityDevice.DeviceFingerprintID
             });
 
-            return await deviceService.TransformTransaction07InsertAsync(transformTransactions);
+            return await deviceService.TransformTransaction07InsertAsync(transformTransactions, isReadyDbExtra);
         }
 
-        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
+        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions, bool isReadyDbExtra)
         {
             if (transactionEvolutions.Any())
             {
-                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
+                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions, isReadyDbExtra);
 
                 // NewDevice
                 if (newDeviceTransIds != null && newDeviceTransIds.Any())
                 {
                     var transIds = string.Join(",", newDeviceTransIds);
-                    return await deviceService.IdentityDeviceInsertAsync(transIds);
+                    return await deviceService.IdentityDeviceInsertAsync(transIds, isReadyDbExtra);
                 }
 
                 // FPS Evolution
@@ -181,21 +181,24 @@
                                                 RecoverRawFingerPrintID = x.RecoverFingerPrintID
                                             });
 
-                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
+                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions, isReadyDbExtra);
                 }
             }
 
             return new List<TransactionRecover>();
         }
 
-        private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans)
+        private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(
+            IEnumerable<TransactionEvolution> trans,
+            bool isReadyDbExtra
+            )
         {
             var newDeviceTransIds = new List<ulong>();
             var transRecover = new List<TransactionEvolutionModel>();
 
             foreach (var tran in trans)
             {
-                var recoverFingerPrintId = await GetRecoverFingerPrintIdByEvolutionAsync(tran);
+                var recoverFingerPrintId = await GetRecoverFingerPrintIdByEvolutionAsync(tran, isReadyDbExtra);
 
                 if (recoverFingerPrintId > 0)
                 {
@@ -216,11 +219,11 @@
             return (newDeviceTransIds, transRecover);
         }
 
-        private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source)
+        private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source, bool isReadyDbExtra)
         {
             if (source != null && !string.IsNullOrEmpty(source.RawFingerPrintIDs) && !string.IsNullOrEmpty(source.BrowserFamilyCode))
             {
-                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode);
+                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode, isReadyDbExtra);
 
                 TransactionEvolutionAttributes result = evolutionAttributes.FirstOrDefault(destination => CompareRules(source, destination));
 
