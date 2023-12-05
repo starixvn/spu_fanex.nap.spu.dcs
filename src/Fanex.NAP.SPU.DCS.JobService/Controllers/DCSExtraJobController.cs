@@ -26,6 +26,8 @@
             this.deviceJobService = deviceJobService;
             this.dcsExtraService = dcsExtraService;
             this.archiveJobServices = archiveJobServices;
+
+            this.deviceJobService.IsReadyDbExtra = true;
         }
 
         [HttpPost("useragent")]
@@ -43,7 +45,7 @@
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await deviceJobService.Execute(size, numberOfBatch, true);
+            return await deviceJobService.Execute(size, numberOfBatch);
         }
 
         [HttpPost("updatemodifieddate")]

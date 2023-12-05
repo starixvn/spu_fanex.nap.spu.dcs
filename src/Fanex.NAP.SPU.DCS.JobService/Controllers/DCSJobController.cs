@@ -30,6 +30,8 @@
             this.sumTransactionJobService = sumTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
+
+            this.deviceJobService.IsReadyDbExtra = false;
         }
 
         [HttpPost("useragent")]
@@ -47,7 +49,7 @@
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await this.deviceJobService.Execute(size, numberOfBatch, false);
+            return await this.deviceJobService.Execute(size, numberOfBatch);
         }
 
         [HttpPost("transformtransaction")]

@@ -7,7 +7,7 @@
     {
 
         [SpParam(SqlParamName = "ip_TransJson")]
-        public string transJson { get; set; }
+        public string TransJson { get; set; }
 
         [SpParam(Ignored = true)]
         public bool IsReadyDbExtra { get; set; }
