@@ -134,6 +134,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
         }
 
+#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
         private async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
         {
             try
@@ -164,6 +165,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 return null;
             }
         }
+#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
 
         public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
         {
