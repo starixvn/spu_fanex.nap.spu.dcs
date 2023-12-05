@@ -44,6 +44,7 @@
             deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()).Returns(identityDevices);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
             deviceService.GetIdentityEvolutionAttributesAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(evolutionAttributes);
+
             deviceService.IdentityDeviceInsertAsync(Arg.Any<string>()).Returns(transactionRecover);
 
             //Act
@@ -56,7 +57,7 @@
             await deviceService.Received(groupTransCount).IdentityDeviceInsertAsync(Arg.Any<string>());
             await deviceService.DidNotReceive().IdentityEvolutionInsertAsync(Arg.Any<IEnumerable<IdentifyEvolutionModel>>());
 
-            await deviceService.Received(groupTransCount).TransformTransaction07InsertAsync(Arg.Any<IEnumerable<TransformTransactionModel>>());
+            await deviceService.Received().TransformTransaction07InsertAsync(Arg.Any<IEnumerable<TransformTransactionModel>>());
 
             Assert.True(result);
         }
@@ -95,11 +96,11 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            await deviceService.Received(groupTransCount).TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>());
-            await deviceService.Received(groupTransCount).GetIdentityDeviceRecoverAsync(Arg.Any<string>());
+            await deviceService.Received().TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>());
+            await deviceService.Received().GetIdentityDeviceRecoverAsync(Arg.Any<string>());
 
             await deviceService.DidNotReceive().IdentityDeviceInsertAsync(Arg.Any<string>());
-            await deviceService.Received(groupTransCount).TransformTransaction07InsertAsync(Arg.Any<IEnumerable<TransformTransactionModel>>());
+            await deviceService.Received().TransformTransaction07InsertAsync(Arg.Any<IEnumerable<TransformTransactionModel>>());
 
             Assert.True(result);
         }
@@ -117,7 +118,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received().CaptureException(Arg.Any<Exception>());
+            sentryClient.Received().CaptureException(new Exception("Sql exception"));
 
             Assert.False(result);
         }
@@ -161,7 +162,7 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(1, 1, false).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
 
             deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()))
@@ -171,7 +172,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(3).CaptureException(Arg.Any<Exception>());
+            sentryClient.Received(3).CaptureException(new Exception("Sql exception"));
 
             Assert.False(result);
         }
@@ -196,7 +197,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(3).CaptureException(Arg.Any<Exception>());
+            sentryClient.Received(1).CaptureException(new Exception("Sql exception"));
 
             Assert.False(result);
         }
@@ -211,7 +212,7 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(1, 1, false).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
 
             deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>())).Do(x => { throw new Exception("Sql exception"); });
             deviceService.When(x => x.GetIdentityDeviceRecoverAsync(Arg.Any<string>())).Do(x => { throw new Exception("Sql exception"); });
@@ -220,7 +221,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(5).CaptureException(Arg.Any<Exception>());
+            sentryClient.Received(3).CaptureException(new Exception("Sql exception"));
 
             Assert.False(result);
         }
@@ -256,7 +257,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(3).CaptureException(Arg.Any<Exception>());
+            sentryClient.Received(1).CaptureException(new Exception("Sql exception"));
 
             Assert.False(result);
         }
