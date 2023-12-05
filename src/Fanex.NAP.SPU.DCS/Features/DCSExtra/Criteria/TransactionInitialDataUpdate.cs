@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class TransactionInitialDataUpdate : NonQueryCommand
+    public class TransactionInitialDataUpdate : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_TransJs")]
         public string TransJs { get; set; }

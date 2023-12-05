@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto
 {
-    internal class BetTransactionInfoDto
+    public class BetTransactionInfoDto
     {
         public DateTime TransDate { get; set; }
 

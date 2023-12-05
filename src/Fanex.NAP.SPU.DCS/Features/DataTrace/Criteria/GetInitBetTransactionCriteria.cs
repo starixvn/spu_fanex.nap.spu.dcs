@@ -3,7 +3,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetInitBetTransactionCriteria : CriteriaBase
+    public class GetInitBetTransactionCriteria : CriteriaBase
     {
         public DateTime FromTransDate { get; set; }
         public DateTime ToTransDate { get; set; }

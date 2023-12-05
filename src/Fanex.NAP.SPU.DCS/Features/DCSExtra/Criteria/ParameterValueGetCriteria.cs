@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class ParameterValueGetCriteria : NonQueryCommand
+    public class ParameterValueGetCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_ParameterID")]
         public int ParameterID { get; set; }

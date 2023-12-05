@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class TransactionInitialDataGetCriteria : NonQueryCommand
+    public class TransactionInitialDataGetCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_BatchSize")]
         public int BatchSize { get; set; }

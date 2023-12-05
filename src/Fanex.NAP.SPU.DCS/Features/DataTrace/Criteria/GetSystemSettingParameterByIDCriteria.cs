@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetSystemSettingParameterByIDCriteria : CriteriaBase
+    public class GetSystemSettingParameterByIDCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_ParameterID")]
         public int ParameterID { get; set; }

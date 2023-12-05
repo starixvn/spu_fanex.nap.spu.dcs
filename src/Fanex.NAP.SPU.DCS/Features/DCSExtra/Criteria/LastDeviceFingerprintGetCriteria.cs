@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class LastDeviceFingerprintGetCriteria : CriteriaBase
+    public class LastDeviceFingerprintGetCriteria : CriteriaBase
     {
         public string ip_DeviceNoList { get; set; }
 

@@ -4,7 +4,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetReportLoginTransactionDetailCriteria : CriteriaBase
+    public class GetReportLoginTransactionDetailCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_TransDate")]
         public DateTime TransDate { get; set; }

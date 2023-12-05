@@ -4,7 +4,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class DeleteBetTransactionSummaryByDateCriteria : NonQueryCommand
+    public class DeleteBetTransactionSummaryByDateCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_TransDate")]
         public DateTime TransDate { get; set; }

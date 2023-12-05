@@ -4,7 +4,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetReportMissingTransactionCriteria : CriteriaBase
+    public class GetReportMissingTransactionCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_FromDate")]
         public DateTime FromDate { get; set; }

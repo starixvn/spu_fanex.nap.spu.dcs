@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class LocationByIPListGet : CriteriaBase
+    public class LocationByIPListGet : CriteriaBase
     {
         public string IPs { get; set; }
 

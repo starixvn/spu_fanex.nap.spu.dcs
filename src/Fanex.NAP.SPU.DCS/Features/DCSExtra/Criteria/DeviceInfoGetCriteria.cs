@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class DeviceInfoGetCriteria : CriteriaBase
+    public class DeviceInfoGetCriteria : CriteriaBase
     {
         public string ip_DeviceIDList { get; set; }
 

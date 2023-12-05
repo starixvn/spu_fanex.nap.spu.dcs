@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class InsertTransformRawTransCriteria : NonQueryCommand
+    public class InsertTransformRawTransCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_RawTransJson")]
         public string RawTransJson { get; set; }

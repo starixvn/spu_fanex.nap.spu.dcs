@@ -226,7 +226,7 @@
             Assert.False(result);
         }
 
-        [Fact]
+        [Fact] 
         public async void TransformDevice_WhenTransformTransaction07InsertAsyncThrowError_ShouldCallExactSentryWithTimes()
         {
             //Arrange

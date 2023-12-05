@@ -3,7 +3,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class RawTransactionGetCriteria : CriteriaBase
+    public class RawTransactionGetCriteria : CriteriaBase
     {
         public string ip_SubscriberName { get; set; }
 

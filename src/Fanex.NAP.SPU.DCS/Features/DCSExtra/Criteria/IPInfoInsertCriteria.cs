@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria
 {
-    internal class IPInfoInsertCriteria : NonQueryCommand
+    public class IPInfoInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_InputJs")]
         public string InputJs { get; set; }
