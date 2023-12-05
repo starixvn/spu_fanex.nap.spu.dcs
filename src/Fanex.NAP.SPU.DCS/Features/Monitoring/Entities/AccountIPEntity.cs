@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Entities
 {
     using System;
-  
+
     public class AccountIPEntity
     {
         public UInt64 AccountID { get; set; }

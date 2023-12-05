@@ -1,10 +1,10 @@
-﻿using Fanex.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Fanex.Data;
 using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.DCSExtra.Criteria;
 using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.DCSExtra
 {

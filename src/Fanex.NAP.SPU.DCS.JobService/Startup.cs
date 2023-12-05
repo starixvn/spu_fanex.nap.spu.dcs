@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Fanex.Data;
 using Fanex.Data.MySql;
 using Fanex.Data.SqlServer;
@@ -13,9 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Sentry;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Fanex.NAP.SPU.DCS.JobService
 {
@@ -44,7 +43,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             });
 
             services.RegisterService();
-            
+
             FanexDataConfig(appSettings);
 
             RegisterLogging(appSettings);

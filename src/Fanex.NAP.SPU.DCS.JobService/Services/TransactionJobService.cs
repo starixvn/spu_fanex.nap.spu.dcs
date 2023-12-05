@@ -1,10 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.NAP.SPU.DCS.Features.Transactions;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.Transactions;
+    using Sentry;
 
     public interface ITransactionJobService
     {

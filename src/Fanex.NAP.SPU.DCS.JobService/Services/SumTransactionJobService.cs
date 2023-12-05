@@ -1,15 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System;
+    using System.Threading.Tasks;
     using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
-    using Fanex.NAP.SPU.Notification.Services;
     using Sentry;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public interface ISumTransactionJobService
     {
@@ -33,9 +30,9 @@
             {
                 var sumTransaction = this.monitoringServices.GetSumTransaction();
 
-                var updateResult = this.monitoringServices.UpdateSumRawTransaction(sumTransaction);                
+                var updateResult = this.monitoringServices.UpdateSumRawTransaction(sumTransaction);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 sentryClient.CaptureException(ex);
 
@@ -49,6 +46,6 @@
             }
 
             return Task.FromResult(true);
-        }      
+        }
     }
 }

@@ -6,7 +6,6 @@
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
     using Sentry;
@@ -41,7 +40,7 @@
                 if (size > 0 && numberOfBatch > 0)
                 {
                     await TransformDevice(size, numberOfBatch, isTransformExtra && appSettings.IsReadyDbExtra);
-                }              
+                }
             }
             catch (Exception ex)
             {

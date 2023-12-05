@@ -1,17 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
-    using Fanex.Logging;
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.Logging.Extensions;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
-    using Newtonsoft.Json;
-    using Sentry;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Logging;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
+    using Newtonsoft.Json;
+    using Sentry;
 
     public interface IDataTraceServices
     {

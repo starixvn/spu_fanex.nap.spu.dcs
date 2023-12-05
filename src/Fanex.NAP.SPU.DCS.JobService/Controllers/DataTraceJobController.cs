@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using System.Threading.Tasks;
     using System;
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
 
@@ -67,7 +67,7 @@
         {
             var stream = await dataTraceJobService.ReportLoginTransaction(fromDate, toDate);
 
-            if(stream != null)
+            if (stream != null)
             {
                 Response.ContentType = contentType;
                 Response.Headers.Add(keyHeader, keyValue);
@@ -78,13 +78,13 @@
 
             return null;
         }
-        
+
         [HttpGet("report-botd-transaction-daily")]
         public async Task<IActionResult> ReportBotDTransactionDaily(DateTime fromDate, DateTime toDate)
         {
             var stream = await dataTraceJobService.ReportBotDTransaction(fromDate, toDate);
 
-            if(stream != null)
+            if (stream != null)
             {
                 Response.ContentType = contentType;
                 Response.Headers.Add(keyHeader, keyValue);
@@ -95,13 +95,13 @@
 
             return null;
         }
-        
+
         [HttpGet("report-missing-transaction-daily")]
         public async Task<IActionResult> ReportMissingTransactionDaily(DateTime fromDate, DateTime toDate)
         {
             var stream = await dataTraceJobService.ReportMissingTransaction(fromDate, toDate);
 
-            if(stream != null)
+            if (stream != null)
             {
                 Response.ContentType = contentType;
                 Response.Headers.Add(keyHeader, keyValue);
@@ -112,25 +112,25 @@
 
             return null;
         }
-        
+
         [HttpGet("report-login-transaction-detail")]
         public async Task<IActionResult> ReportLoginTransactionDetail(DateTime transDate)
         {
             var stream = await dataTraceJobService.ReportLoginTransactionDetail(transDate);
 
-            if(stream != null)
+            if (stream != null)
             {
                 Response.ContentType = contentType;
                 Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportLoginTransactionDetail"+ transDate.ToString("yyyymmdd")+ ".xlsx");
+                var file = File(stream, contentType, "ReportLoginTransactionDetail" + transDate.ToString("yyyymmdd") + ".xlsx");
 
                 return file;
             }
 
             return null;
         }
-        
-        
+
+
         [HttpPost("checktimeout")]
         public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
         {

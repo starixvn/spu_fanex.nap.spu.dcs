@@ -1,11 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System.Linq;
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Newtonsoft.Json;
     using Sentry;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     public interface IUserAgentJobService
@@ -37,10 +36,10 @@
         {
             try
             {
-                if(size > 0)
+                if (size > 0)
                 {
                     JobRun(size, isTransformExtra);
-                }                                
+                }
             }
             catch (System.Exception ex)
             {
@@ -49,14 +48,14 @@
                 return await Task.FromResult(false);
             }
 
-            return await Task.FromResult(true);            
+            return await Task.FromResult(true);
         }
 
         private void JobRun(int size, bool isTransformExtra)
-        {            
+        {
             if (isTransformExtra)
             {
-                if(appSettings.IsReadyDbExtra)
+                if (appSettings.IsReadyDbExtra)
                     TransformUserAgent(size, true);
             }
             else
@@ -88,7 +87,7 @@
                 sentryClient.CaptureException(ex);
 
                 throw;
-            }            
+            }
         }
     }
 }

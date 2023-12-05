@@ -1,7 +1,7 @@
-﻿using Fanex.NAP.SPU.DCS.Features.ArchiveData;
-using Sentry;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Fanex.NAP.SPU.DCS.Features.ArchiveData;
+using Sentry;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {

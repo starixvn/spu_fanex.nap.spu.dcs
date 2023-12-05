@@ -1,11 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
+    using System.Collections.Generic;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria;
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
     using Fanex.NAP.SPU.DCS.Shares;
-    using System.Collections.Generic;
 
     public interface IUserAgentDataAccess
     {
@@ -47,5 +47,5 @@
                 ErrorCode = errCode
             };
         }
-    }   
+    }
 }

@@ -1,10 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     public interface IDeviceDataAccess
     {
@@ -59,7 +59,7 @@
         {
             var criteria = new GetIdentityDeviceRecoverCriteria
             {
-               TransIds = transIds
+                TransIds = transIds
             };
 
             return await repository.FetchMultipleAsync<TransactionRecover, TransactionEvolution>(criteria);

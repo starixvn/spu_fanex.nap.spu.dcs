@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    using Fanex.Data.Repository;
     using Fanex.Data;
+    using Fanex.Data.Repository;
     public class InsertSummaryBetTransactionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_BetTransactionJson")]

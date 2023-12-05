@@ -1,5 +1,5 @@
-﻿using Fanex.Data.Repository;
-using System;
+﻿using System;
+using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {

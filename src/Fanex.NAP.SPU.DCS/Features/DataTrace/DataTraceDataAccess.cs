@@ -1,12 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     public interface IDataTraceDataAccess
     {

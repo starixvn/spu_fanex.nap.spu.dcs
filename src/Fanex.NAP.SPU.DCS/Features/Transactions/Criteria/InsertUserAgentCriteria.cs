@@ -23,7 +23,7 @@
             else
             {
                 return "DCS_DC_Transform_UserAgent_Insert";
-            }            
+            }
         }
 
         public override bool IsValid()

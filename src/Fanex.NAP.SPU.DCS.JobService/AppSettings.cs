@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService
 {
-    using Microsoft.Extensions.Configuration;
     using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Configuration;
 
     public interface IAppSettings
     {

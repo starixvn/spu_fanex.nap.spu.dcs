@@ -1,16 +1,16 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.Logging;
-    using Fanex.Logging.Extensions;
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using OfficeOpenXml;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Logging;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    using OfficeOpenXml;
 
     public interface IDataTraceJobService
     {

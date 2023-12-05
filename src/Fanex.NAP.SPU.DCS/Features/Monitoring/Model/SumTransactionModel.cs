@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Model
 {
-    using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
     using System;
     using System.Collections.Generic;
+    using Fanex.NAP.SPU.DCS.Features.Monitoring.Entities;
 
     public class SumTransactionModel
     {

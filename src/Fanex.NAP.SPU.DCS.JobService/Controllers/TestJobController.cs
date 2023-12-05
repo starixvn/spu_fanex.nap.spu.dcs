@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using Fanex.NAP.SPU.DCS.JobService.Services;
     using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]

@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 {
-    public class TransformDeviceInsertCriteria: NonQueryCommand
+    public class TransformDeviceInsertCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_TransJson")]
         public string TransIdJson { get; set; }
@@ -20,7 +20,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
             else
             {
                 return "DCS_DC_Transform_Device_Insert";
-            }            
+            }
         }
 
         public override bool IsValid() => true;

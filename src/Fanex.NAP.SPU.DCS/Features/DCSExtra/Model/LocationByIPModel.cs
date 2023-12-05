@@ -1,8 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using System;
-
-namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
+﻿namespace Fanex.NAP.SPU.DCS.Features.DCSExtra.Model
 {
     public class LocationByIPModel
     {

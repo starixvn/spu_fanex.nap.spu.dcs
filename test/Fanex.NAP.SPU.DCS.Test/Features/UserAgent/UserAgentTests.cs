@@ -1,11 +1,11 @@
-﻿using Fanex.NAP.SPU.DCS.Features.UserAgent;
+﻿using System;
+using System.Collections.Generic;
+using Fanex.NAP.SPU.DCS.Features.UserAgent;
 using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
 using Fanex.NAP.SPU.DCS.Shares;
 using Fanex.NAP.SPU.DCS.Shares.Models;
 using FluentAssertions;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent

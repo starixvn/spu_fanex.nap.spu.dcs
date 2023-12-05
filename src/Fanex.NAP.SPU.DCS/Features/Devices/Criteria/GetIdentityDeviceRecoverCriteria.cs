@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 {
-    using Fanex.Data.Repository;
     using Fanex.Data;
+    using Fanex.Data.Repository;
 
     public class GetIdentityDeviceRecoverCriteria : CriteriaBase
     {

@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
-    public class UnhandleSubscriberActionCriteria: NonQueryCommand
+    public class UnhandleSubscriberActionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_FromTransID")]
         public long FromTransId { get; set; }
@@ -23,7 +23,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
             else
             {
                 return "DCS_DC_Transform_UnhandleSubscriberAction";
-            }            
+            }
         }
 
         public override bool IsValid()

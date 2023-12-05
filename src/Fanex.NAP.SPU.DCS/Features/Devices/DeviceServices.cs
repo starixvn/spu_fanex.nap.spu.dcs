@@ -1,10 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
-    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
 
     public interface IDeviceServices
     {
@@ -34,7 +34,7 @@
 
         public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
         {
-            if(size != 0 && noOfBatch != 0)
+            if (size != 0 && noOfBatch != 0)
             {
                 return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch, isReadyDbExtra);
             }
@@ -50,7 +50,7 @@
 
         public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
         {
-            if(!string.IsNullOrEmpty(transIds)) return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
+            if (!string.IsNullOrEmpty(transIds)) return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
 
             return (new List<TransactionRecover>(), new List<TransactionEvolution>());
         }
@@ -73,7 +73,7 @@
 
         public async Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels)
         {
-            if(transformTransactionModels != null && transformTransactionModels.Any())
+            if (transformTransactionModels != null && transformTransactionModels.Any())
             {
                 var transJson = JsonSerializer.Serialize(transformTransactionModels);
                 return await deviceDataAcess.TransformTransaction07InsertAsync(transJson);

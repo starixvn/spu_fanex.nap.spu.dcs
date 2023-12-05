@@ -1,5 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.DCSExtra;
     using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
     using Fanex.NAP.SPU.DCS.JobService.Models;
@@ -8,11 +13,6 @@
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using Sentry;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public interface IDCSExtraService
     {
@@ -247,14 +247,14 @@
         {
             try
             {
-                if(!ValidateBatchParameters(batchSize, numberOfBatch))
+                if (!ValidateBatchParameters(batchSize, numberOfBatch))
                 {
                     sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
                     return false;
                 }
 
                 var initialDataConfig = settingDCSExtra.GetSection("InitialData");
-                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");                
+                var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
 
                 sentryClient.CaptureMessage("Start InitialTransIpInfo!");
 
@@ -364,7 +364,7 @@
 
         private async Task UpdateTransactionInitialData(IEnumerable<TransactionInitialDataDto> mappingTransID, int batchSize)
         {
-            if(mappingTransID != null && mappingTransID.Any())
+            if (mappingTransID != null && mappingTransID.Any())
             {
                 var batches = mappingTransID.Chunk2(batchSize);
                 var tasksUpdate = new List<Task>();

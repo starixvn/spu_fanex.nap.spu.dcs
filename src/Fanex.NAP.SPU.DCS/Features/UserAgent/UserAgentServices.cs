@@ -1,14 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
     using Fanex.NAP.SPU.DCS.Shares;
     using Fanex.NAP.SPU.DCS.Shares.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using UAParser.FormFactor;
     using UAParser.FormFactor.Models;
 
@@ -40,7 +40,7 @@
 
         public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
         {
-            if(!string.IsNullOrWhiteSpace(userAgentJson))
+            if (!string.IsNullOrWhiteSpace(userAgentJson))
             {
                 return dataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra);
             }
@@ -82,7 +82,7 @@
                             CreatedDate = x.CreatedDate
                         };
                     }
-                   
+
                 }).ToList();
             }
 
@@ -105,7 +105,7 @@
                           .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                           .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                    LogService.Error($"DCS - Parse User Agent { userAgent } exception message:  { logMessage }");
+                    LogService.Error($"DCS - Parse User Agent {userAgent} exception message:  {logMessage}");
 
                     return null;
                 }

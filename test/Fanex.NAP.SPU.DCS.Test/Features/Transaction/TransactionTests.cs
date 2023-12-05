@@ -1,12 +1,8 @@
-﻿using Fanex.NAP.SPU.DCS.Features.Transactions;
+﻿using System.Collections.Generic;
+using Fanex.NAP.SPU.DCS.Features.Transactions;
 using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
 using FluentAssertions;
 using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
