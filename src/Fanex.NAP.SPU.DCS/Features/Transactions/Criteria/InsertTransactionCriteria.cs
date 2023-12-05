@@ -16,14 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 
         public override string GetSettingKey()
         {
-            if (IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_Transaction_Insert";
-            }
-            else
-            {
-                return "DCS_DC_Transform_Transaction_Insert";
-            }
+            return IsReadyDbExtra ? "DCS_ET_Transform_Transaction_Insert" : "DCS_DC_Transform_Transaction_Insert";
         }
 
         public override bool IsValid()

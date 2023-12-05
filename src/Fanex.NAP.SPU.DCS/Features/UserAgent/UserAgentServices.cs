@@ -116,7 +116,7 @@
             return null;
         }
 
-        private string GetDeviceTypeName(ClientInfo clientInfo)
+        private static string GetDeviceTypeName(ClientInfo clientInfo)
         {
             if (clientInfo != null && clientInfo.Device != null)
             {
