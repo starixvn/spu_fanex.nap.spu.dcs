@@ -215,33 +215,30 @@
                     .OrderBy(x => x.TransTime);
         }
 
+#pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
+#pragma warning disable S109 // Assign this magic number
+#pragma warning disable S2197 // The result of this modulus operation may not be positive.
         private static string MappingFlaggedCode(int? flagged)
         {
             if (flagged == null) return Flagged.Human.ToString();
 
-            var mapping = new Dictionary<int, string>
-            {
-                { 5, Flagged.EmptyToken.ToString() },
-                { 6, Flagged.EmptyAnalysis.ToString() },
-                { 7, Flagged.EmptyDevice.ToString() },
-                { 8, Flagged.InvalidAnalysis.ToString() },
-                { 9, Flagged.InvalidToken.ToString() },
-                { 10, Flagged.InvalidDevice.ToString() },
-                { 212, Flagged.Human.ToString() },
-                { 215, Flagged.EmptyDevice.ToString() },
-                { 216, Flagged.InvalidDevice.ToString() }
-            };
-
-            if (mapping.TryGetValue(flagged.Value, out var result))
-            {
-                return result;
-            }
-
+            if (flagged == 5) return Flagged.EmptyToken.ToString();
+            if (flagged == 6) return Flagged.EmptyAnalysis.ToString();
+            if (flagged == 7) return Flagged.EmptyDevice.ToString();
+            if (flagged == 8) return Flagged.InvalidAnalysis.ToString();
+            if (flagged == 9) return Flagged.InvalidToken.ToString();
+            if (flagged == 10) return Flagged.InvalidDevice.ToString();
             if (flagged % 10 == 3) return Flagged.Human.ToString();
+            if (flagged == 212) return Flagged.Human.ToString();
             if (flagged % 10 == 4) return Flagged.Headless.ToString();
+            if (flagged == 215) return Flagged.EmptyDevice.ToString();
+            if (flagged == 216) return Flagged.InvalidDevice.ToString();
 
             return Flagged.Human.ToString();
         }
+#pragma warning restore S121 // Add curly braces around the nested statement(s) in this 'if' block.
+#pragma warning restore S6507 // Assign this magic number
+#pragma warning restore S2197 // The result of this modulus operation may not be positive.
 
         public async Task<bool> InitialTransIpInfo(int batchSize, int numberOfBatch)
         {

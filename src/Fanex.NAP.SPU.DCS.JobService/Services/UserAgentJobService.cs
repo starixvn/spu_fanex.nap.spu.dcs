@@ -53,10 +53,9 @@
 
         private void JobRun(int size, bool isTransformExtra)
         {
-            if (isTransformExtra)
+            if (isTransformExtra && appSettings.IsReadyDbExtra)
             {
-                if (appSettings.IsReadyDbExtra)
-                    TransformUserAgent(size, true);
+                TransformUserAgent(size, true);
             }
             else
             {

@@ -135,7 +135,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         }
 
 #pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
-        private async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
+        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
         {
             try
             {

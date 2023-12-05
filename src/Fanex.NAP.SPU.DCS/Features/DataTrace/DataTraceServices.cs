@@ -66,7 +66,9 @@
         public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
             if (!await IsDailyTaskReadyAsync())
+            {
                 return false;
+            }    
 
             if (fromDate != null && toDate != null)
             {
@@ -293,11 +295,12 @@
 
         public async Task<bool> ProcessInitBetTransactionAsync(DateTime transDate)
         {
+            const int batchSize = 25000;
             var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(transDate);
             if (betTransactionInfos != null && betTransactionInfos.Any())
             {
                 _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(transDate);
-                _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), 25000);
+                _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
             }
 
             return true;
@@ -306,7 +309,9 @@
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
         {
             if (!await IsDailyTaskReadyAsync())
+            {
                 return 0;
+            }
 
             var data = await dataAccess.GetBetTransactionAsync(transDate);
             if (data != null && data.Any())

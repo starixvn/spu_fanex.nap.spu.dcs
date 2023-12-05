@@ -222,18 +222,18 @@
             {
                 var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode);
 
-                foreach (TransactionEvolutionAttributes destination in evolutionAttributes)
+                TransactionEvolutionAttributes result = evolutionAttributes.FirstOrDefault(destination => CompareRules(source, destination));
+
+                if (result != null)
                 {
-                    if (CompareRules(source, destination))
-                    {
-                        return destination.RawFingerPrintID;
-                    }
+                    return result.RawFingerPrintID;
                 }
             }
 
             return 0;
         }
 
+#pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
         private bool CompareRules(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
         {
             // Rule 2
@@ -258,7 +258,7 @@
 
             return true;
         }
-
+#pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
 
         #region "Evolution"
 
@@ -323,12 +323,13 @@
             if (string.IsNullOrEmpty(fontsSource) || string.IsNullOrEmpty(fontsDestination))
             {
                 return fontsSource == fontsDestination;
-            };
+            }
 
             var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
             var arrDestination = JsonSerializer.Deserialize<string[]>(fontsDestination);
 
-            return arrSrc.All(arrDestination.Contains) || arrDestination.All(arrSrc.Contains);
+            return Array.TrueForAll(arrSrc, element => arrDestination.Contains(element))
+                 || Array.TrueForAll(arrDestination, element => arrSrc.Contains(element));
         }
 
         private bool CheckAllowChangesWithSimilar(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination, ref int counter)

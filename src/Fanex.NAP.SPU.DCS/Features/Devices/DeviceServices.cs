@@ -50,7 +50,10 @@
 
         public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
         {
-            if (!string.IsNullOrEmpty(transIds)) return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
+            if (!string.IsNullOrEmpty(transIds))
+            {
+                return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds);
+            }
 
             return (new List<TransactionRecover>(), new List<TransactionEvolution>());
         }

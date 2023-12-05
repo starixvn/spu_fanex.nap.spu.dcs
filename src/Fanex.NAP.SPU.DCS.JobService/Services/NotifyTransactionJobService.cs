@@ -58,9 +58,7 @@
             {
                 sentryClient.CaptureException(ex);
 
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
                 LogService.Error($"DCS - Notify Transaction job Execute exeption message:  {logMessage}");
 
@@ -145,9 +143,7 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
                 LogService.Error($"DCS - MonitorTransactionLevelAccount job Execute exeption message:  {logMessage}");
 
@@ -178,9 +174,7 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
                 LogService.Error($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
 
@@ -207,9 +201,7 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
                 LogService.Error($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
 
@@ -230,6 +222,13 @@
                    .Message(new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo))
                    .SendWithoutDelay(true);
             }
+        }
+
+        private static string LogMessage(Exception ex)
+        {
+            return new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
         }
 
         public Task<bool> TestSentryCaptureMessage(string message)
