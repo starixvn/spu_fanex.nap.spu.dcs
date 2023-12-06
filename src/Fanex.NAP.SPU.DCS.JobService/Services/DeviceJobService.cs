@@ -1,14 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Sentry;
 
     public interface IDeviceJobService
     {

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.NAP.SPU.DCS.Features.ArchiveData;
-using Sentry;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.ArchiveData;
+
     public interface IArchiveJobServices
     {
         Task<bool> Execute(int batchSize, bool isTransformExtra);

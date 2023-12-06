@@ -1,9 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
@@ -11,8 +7,6 @@
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.Notification.Services;
-    using Newtonsoft.Json;
-    using Sentry;
 
     public interface INotifyTransactionJobService
     {

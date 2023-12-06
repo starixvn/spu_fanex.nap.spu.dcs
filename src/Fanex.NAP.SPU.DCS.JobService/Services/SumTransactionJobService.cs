@@ -1,12 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System;
-    using System.Threading.Tasks;
     using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
-    using Sentry;
 
     public interface ISumTransactionJobService
     {

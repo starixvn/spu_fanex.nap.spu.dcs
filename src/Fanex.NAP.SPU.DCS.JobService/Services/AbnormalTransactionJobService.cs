@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
-using Sentry;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+
     public interface IAbnormalTransactionJobService
     {
         Task<bool> PushAbnormalTransaction(int size);

@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService
 {
-    using System;
     using System.ComponentModel;
     using Microsoft.Extensions.Configuration;
 

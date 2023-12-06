@@ -1,18 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.DCSExtra;
     using Fanex.NAP.SPU.DCS.Features.DCSExtra.Model;
     using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.DCS.JobService.Models.Dto;
     using Fanex.NAP.SPU.DCS.JobService.Ultilities;
     using Microsoft.Extensions.Configuration;
-    using Newtonsoft.Json;
-    using Sentry;
 
     public interface IDCSExtraService
     {

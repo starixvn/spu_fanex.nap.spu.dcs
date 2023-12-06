@@ -1,9 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using System;
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
     [Route("api/datatracejob")]

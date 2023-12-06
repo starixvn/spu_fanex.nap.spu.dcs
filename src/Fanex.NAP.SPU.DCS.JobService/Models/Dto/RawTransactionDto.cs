@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Models.Dto
 {
     public class RawTransactionDto

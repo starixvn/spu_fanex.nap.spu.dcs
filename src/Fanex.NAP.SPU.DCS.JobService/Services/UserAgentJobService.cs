@@ -1,10 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System.Linq;
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
-    using Newtonsoft.Json;
-    using Sentry;
     using UAParser.FormFactor.Models;
 
     public interface IUserAgentJobService
