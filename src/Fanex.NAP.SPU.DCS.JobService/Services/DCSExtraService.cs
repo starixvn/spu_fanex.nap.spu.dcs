@@ -211,6 +211,7 @@
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
 #pragma warning disable S109 // Assign this magic number
 #pragma warning disable S2197 // The result of this modulus operation may not be positive.
+#pragma warning disable S122 // Reformat the code to have only one statement per line.
         private static string MappingFlaggedCode(int? flagged)
         {
             if (flagged == null) return Flagged.Human.ToString();
@@ -232,6 +233,7 @@
 #pragma warning restore S121 // Add curly braces around the nested statement(s) in this 'if' block.
 #pragma warning restore S6507 // Assign this magic number
 #pragma warning restore S2197 // The result of this modulus operation may not be positive.
+#pragma warning restore S122 // Reformat the code to have only one statement per line.
 
         public async Task<bool> InitialTransIpInfo(int batchSize, int numberOfBatch)
         {

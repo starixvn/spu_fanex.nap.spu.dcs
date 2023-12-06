@@ -232,6 +232,7 @@
         }
 
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
+#pragma warning disable S122 // Reformat the code to have only one statement per line.
         private bool CompareRules(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
         {
             // Rule 2
@@ -257,6 +258,8 @@
             return true;
         }
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
+#pragma warning disable S122 // Reformat the code to have only one statement per line.
+
 
         #region "Evolution"
 

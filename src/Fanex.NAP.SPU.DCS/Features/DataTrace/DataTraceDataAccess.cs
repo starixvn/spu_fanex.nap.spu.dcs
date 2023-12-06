@@ -22,7 +22,7 @@
 
         Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate);
 
-        Task<string> GetSystemSettingParameterByID(int id);
+        Task<string> GetSystemSettingParameterByID(int parameterID);
 
         Task<int> UpdateSystemSettingParameterByID(int id, string value);
 

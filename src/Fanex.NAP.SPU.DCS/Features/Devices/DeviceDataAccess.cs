@@ -59,8 +59,6 @@
                 IsReadyDbExtra = IsReadyDbExtra
             };
 
-            var test = IsReadyDbExtra;
-
             return await repository.FetchAsync<IdentityDevice>(criteria);
         }
 

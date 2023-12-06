@@ -30,6 +30,7 @@
         private readonly IAppSettings appSettings;
 
         private readonly string proxy;
+        private readonly int delaySecond = 300;
 
         public NotifyTransactionJobService(IMonitoringServices monitoringServices, ISentryClient sentryClient, IAppSettings appSettings)
         {
@@ -72,16 +73,20 @@
                 var message = $"Monitoring Transaction job run COMPLETED.";
 
                 if (!string.IsNullOrWhiteSpace(data.YesterdayLess50Percent))
+                {
                     message += $"\n\r - Total Trans Today < 50% Yesterday: {data.YesterdayLess50Percent}";
+                }    
 
                 if (!string.IsNullOrWhiteSpace(data.ValidLess50Percent))
+                {
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
+                }
 
                 var telegramService = new NotificationService();
                 telegramService
                    .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                    .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message))
-                   .SendWithDelay(300, true);
+                   .SendWithDelay(delaySecond, true);
             }
         }
 
@@ -91,7 +96,7 @@
             telegramService
                .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
                .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "Test"))
-               .SendWithDelay(300, true);
+               .SendWithDelay(delaySecond, true);
 
             return Task.FromResult(true);
         }

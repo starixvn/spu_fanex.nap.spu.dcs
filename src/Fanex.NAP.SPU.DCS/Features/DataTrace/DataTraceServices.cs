@@ -325,7 +325,9 @@
         public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
         {
             if (!await IsDailyTaskReadyAsync())
+            {
                 return 0;
+            }
 
             var data = await dataAccess.GetInitBetTransactionAsync(transDate);
             if (data != null && data.Any())
