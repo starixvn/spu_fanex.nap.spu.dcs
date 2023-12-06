@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService
+﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
     using System;
     using System.Collections.Generic;
