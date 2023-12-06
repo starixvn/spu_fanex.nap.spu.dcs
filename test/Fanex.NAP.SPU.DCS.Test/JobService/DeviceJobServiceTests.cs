@@ -40,8 +40,8 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(1, 1, false).Returns(stagingTransIds);
-            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()).Returns(identityDevices);
+            deviceService.GetStagingTransIdForDeviceAsync(1, 1).Returns(stagingTransIds);
+            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()).Returns(identityDevices);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
             deviceService.GetIdentityEvolutionAttributesAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(evolutionAttributes);
 
@@ -51,7 +51,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            await deviceService.Received(groupTransCount).TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>());
+            await deviceService.Received(groupTransCount).TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>());
             await deviceService.Received(groupTransCount).GetIdentityDeviceRecoverAsync(Arg.Any<string>());
 
             await deviceService.Received(groupTransCount).IdentityDeviceInsertAsync(Arg.Any<string>());
@@ -86,8 +86,8 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
-            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()).Returns(identityDevice);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
+            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()).Returns(identityDevice);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
             deviceService.GetIdentityEvolutionAttributesAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(transactionAttr);
             deviceService.IdentityEvolutionInsertAsync(Arg.Any<IEnumerable<IdentifyEvolutionModel>>()).Returns(transactionRecover);
@@ -96,7 +96,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            await deviceService.Received().TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>());
+            await deviceService.Received().TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>());
             await deviceService.Received().GetIdentityDeviceRecoverAsync(Arg.Any<string>());
 
             await deviceService.DidNotReceive().IdentityDeviceInsertAsync(Arg.Any<string>());
@@ -111,7 +111,7 @@
             //Arrange
             var deviceJobService = GetService();
 
-            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(1, 1, false))
+            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(1, 1))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             //Act
@@ -162,10 +162,10 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
 
-            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()))
+            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             //Act
@@ -187,8 +187,8 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
-            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()).Returns(identityDevice);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
+            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()).Returns(identityDevice);
 
             deviceService.When(x => x.GetIdentityDeviceRecoverAsync(Arg.Any<string>()))
                             .Do(x => { throw new Exception("Sql exception"); });
@@ -212,9 +212,9 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
 
-            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>())).Do(x => { throw new Exception("Sql exception"); });
+            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>())).Do(x => { throw new Exception("Sql exception"); });
             deviceService.When(x => x.GetIdentityDeviceRecoverAsync(Arg.Any<string>())).Do(x => { throw new Exception("Sql exception"); });
 
             //Act
@@ -245,8 +245,8 @@
 
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(stagingTransIds);
-            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), Arg.Any<bool>()).Returns(identityDevice);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
+            deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()).Returns(identityDevice);
             deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(deviceRecovers);
             deviceService.GetIdentityEvolutionAttributesAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(transactionAttr);
             deviceService.IdentityEvolutionInsertAsync(Arg.Any<IEnumerable<IdentifyEvolutionModel>>()).Returns(transactionRecover);

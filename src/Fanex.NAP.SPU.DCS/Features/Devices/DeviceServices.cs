@@ -33,13 +33,14 @@
         public DeviceServices(IDeviceDataAccess deviceDataAcess)
         {
             this.deviceDataAcess = deviceDataAcess;
-            this.deviceDataAcess.IsReadyDbExtra = IsReadyDbExtra;
         }
 
         public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch)
         {
             if (size != 0 && noOfBatch != 0)
             {
+                deviceDataAcess.IsReadyDbExtra = IsReadyDbExtra;
+
                 return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch);
             }
 

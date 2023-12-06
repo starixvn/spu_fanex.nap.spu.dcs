@@ -12,9 +12,7 @@
 
     public interface IDeviceJobService
     {
-        bool IsReadyDbExtra { get; set; }
-
-        Task<bool> Execute(int size, int numberOfBatch);
+        Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra);
     }
 
     public class DeviceJobService : IDeviceJobService
@@ -22,8 +20,6 @@
         private readonly ISentryClient sentryClient;
         private readonly IDeviceServices deviceService;
         private readonly IAppSettings appSettings;
-
-        public bool IsReadyDbExtra { get; set; }
 
         private const int delayTime = 100; // milliseconds
 
@@ -35,16 +31,16 @@
             this.sentryClient = sentryClient;
             this.deviceService = deviceService;
             this.appSettings = appSettings;
-
-            this.deviceService.IsReadyDbExtra = IsReadyDbExtra && appSettings.IsReadyDbExtra;
         }
 
-        public async Task<bool> Execute(int size, int numberOfBatch)
+        public async Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra)
         {
             try
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
+                    deviceService.IsReadyDbExtra = isReadyDbExtra && appSettings.IsReadyDbExtra;
+
                     await TransformDevice(size, numberOfBatch);
                 }
             }
