@@ -6,8 +6,8 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
+using Fanex.NAP.SPU.DCS.JobService.Services;
 using Newtonsoft.Json;
-using Sentry;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
@@ -19,12 +19,12 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
     public class AbnormalTransactionServices : IAbnormalTransactionServices
     {
-        private readonly ISentryClient _sentryClient;
+        private readonly ILogService _logService;
         private readonly IAbnormalTransactionDataAccess _dataAccess;
 
-        public AbnormalTransactionServices(ISentryClient sentryClient, IAbnormalTransactionDataAccess dataAccess)
+        public AbnormalTransactionServices(ILogService logService, IAbnormalTransactionDataAccess dataAccess)
         {
-            _sentryClient = sentryClient;
+            _logService = logService;
             _dataAccess = dataAccess;
         }
 
@@ -57,7 +57,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             return true;
         }
 
-        private IEnumerable<AbnormalTransactionModel> TransformData(IEnumerable<AbnormalTransactionEntity> entities)
+        private static IEnumerable<AbnormalTransactionModel> TransformData(IEnumerable<AbnormalTransactionEntity> entities)
         {
             if (entities.Any())
             {
@@ -88,7 +88,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             if (!response.IsSuccessStatusCode || responseBody != "true")
             {
                 var exception = new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush));
-                _sentryClient.CaptureException(exception);
+                await _logService.ErrorAsync(exception);
                 return false;
             }
 

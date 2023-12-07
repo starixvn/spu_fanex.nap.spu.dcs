@@ -1,18 +1,17 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
-    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
-    using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Fanex.NAP.SPU.DCS.JobService;
-    using NSubstitute;
-    using Sentry;
-    using System.Threading.Tasks;
     using System;
-    using Xunit;
+    using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+    using Fanex.NAP.SPU.DCS.JobService;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
+    using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+    using Xunit;
 
     public class AbnormalTransactionJobServiceTests
     {
-        private ISentryClient sentryClient;
+        private ILogService logService;
         private IAbnormalTransactionServices abnormalTransactionServices;
         private IAppSettings appSettings;
 
@@ -45,7 +44,7 @@
 
             // Assert
             Assert.False(result);
-            sentryClient.Received(1).CaptureMessage("PushAbnormalTransaction size = 0");
+            await logService.Received().InfoMessageAsync(Arg.Any<string>());
         }
 
         [Fact]
@@ -63,15 +62,15 @@
 
             // Assert
             Assert.False(result);
-            sentryClient.Received(1).CaptureException(new Exception("Simulated exception"));
+            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
         }
 
         private AbnormalTransactionJobService GetService()
         {
-            sentryClient = Substitute.For<ISentryClient>();
+            logService = Substitute.For<ILogService>();
             appSettings = Substitute.For<IAppSettings>();
             abnormalTransactionServices = Substitute.For<IAbnormalTransactionServices>();
-            return new AbnormalTransactionJobService(sentryClient, appSettings, abnormalTransactionServices);
+            return new AbnormalTransactionJobService(logService, appSettings, abnormalTransactionServices);
         }
     }
 }

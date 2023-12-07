@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
@@ -12,12 +11,12 @@
 
     public class SumTransactionJobService : ISumTransactionJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IMonitoringServices monitoringServices;
 
-        public SumTransactionJobService(IMonitoringServices monitoringServices, ISentryClient sentryClient)
+        public SumTransactionJobService(IMonitoringServices monitoringServices, ILogService logService)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.monitoringServices = monitoringServices;
         }
 
@@ -31,13 +30,11 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
-
                 var logMessage = new LogMessage(ex.Message)
                         .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                         .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                LogService.Error($"DCS - Sum Transaction job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - Sum Transaction job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }

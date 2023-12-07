@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.Logging;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
@@ -22,6 +23,7 @@
             RegisterDCSExtra(services);
             RegisterArchiveService(services);
             RegisterDWTransactionService(services);
+            RegisterLogService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -79,6 +81,12 @@
             services.AddSingleton<IDataTraceJobService, DataTraceJobService>();
             services.AddSingleton<IDataTraceServices, DataTraceServices>();
             services.AddSingleton<IDataTraceDataAccess, DataTraceDataAccess>();
+        }
+
+        private static void RegisterLogService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILogger, Logger>();
+            services.AddSingleton<ILogService, LogService>();
         }
     }
 }

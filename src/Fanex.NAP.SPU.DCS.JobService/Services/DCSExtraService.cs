@@ -17,13 +17,13 @@
     public class DCSExtraService : IDCSExtraService
     {
         private readonly IDCSExtraServices dcsExtraService;
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IConfigurationSection settingDCSExtra;
 
-        public DCSExtraService(IDCSExtraServices dcsExtraService, ISentryClient sentryClient, IConfiguration configuration)
+        public DCSExtraService(IDCSExtraServices dcsExtraService, ILogService logService, IConfiguration configuration)
         {
             this.dcsExtraService = dcsExtraService;
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.settingDCSExtra = configuration.GetSection("DCSExtra");
         }
 
@@ -53,7 +53,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                await logService.ErrorAsync(ex);
                 return false;
             }
         }
@@ -74,7 +74,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        logService.ErrorAsync(ex);
                     }
 
                     return Task.FromResult<IEnumerable<RawTransactionModel>>(null);
@@ -124,7 +124,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        logService.ErrorAsync(ex);
                     }
 
                     return Task.FromResult<IEnumerable<DeviceInfoModel>>(null);
@@ -153,7 +153,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        logService.ErrorAsync(ex);
                     }
 
                     return Task.FromResult<IEnumerable<DeviceFingerprintModel>>(null);
@@ -241,18 +241,18 @@
             {
                 if (!ValidateBatchParameters(batchSize, numberOfBatch))
                 {
-                    sentryClient.CaptureException(new Exception("BatchSize is invalid!"));
+                    await logService.ErrorAsync(new Exception("BatchSize is invalid!"));
                     return false;
                 }
 
                 var initialDataConfig = settingDCSExtra.GetSection("InitialData");
                 var lastTransID_ParameterID = initialDataConfig.GetValue<int>("LastTransID_ParameterID");
 
-                sentryClient.CaptureMessage("Start InitialTransIpInfo!");
+                await logService.InfoMessageAsync("Start InitialTransIpInfo!");
 
                 var trans = await dcsExtraService.GetTransactionInitialDataAsync(batchSize * numberOfBatch, lastTransID_ParameterID);
 
-                sentryClient.CaptureMessage("GetTransactionInitialDataAsync Finished!");
+                await logService.InfoMessageAsync("GetTransactionInitialDataAsync Finished!");
                 if (trans != null && trans.Any())
                 {
                     var listIpID = trans.Where(t => t.IPID.HasValue)
@@ -266,7 +266,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                await logService.ErrorAsync(ex);
                 return false;
             }
 
@@ -282,23 +282,23 @@
                 var locationByIP = await dcsExtraService.GetLocationByIPList(ipIDs);
                 var ipInfo = HashIPInfoCode(locationByIP);
 
-                sentryClient.CaptureMessage("GetLocationByIPList Finished!");
+                await logService.InfoMessageAsync("GetLocationByIPList Finished!");
                 if (ipInfo != null && ipInfo.Any())
                 {
                     await InsertIPInfo(ipInfo);
-                    sentryClient.CaptureMessage("InsertIPInfo Finished!");
+                    await logService.InfoMessageAsync("InsertIPInfo Finished!");
 
                     // UPDATE Trans
                     var mappingTransID = MergeTransactionInitial(trans, ipInfo);
                     await UpdateTransactionInitialData(mappingTransID, batchSize);
 
-                    sentryClient.CaptureMessage("UpdateTransactionInitialData Finished!");
+                    await logService.InfoMessageAsync("UpdateTransactionInitialData Finished!");
                     // UPDATE Parameter
                     var lastTransID = mappingTransID.Min(x => x.TransID);
 
                     await dcsExtraService.UpdateParameterValueAsync(lastTransID_ParameterID, lastTransID.ToString());
 
-                    sentryClient.CaptureMessage("UpdateParameterValueAsync Finished!");
+                    await logService.InfoMessageAsync("UpdateParameterValueAsync Finished!");
                 }
             }
         }

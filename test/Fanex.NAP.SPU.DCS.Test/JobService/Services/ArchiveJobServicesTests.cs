@@ -2,18 +2,17 @@
 
 namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
-    using System.Threading.Tasks;
     using System;
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using NSubstitute;
-    using Sentry;
     using Xunit;
 
     public class ArchiveJobServicesTests
     {
         private IArchiveDataService archiveDataService;
-        private ISentryClient sentryClient;
+        private ILogService logService;
 
         [Fact]
         public async Task Execute_ValidBatchSize_ReturnsTrue()
@@ -30,7 +29,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             // Assert
             Assert.True(result);
             archiveDataService.Received(1).UpdateModifiedDate(batchSize, isTransformExtra);
-            sentryClient.DidNotReceiveWithAnyArgs().CaptureException(Arg.Any<Exception>());
+            await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
 
         [Fact]
@@ -47,7 +46,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 
             // Assert
             Assert.False(result);
-            sentryClient.Received(1).CaptureException(new Exception("DeleteBotComponent invalid Retention days"));
+            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
             archiveDataService.DidNotReceiveWithAnyArgs().UpdateModifiedDate(Arg.Any<int>(), Arg.Any<bool>());
         }
 
@@ -70,9 +69,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
         public ArchiveJobServices GetService()
         {
 
-            sentryClient = Substitute.For<ISentryClient>();
+            logService = Substitute.For<ILogService>();
             archiveDataService = Substitute.For<IArchiveDataService>();
-            return new ArchiveJobServices(archiveDataService, sentryClient);
+            return new ArchiveJobServices(archiveDataService, logService);
         }
     }
 }

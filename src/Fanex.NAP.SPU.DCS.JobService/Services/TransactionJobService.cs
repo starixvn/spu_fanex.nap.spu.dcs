@@ -9,16 +9,16 @@
 
     public class TransactionJobService : ITransactionJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly ITransactionServices transactionService;
         private readonly IAppSettings appSettings;
 
         private readonly IList<string> IgnoreMessages;
         private const int delayTime = 500; // milliseconds
 
-        public TransactionJobService(ISentryClient sentryClient, ITransactionServices transactionService, IAppSettings appSettings)
+        public TransactionJobService(ILogService logService, ITransactionServices transactionService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.transactionService = transactionService;
             this.appSettings = appSettings;
             IgnoreMessages = new List<string> {
@@ -41,7 +41,7 @@
             {
                 if (!this.IgnoreMessages.Contains(ex.Message))
                 {
-                    sentryClient.CaptureException(ex);
+                    await logService.ErrorAsync(ex);
 
                     return await Task.FromResult(false);
                 }
@@ -88,7 +88,7 @@
                 }
                 catch (Exception ex)
                 {
-                    sentryClient.CaptureException(ex);
+                    await logService.ErrorAsync(ex);
 
                     throw;
                 }

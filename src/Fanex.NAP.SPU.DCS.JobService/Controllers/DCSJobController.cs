@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using System.Text;
+    using System.Text.RegularExpressions;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
 

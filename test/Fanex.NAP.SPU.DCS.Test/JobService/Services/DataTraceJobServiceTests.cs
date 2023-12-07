@@ -9,6 +9,7 @@
     public class DataTraceJobServiceTests
     {
         private IDataTraceServices dataTraceServices;
+        private ILogService logService;
 
         [Fact]
         public async Task SummaryLoginTransactionsAsync_SuccessfulExecution_ReturnsTrue()
@@ -26,7 +27,7 @@
             Assert.True(result);
             await dataTraceServices.Received(1).InsertSummaryLoginTransactionAsync(batchSize);
         }
-        
+
 
 
         [Fact]
@@ -47,7 +48,8 @@
         public DataTraceJobService GetService()
         {
             dataTraceServices = Substitute.For<IDataTraceServices>();
-            return new DataTraceJobService(dataTraceServices);
+            logService = Substitute.For<ILogService>();
+            return new DataTraceJobService(dataTraceServices, logService);
         }
     }
 }

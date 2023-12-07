@@ -12,13 +12,13 @@
     }
     public class UserAgentJobService : IUserAgentJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IUserAgentServices userAgentService;
         private readonly IAppSettings appSettings;
 
-        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService, IAppSettings appSettings)
+        public UserAgentJobService(ILogService logService, IUserAgentServices userAgentService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.userAgentService = userAgentService;
             this.appSettings = appSettings;
         }
@@ -37,9 +37,9 @@
                     JobRun(size, isTransformExtra);
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                await logService.ErrorAsync(ex);
 
                 return await Task.FromResult(false);
             }
@@ -77,9 +77,9 @@
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
 
                 throw;
             }

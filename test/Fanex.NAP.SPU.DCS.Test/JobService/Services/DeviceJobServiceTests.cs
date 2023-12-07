@@ -15,7 +15,7 @@
 
     public class DeviceJobServiceTests
     {
-        private ISentryClient sentryClient;
+        private ILogService logService;
         private IDeviceServices deviceService;
         private IAppSettings appSettings;
 
@@ -118,7 +118,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received().CaptureException(new Exception("Sql exception"));
+            await logService.Received().ErrorAsync(Arg.Any<Exception>());
 
             Assert.False(result);
         }
@@ -172,7 +172,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(3).CaptureException(new Exception("Sql exception"));
+            await logService.Received(3).ErrorAsync(Arg.Any<Exception>());
 
             Assert.False(result);
         }
@@ -180,6 +180,7 @@
         [Fact]
         public async void TransformDevice_WhenGetIdentityDeviceRecoverAsyncThrowError_ShouldCallExactSentryWithTimes()
         {
+
             //Arrange
             List<StagingTransId> stagingTransIds = GetStagingTrans();
 
@@ -197,10 +198,12 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(1).CaptureException(new Exception("Sql exception"));
+            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
 
             Assert.False(result);
         }
+
+
 
         [Fact]
         public async void TransformDevice_WhenTwoTasksThrowError_ShouldCallExactSentryWithTimes()
@@ -221,7 +224,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(3).CaptureException(new Exception("Sql exception"));
+            await logService.Received(3).ErrorAsync(Arg.Any<Exception>());
 
             Assert.False(result);
         }
@@ -257,7 +260,7 @@
             var result = await deviceJobService.Execute(1, 1, false);
 
             //Assert
-            sentryClient.Received(1).CaptureException(new Exception("Sql exception"));
+            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
 
             Assert.False(result);
         }
@@ -291,13 +294,13 @@
 
         private DeviceJobService GetService()
         {
-            sentryClient = Substitute.For<ISentryClient>();
+            logService = Substitute.For<ILogService>();
             deviceService = Substitute.For<IDeviceServices>();
             appSettings = Substitute.For<IAppSettings>();
-            return new DeviceJobService(sentryClient, deviceService, appSettings);
+            return new DeviceJobService(logService, deviceService, appSettings);
         }
 
-        private List<TransactionEvolutionAttributes> GetEvolutionAttributes()
+        private static List<TransactionEvolutionAttributes> GetEvolutionAttributes()
         {
             return new List<TransactionEvolutionAttributes>
             {
@@ -328,7 +331,7 @@
             };
         }
 
-        private List<TransactionEvolution> GetTransactionEvolution()
+        private static List<TransactionEvolution> GetTransactionEvolution()
         {
             return new List<TransactionEvolution>
             {

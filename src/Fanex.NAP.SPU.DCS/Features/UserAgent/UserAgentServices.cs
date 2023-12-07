@@ -7,6 +7,7 @@
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
     using Fanex.NAP.SPU.DCS.Shares;
     using Fanex.NAP.SPU.DCS.Shares.Models;
     using UAParser.FormFactor;
@@ -26,11 +27,13 @@
     public class UserAgentServices : IUserAgentServices
     {
         private readonly IUserAgentDataAccess dataAccess;
+        private readonly ILogService logService;
         private const string Unknown = "Unknown";
 
-        public UserAgentServices(IUserAgentDataAccess dataAccess)
+        public UserAgentServices(IUserAgentDataAccess dataAccess, ILogService logService)
         {
             this.dataAccess = dataAccess;
+            this.logService = logService;
         }
 
         public List<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
@@ -105,13 +108,13 @@
                           .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                           .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                    LogService.Error($"DCS - Parse User Agent {userAgent} exception message:  {logMessage}");
+                    logService.ErrorMessageAsync($"DCS - Parse User Agent {userAgent} exception message:  {logMessage}");
 
                     return null;
                 }
             }
 
-            LogService.Info($"DCS - Parse User Agent null:");
+            logService.InfoMessageAsync($"DCS - Parse User Agent null:");
 
             return null;
         }

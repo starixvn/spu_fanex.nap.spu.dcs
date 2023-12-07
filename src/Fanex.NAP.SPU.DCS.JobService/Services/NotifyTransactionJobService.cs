@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
@@ -25,16 +24,16 @@
 
     public class NotifyTransactionJobService : INotifyTransactionJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IMonitoringServices monitoringServices;
         private readonly IAppSettings appSettings;
 
         private readonly string proxy;
         private readonly int delaySecond = 300;
 
-        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ISentryClient sentryClient, IAppSettings appSettings)
+        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ILogService logService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.monitoringServices = monitoringServices;
             this.appSettings = appSettings;
 
@@ -51,11 +50,11 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
 
                 var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - Notify Transaction job Execute exeption message:  {logMessage}");
+                logService.InfoMessageAsync($"DCS - Notify Transaction job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -75,7 +74,7 @@
                 if (!string.IsNullOrWhiteSpace(data.YesterdayLess50Percent))
                 {
                     message += $"\n\r - Total Trans Today < 50% Yesterday: {data.YesterdayLess50Percent}";
-                }    
+                }
 
                 if (!string.IsNullOrWhiteSpace(data.ValidLess50Percent))
                 {
@@ -144,7 +143,7 @@
             {
                 var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - MonitorTransactionLevelAccount job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - MonitorTransactionLevelAccount job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -175,7 +174,7 @@
             {
                 var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -202,7 +201,7 @@
             {
                 var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -232,7 +231,7 @@
 
         public Task<bool> TestSentryCaptureMessage(string message)
         {
-            sentryClient.CaptureMessage(message);
+            logService.InfoMessageAsync(message);
             return Task.FromResult(true);
         }
     }

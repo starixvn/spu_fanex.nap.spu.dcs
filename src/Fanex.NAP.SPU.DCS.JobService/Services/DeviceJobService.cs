@@ -13,7 +13,7 @@
 
     public class DeviceJobService : IDeviceJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IDeviceServices deviceService;
         private readonly IAppSettings appSettings;
 
@@ -22,9 +22,9 @@
         private readonly int maxChangesRule5 = 2;
         private readonly int maxChangesRule6 = 1;
 
-        public DeviceJobService(ISentryClient sentryClient, IDeviceServices deviceService, IAppSettings appSettings)
+        public DeviceJobService(ILogService logService, IDeviceServices deviceService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.deviceService = deviceService;
             this.appSettings = appSettings;
         }
@@ -42,7 +42,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                await logService.ErrorAsync(ex);
 
                 return await Task.FromResult(false);
             }
@@ -87,7 +87,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        logService.ErrorAsync(ex);
                         throw;
                     }
                 });
@@ -114,7 +114,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        logService.ErrorAsync(ex);
                         throw;
                     }
                 });
@@ -364,7 +364,7 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
                 return false;
             }
 

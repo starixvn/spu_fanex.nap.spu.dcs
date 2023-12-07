@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Fanex.NAP.SPU.DCS.Features.UserAgent;
 using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+using Fanex.NAP.SPU.DCS.JobService.Services;
 using Fanex.NAP.SPU.DCS.Shares;
 using Fanex.NAP.SPU.DCS.Shares.Models;
 using FluentAssertions;
@@ -14,12 +15,15 @@ namespace Fanex.NAP.SPU.DCS.Test.Features.UserAgent
     {
         private readonly IUserAgentDataAccess userAgentDataAccess;
         private readonly IUserAgentServices userAgentService;
+        private readonly ILogService logService;
+
 
         public UserAgentTests()
         {
             userAgentDataAccess = Substitute.For<IUserAgentDataAccess>();
+            logService = Substitute.For<ILogService>();
 
-            userAgentService = new UserAgentServices(userAgentDataAccess);
+            userAgentService = new UserAgentServices(userAgentDataAccess, logService);
         }
 
         [Fact]

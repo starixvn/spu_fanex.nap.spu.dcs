@@ -1,7 +1,6 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
@@ -36,10 +35,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public class DataTraceJobService : IDataTraceJobService
     {
         private readonly IDataTraceServices dataTraceServices;
+        private readonly ILogService logService;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices)
+        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService)
         {
             this.dataTraceServices = dataTraceServices;
+            this.logService = logService;
         }
 
         public async Task<bool> SummaryLoginTransactionsAsync(int batchSize)
@@ -248,13 +249,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return new MemoryStream(package.GetAsByteArray());
         }
 
-        private static void HandleException(Exception ex, string extraLogMessage)
+        private void HandleException(Exception ex, string extraLogMessage)
         {
             string logMessage = new LogMessage(ex.Message)
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-            LogService.Error(extraLogMessage + logMessage);
+            logService.ErrorMessageAsync(extraLogMessage + logMessage);
         }
     }
 }

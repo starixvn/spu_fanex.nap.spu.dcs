@@ -5,11 +5,10 @@
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Logging;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
     using Newtonsoft.Json;
-    using Sentry;
 
     public interface IDataTraceServices
     {
@@ -41,7 +40,7 @@
     public class DataTraceServices : IDataTraceServices
     {
         private readonly IDataTraceDataAccess dataAccess;
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
 
         private const int dailyTaskFPSID = 104;
         private const int delayTime = 100;
@@ -51,10 +50,10 @@
         private const int CONST_MissingTransaction_LoginTrans = 1;
         private const int CONST_MissingTransaction_BetTrans = 2;
 
-        public DataTraceServices(IDataTraceDataAccess dataAccess, ISentryClient sentryClient)
+        public DataTraceServices(IDataTraceDataAccess dataAccess, ILogService logService)
         {
             this.dataAccess = dataAccess;
-            this.sentryClient = sentryClient;
+            this.logService = logService;
         }
 
         public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
@@ -68,7 +67,7 @@
             if (!await IsDailyTaskReadyAsync())
             {
                 return false;
-            }    
+            }
 
             if (fromDate != null && toDate != null)
             {
@@ -113,7 +112,7 @@
                         }
                         else
                         {
-                            LogService.Error($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
+                            await logService.ErrorMessageAsync($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
                         }
                     }
                 }
@@ -168,7 +167,7 @@
                             }
                             catch (Exception ex)
                             {
-                                sentryClient.CaptureException(ex);
+                                await logService.ErrorAsync(ex);
                                 throw;
                             }
                         });
@@ -187,7 +186,7 @@
                 }
                 else
                 {
-                    LogService.Error($"DCS - DataTrace GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                    await logService.ErrorMessageAsync($"DCS - DataTrace GetMissingBetTransactionPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                 }
             }
 
@@ -240,7 +239,7 @@
                             }
                             catch (Exception ex)
                             {
-                                sentryClient.CaptureException(ex);
+                                await logService.ErrorAsync(ex);
                                 throw;
                             }
                         });
@@ -259,7 +258,7 @@
                 }
                 else
                 {
-                    LogService.Error($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
+                    await logService.ErrorMessageAsync($"DCS - DataTrace GetMissingLoginTranPackageAsync does not return data for date: {transDate:yyyy-MM-dd}");
                 }
             }
 
@@ -339,7 +338,7 @@
         }
 
 
-        private IEnumerable<BetTransactionInfoDto> TransformBetTransactionInfo(IEnumerable<BetTransactionInfo> model)
+        private static IEnumerable<BetTransactionInfoDto> TransformBetTransactionInfo(IEnumerable<BetTransactionInfo> model)
         {
             return model.OrderBy(x => x.CustID).Select(x => new BetTransactionInfoDto
             {
@@ -368,7 +367,7 @@
                     }
                     catch (Exception ex)
                     {
-                        sentryClient.CaptureException(ex);
+                        await logService.ErrorAsync(ex);
                         throw;
                     }
                 });

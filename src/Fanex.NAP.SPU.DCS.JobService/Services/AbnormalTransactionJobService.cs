@@ -9,14 +9,14 @@
 
     public class AbnormalTransactionJobService : IAbnormalTransactionJobService
     {
-        private readonly ISentryClient _sentryClient;
+        private readonly ILogService _logService;
         private readonly IAbnormalTransactionServices _abnormalTransactionServices;
-
         private readonly string _abnormalTransactionUrl;
 
-        public AbnormalTransactionJobService(ISentryClient sentryClient, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
+        public AbnormalTransactionJobService(ILogService logService, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
         {
-            _sentryClient = sentryClient;
+            _logService = logService;
+
             _abnormalTransactionServices = abnormalTransactionJobServices;
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
@@ -34,12 +34,12 @@
                 }
                 catch (Exception ex)
                 {
-                    _sentryClient.CaptureException(ex);
+                    await _logService.ErrorAsync(ex);
                     return false;
                 }
             }
 
-            _sentryClient.CaptureMessage("PushAbnormalTransaction size = 0");
+            await _logService.InfoMessageAsync("PushAbnormalTransaction size = 0");
             return false;
         }
     }

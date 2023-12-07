@@ -12,12 +12,12 @@
     public class ArchiveJobServices : IArchiveJobServices
     {
         private readonly IArchiveDataService archiveDataService;
-        private readonly ISentryClient _sentryClient;
+        private readonly ILogService logService;
 
-        public ArchiveJobServices(IArchiveDataService archiveDataService, ISentryClient sentryClient)
+        public ArchiveJobServices(IArchiveDataService archiveDataService, ILogService logService)
         {
             this.archiveDataService = archiveDataService;
-            _sentryClient = sentryClient;
+            this.logService = logService;
         }
 
         public Task<bool> Execute(int batchSize, bool isTransformExtra)
@@ -30,13 +30,13 @@
                 }
                 else
                 {
-                    _sentryClient.CaptureException(new Exception("ArchiveData invalid Batch size"));
+                    logService.ErrorAsync(new Exception("ArchiveData invalid Batch size"));
                     return Task.FromResult(false);
                 }
             }
             catch (Exception ex)
             {
-                _sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
                 return Task.FromResult(false);
             }
 
@@ -53,13 +53,13 @@
                 }
                 else
                 {
-                    _sentryClient.CaptureException(new Exception("DeleteBotComponent invalid Retention days"));
+                    logService.ErrorAsync(new Exception("DeleteBotComponent invalid Retention days"));
                     return Task.FromResult(false);
                 }
             }
             catch (Exception ex)
             {
-                _sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
                 return Task.FromResult(false);
             }
 
