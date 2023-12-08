@@ -31,12 +31,6 @@
         <Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-
-        <Setting Key="DCS_FPS_GetRawTransaction_AgentCTMax" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentCTMax.fpsWebService"/>
-        <Setting Key="DCS_FPS_GetRawTransaction_CTMax" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_CTMax.fpsWebService"/>
-        <Setting Key="DCS_FPS_GetRawTransaction_AgentSky" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentSky.fpsWebService"/>
-        <Setting Key="DCS_FPS_GetRawTransaction_Sky" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_Sky.fpsWebService"/>
-        <Setting Key="DCS_FPS_GetRawTransaction_AgentVelki" SpName="DCS_FPS_GetRawTransaction" DbName="SQLServer.FPS_SUB_AgentVelki.fpsWebService"/>
     </Function>
 
     <Function Name="DCS_Extra">
