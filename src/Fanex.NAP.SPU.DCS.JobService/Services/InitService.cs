@@ -4,7 +4,6 @@
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using Fanex.NAP.SPU.DCS.Features.DCSExtra;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
@@ -20,7 +19,6 @@
             RegisterTransformTransaction(services);
             RegisterMonitoring(services);
             RegisterAbnormalTransaction(services);
-            RegisterDCSExtra(services);
             RegisterArchiveService(services);
             RegisterDWTransactionService(services);
             RegisterLogService(services);
@@ -60,13 +58,6 @@
             services.AddSingleton<IAbnormalTransactionDataAccess, AbnormalTransactionDataAccess>();
             services.AddSingleton<IAbnormalTransactionServices, AbnormalTransactionServices>();
             services.AddSingleton<IAbnormalTransactionJobService, AbnormalTransactionJobService>();
-        }
-
-        private static void RegisterDCSExtra(this IServiceCollection services)
-        {
-            services.AddSingleton<IDCSExtraDataAccess, DCSExtraDataAccess>();
-            services.AddSingleton<IDCSExtraServices, DCSExtraServices>();
-            services.AddSingleton<IDCSExtraService, DCSExtraService>();
         }
 
         private static void RegisterArchiveService(this IServiceCollection services)

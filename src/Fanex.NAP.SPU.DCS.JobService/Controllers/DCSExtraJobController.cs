@@ -9,20 +9,17 @@
         private readonly IUserAgentJobService userAgentJobService;
         private readonly ITransactionJobService transactionJobService;
         private readonly IDeviceJobService deviceJobService;
-        private readonly IDCSExtraService dcsExtraService;
         private readonly IArchiveJobServices archiveJobServices;
 
         public DCSExtraJobController(
             IUserAgentJobService userAgentJobService,
             ITransactionJobService transactionJobService,
             IDeviceJobService deviceJobService,
-            IDCSExtraService dcsExtraService,
             IArchiveJobServices archiveJobServices)
         {
             this.userAgentJobService = userAgentJobService;
             this.transactionJobService = transactionJobService;
             this.deviceJobService = deviceJobService;
-            this.dcsExtraService = dcsExtraService;
             this.archiveJobServices = archiveJobServices;
         }
 
@@ -48,18 +45,6 @@
         public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
         {
             return await archiveJobServices.Execute(batchSize, true);
-        }
-
-        [HttpPost("migrate")]
-        public async Task<bool> Migrate([FromForm] int rangeMinutes, [FromForm] int stopMinutes, [FromForm] int batchSizeGetData)
-        {
-            return await dcsExtraService.MigrateDCSExtra(rangeMinutes, stopMinutes, batchSizeGetData);
-        }
-
-        [HttpPost("initialtransipinfo")]
-        public async Task<bool> InitialTransIpInfo([FromForm] int batchSize, [FromForm] int numberOfBatch)
-        {
-            return await dcsExtraService.InitialTransIpInfo(batchSize, numberOfBatch);
         }
 
         [HttpPost("deletebotcomponent")]

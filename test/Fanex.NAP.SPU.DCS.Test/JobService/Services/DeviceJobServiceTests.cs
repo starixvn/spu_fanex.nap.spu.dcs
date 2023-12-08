@@ -10,7 +10,6 @@
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using NSubstitute;
     using NSubstitute.ReceivedExtensions;
-    using Sentry;
     using Xunit;
 
     public class DeviceJobServiceTests

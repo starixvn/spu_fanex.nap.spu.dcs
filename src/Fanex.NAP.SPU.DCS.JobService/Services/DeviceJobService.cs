@@ -306,7 +306,7 @@
 
         static bool ValidateVersion(string version) => Version.TryParse(version, out _);
 
-        private bool CheckForbiddenChanges(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
+        private static bool CheckForbiddenChanges(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
         {
             var values = new List<ValuePair>
             {

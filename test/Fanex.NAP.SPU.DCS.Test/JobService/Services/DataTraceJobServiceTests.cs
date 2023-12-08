@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
