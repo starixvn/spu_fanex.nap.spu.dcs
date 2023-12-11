@@ -22,6 +22,7 @@
             RegisterArchiveService(services);
             RegisterDWTransactionService(services);
             RegisterLogService(services);
+            RegisterTelegramService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -78,6 +79,11 @@
         {
             services.AddSingleton<ILogger, Logger>();
             services.AddSingleton<ILogService, LogService>();
+        }
+
+        private static void RegisterTelegramService(this IServiceCollection services)
+        {
+            services.AddSingleton<INotificationService, NotificationService>();
         }
     }
 }

@@ -27,15 +27,17 @@
         private readonly ILogService logService;
         private readonly IMonitoringServices monitoringServices;
         private readonly IAppSettings appSettings;
+        private readonly INotificationService notificationService;
 
         private readonly string proxy;
-        private readonly int delaySecond = 300;
+        private readonly string token = "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9";
 
-        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ILogService logService, IAppSettings appSettings)
+        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ILogService logService, IAppSettings appSettings, INotificationService notificationService)
         {
             this.logService = logService;
             this.monitoringServices = monitoringServices;
             this.appSettings = appSettings;
+            this.notificationService = notificationService;
 
             proxy = appSettings.EnvironmentString == "PROD" ? appSettings.TelegramProxy : null;
         }
@@ -81,21 +83,13 @@
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
                 }
 
-                var telegramService = new NotificationService();
-                telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-                   .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message))
-                   .SendWithDelay(delaySecond, true);
+                notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message));
             }
         }
 
         public Task<bool> TestTelegramNotifyMessage()
         {
-            var telegramService = new NotificationService();
-            telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "Test"))
-               .SendWithDelay(delaySecond, true);
+            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "test"));
 
             return Task.FromResult(true);
         }
@@ -213,12 +207,7 @@
         {
             if (model != null)
             {
-                var telegramService = new NotificationService();
-
-                telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", model.GroupID, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-                   .Message(new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo))
-                   .SendWithoutDelay(true);
+                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo));
             }
         }
 

@@ -2,7 +2,6 @@
 {
     using System.Threading.Tasks;
     using System;
-    using Fanex.NAP.SPU.DCS.Features.ArchiveData;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.JobService;
     using Fanex.NAP.SPU.DCS.JobService.Services;
@@ -11,15 +10,15 @@
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using NSubstitute.ExceptionExtensions;
-    using System.Collections;
     using System.Collections.Generic;
-    using Fanex.NAP.SPU.DCS.JobService.Models;
+    using Fanex.NAP.SPU.Notification.Services;
 
     public class NotifyTransactionJobServiceTests
     {
         private ILogService logService;
         private IMonitoringServices monitoringServices;
         private IAppSettings appSettings;
+        private INotificationService notificationService;
 
         private readonly IFixture fixture = new Fixture();
 
@@ -44,7 +43,6 @@
         public async Task Execute_WhenThrowError_ShouldReturnFalseAndCallExactFunction()
         {
             // Arrange
-            var transactions = fixture.Create<NotifyTransactionModel>();
             var service = GetService();
 
             monitoringServices.GetNotificationTransaction().Throws(new Exception("Simulate exception"));
@@ -138,8 +136,8 @@
         [Fact]
         public async Task NotifyMessageByID_WhenThrowException_ShouldReturnFalseAndCallExactFunction()
         {
-            var notifyMessage = fixture.Create<NotifyMessageModel>();
             uint notifyMessageID = 1;
+
             var service = GetService();
 
             monitoringServices.GetNotifyMessageById(notifyMessageID).Throws(new Exception("Simulate Exception"));
@@ -197,7 +195,8 @@
             logService = Substitute.For<ILogService>();
             monitoringServices = Substitute.For<IMonitoringServices>();
             appSettings = Substitute.For<IAppSettings>();
-            return new NotifyTransactionJobService(monitoringServices, logService, appSettings);
+            notificationService = Substitute.For<INotificationService>();
+            return new NotifyTransactionJobService(monitoringServices, logService, appSettings, notificationService);
         }
     }
 }
