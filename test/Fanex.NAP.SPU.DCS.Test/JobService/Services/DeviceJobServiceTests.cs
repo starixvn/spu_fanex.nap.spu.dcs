@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http;
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
@@ -17,6 +18,7 @@
         private ILogService logService;
         private IDeviceServices deviceService;
         private IAppSettings appSettings;
+        private HttpClient httpClient;
 
         private readonly IFixture fixture = new Fixture();
 
@@ -296,7 +298,8 @@
             logService = Substitute.For<ILogService>();
             deviceService = Substitute.For<IDeviceServices>();
             appSettings = Substitute.For<IAppSettings>();
-            return new DeviceJobService(logService, deviceService, appSettings);
+            httpClient = Substitute.For<HttpClient>();
+            return new DeviceJobService(logService, deviceService, appSettings, httpClient);
         }
 
         private static List<TransactionEvolutionAttributes> GetEvolutionAttributes()

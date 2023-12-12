@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System.Net.Http;
+    using System.Net.Http.Json;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.Devices;
@@ -16,17 +17,19 @@
         private readonly ILogService logService;
         private readonly IDeviceServices deviceService;
         private readonly IAppSettings appSettings;
+        private readonly HttpClient httpClient;
 
         private const int delayTime = 100; // milliseconds
 
         private readonly int maxChangesRule5 = 2;
         private readonly int maxChangesRule6 = 1;
 
-        public DeviceJobService(ILogService logService, IDeviceServices deviceService, IAppSettings appSettings)
+        public DeviceJobService(ILogService logService, IDeviceServices deviceService, IAppSettings appSettings, HttpClient httpClient)
         {
             this.logService = logService;
             this.deviceService = deviceService;
             this.appSettings = appSettings;
+            this.httpClient = httpClient;
         }
 
         public async Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra)
@@ -375,9 +378,9 @@
         {
             if ((string.IsNullOrEmpty(source) || string.IsNullOrEmpty(destination)) && source != destination) return false;
 
-            var content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
-            var client = new HttpClient();
-            var response = await client.PostAsync(new System.Uri(appSettings.RatioUrl), content);
+            using StringContent content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
+
+            using HttpResponseMessage response = await httpClient.PostAsync(new Uri(appSettings.RatioUrl), content);
 
             if (response.Content != null)
             {

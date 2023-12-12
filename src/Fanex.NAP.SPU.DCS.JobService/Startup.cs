@@ -1,5 +1,7 @@
 namespace Fanex.NAP.SPU.DCS.JobService
 {
+    using System.Net.Http;
+    using System.Threading;
     using Fanex.Data;
     using Fanex.Data.MySql;
     using Fanex.Data.SqlServer;
@@ -44,6 +46,15 @@ namespace Fanex.NAP.SPU.DCS.JobService
             FanexDataConfig(appSettings);
 
             RegisterLogging(appSettings);
+
+            services.AddHttpClient<DeviceJobService>().ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new SocketsHttpHandler()
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+                };
+            })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
