@@ -54,10 +54,9 @@
 
         private void JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
         {
-            if (isTransformExtra)
+            if (isTransformExtra && appSettings.IsReadyDbExtra)
             {
-                if (appSettings.IsReadyDbExtra)
-                    TransformTransaction(numberOfTrans, numberOfBatch, true).Wait();
+                TransformTransaction(numberOfTrans, numberOfBatch, true).Wait();
             }
             else
             {
