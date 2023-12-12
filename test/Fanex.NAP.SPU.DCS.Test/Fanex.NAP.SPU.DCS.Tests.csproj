@@ -27,8 +27,4 @@
     <ProjectReference Include="..\..\src\Fanex.NAP.SPU.DCS\Fanex.NAP.SPU.DCS.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="JobService\Testable\" />
-  </ItemGroup>
-
 </Project>

@@ -95,8 +95,6 @@
         public async Task MonitorTransactionAndNotify_WhenThrowException_ShouldReturnFalseAndCallExactFunction()
         {
             // Arrange
-            var mainCust = fixture.CreateMany<CustModel>();
-
             var rptDateStr = "2023-01-01";
             var batchSize = 1;
             var limitShowCust = 1;

@@ -5,7 +5,6 @@
     using Fanex.NAP.SPU.DCS.JobService;
     using NSubstitute;
     using AutoFixture;
-    using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
     using System.Threading.Tasks;
     using System;
     using Xunit;
