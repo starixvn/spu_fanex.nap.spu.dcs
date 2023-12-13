@@ -2,15 +2,12 @@
 {
     using AutoFixture;
     using Fanex.Data.Repository;
-    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Fanex.NAP.SPU.DCS.Features.Devices;
     using NSubstitute;
     using System.Threading.Tasks;
     using Xunit;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
     using System;
 
     public class DataTraceDataAccessTests

@@ -80,11 +80,11 @@
 
                 for (var date = (DateTime)fromDate; date <= toDate; date = date.AddDays(1))
                 {
-                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
-                    if (betTransactionInfos != null && betTransactionInfos.Any())
+                    var betTransactions = await dataAccess.GetBetTransactionAsync(date);
+                    if (betTransactions != null && betTransactions.Any())
                     {
                         _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                        _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+                        await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactions), batchSize);
                     }
                 }
             }
@@ -114,16 +114,9 @@
                 if (betTransactionInfos != null && betTransactionInfos.Any())
                 {
                     _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                    var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
 
-                    if (isSuccessful)
-                    {
-                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString(formatDatetime));
-                    }
-                    else
-                    {
-                        await logService.ErrorMessageAsync($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
-                    }
+                    await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+                    await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString(formatDatetime));
                 }
             }
 
@@ -162,31 +155,8 @@
                 var listAccountIDByBatch = await dataAccess.GetMissingBetTransactionPackageAsync(transDate, batchSize);
                 if (listAccountIDByBatch != null && listAccountIDByBatch.Any())
                 {
-                    var tasks = new List<Task>();
-
                     await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_BetTrans);
-
-                    foreach (var listAccountID in listAccountIDByBatch)
-                    {
-                        var task = Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await dataAccess.InsertMissingBetTransactionAsync(transDate, listAccountID);
-                            }
-                            catch (Exception ex)
-                            {
-                                await logService.ErrorAsync(ex);
-                                throw;
-                            }
-                        });
-
-                        await Task.Delay(delayTime);
-
-                        tasks.Add(task);
-                    }
-
-                    await Task.WhenAll(tasks);
+                    await ProcessInsertMissingBetTransactionAsync(transDate, listAccountIDByBatch);
 
                     if (isUpdateSystemSetting)
                     {
@@ -200,6 +170,33 @@
             }
 
             return true;
+        }
+
+        private async Task ProcessInsertMissingBetTransactionAsync(DateTime transDate, IEnumerable<string> listAccountIDByBatch)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var listAccountID in listAccountIDByBatch)
+            {
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await dataAccess.InsertMissingBetTransactionAsync(transDate, listAccountID);
+                    }
+                    catch (Exception ex)
+                    {
+                        await logService.ErrorAsync(ex);
+                        throw;
+                    }
+                });
+
+                await Task.Delay(delayTime);
+
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task<bool> ProcessSummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -234,36 +231,8 @@
                 var missingLoginIDPackages = await dataAccess.GetMissingLoginTranPackageAsync(transDate, batchSize);
                 if (missingLoginIDPackages != null && missingLoginIDPackages.Any())
                 {
-                    var tasks = new List<Task>();
-
                     await dataAccess.DeleteMissingTransactionByDate(transDate, CONST_MissingTransaction_LoginTrans);
-
-                    foreach (var package in missingLoginIDPackages)
-                    {
-                        var task = Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
-                            }
-                            catch (Exception ex)
-                            {
-                                await logService.ErrorAsync(ex);
-                                throw;
-                            }
-                        });
-
-                        await Task.Delay(delayTime);
-
-                        tasks.Add(task);
-                    }
-
-                    await Task.WhenAll(tasks);
-
-                    if (isUpdateSystemSetting)
-                    {
-                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString(formatDatetime));
-                    }
+                    await ProcessInsertMissingLoginTransactionAsync(isUpdateSystemSetting, transDate, missingLoginIDPackages);
                 }
                 else
                 {
@@ -272,6 +241,38 @@
             }
 
             return true;
+        }
+
+        private async Task ProcessInsertMissingLoginTransactionAsync(bool isUpdateSystemSetting, DateTime transDate, IEnumerable<RangeIDPackage> missingLoginIDPackages)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var package in missingLoginIDPackages)
+            {
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await dataAccess.InsertMissingLoginTransactionAsync(transDate, package.MinID, package.MaxID);
+                    }
+                    catch (Exception ex)
+                    {
+                        await logService.ErrorAsync(ex);
+                        throw;
+                    }
+                });
+
+                await Task.Delay(delayTime);
+
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
+
+            if (isUpdateSystemSetting)
+            {
+                await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString(formatDatetime));
+            }
         }
 
         private static DateTime ParseExactDate(string dateTimeString)
@@ -313,7 +314,7 @@
             if (betTransactionInfos != null && betTransactionInfos.Any())
             {
                 _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(transDate);
-                _ = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+                await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
             }
 
             return true;
@@ -327,12 +328,8 @@
             }
 
             var data = await dataAccess.GetBetTransactionAsync(transDate);
-            if (data != null && data.Any())
-            {
-                return data.Count();
-            }
 
-            return 0;
+            return data != null && data.Any() ? data.Count() : 0;
         }
 
         public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
@@ -343,14 +340,8 @@
             }
 
             var data = await dataAccess.GetInitBetTransactionAsync(transDate);
-            if (data != null && data.Any())
-            {
-                return data.Count();
-            }
-
-            return 0;
+            return data != null && data.Any() ? data.Count() : 0;
         }
-
 
         private static IEnumerable<BetTransactionInfoDto> TransformBetTransactionInfo(IEnumerable<BetTransactionInfo> model)
         {
@@ -364,7 +355,7 @@
             });
         }
 
-        private async Task<bool> InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfoDto> betTransactionInfos, int batchSize)
+        private async Task InsertSummaryBetTransactionByBatchAsync(IEnumerable<BetTransactionInfoDto> betTransactionInfos, int batchSize)
         {
             var tasks = new List<Task>();
 
@@ -392,8 +383,6 @@
             }
 
             await Task.WhenAll(tasks);
-
-            return true;
         }
 
         private async Task<bool> IsDailyTaskReadyAsync()
