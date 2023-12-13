@@ -44,6 +44,8 @@
 
         private const int dailyTaskFPSID = 104;
         private const int delayTime = 100;
+        private const string formatDatetime = "yyyy-MM-dd";
+
         private const int CONST_SystemSetting_maxBetTransactionDateID = 2;
         private const int CONST_SystemSetting_LastScannedLoginTransDate = 3;
         private const int CONST_SystemSetting_LastScannedBetTransDate = 4;
@@ -88,32 +90,39 @@
             }
             else
             {
-                var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
-                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                DateTime yesterday = DateTime.Now.Date.AddDays(-1);
+                return await ProcessInsertSummaryBetTransaction(batchSize);
+            }
 
-                maxBetTicketDate = maxBetTicketDate.AddDays(1);
-                if (maxBetTicketDate > yesterday)
-                {
-                    return true;
-                }
+            return true;
+        }
 
-                for (var date = maxBetTicketDate; date <= yesterday; date = date.AddDays(1))
+        private async Task<bool> ProcessInsertSummaryBetTransaction(int batchSize)
+        {
+            var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
+            DateTime maxBetTicketDate = ParseExactDate(maxBetTicketDateStr);
+            DateTime yesterday = DateTimeOffset.Now.Date.AddDays(-1);
+
+            maxBetTicketDate = maxBetTicketDate.AddDays(1);
+            if (maxBetTicketDate > yesterday)
+            {
+                return true;
+            }
+
+            for (var date = maxBetTicketDate; date <= yesterday; date = date.AddDays(1))
+            {
+                var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
+                if (betTransactionInfos != null && betTransactionInfos.Any())
                 {
-                    var betTransactionInfos = await dataAccess.GetBetTransactionAsync(date);
-                    if (betTransactionInfos != null && betTransactionInfos.Any())
+                    _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
+                    var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
+
+                    if (isSuccessful)
                     {
-                        _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(date);
-                        var isSuccessful = await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
-
-                        if (isSuccessful)
-                        {
-                            await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString("yyyy-MM-dd"));
-                        }
-                        else
-                        {
-                            await logService.ErrorMessageAsync($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
-                        }
+                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID, date.ToString(formatDatetime));
+                    }
+                    else
+                    {
+                        await logService.ErrorMessageAsync($"DCS - DataTrace InsertSummaryBetTransactionByBatchAsync is not success!");
                     }
                 }
             }
@@ -131,11 +140,11 @@
             else
             {
                 var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate);
-                DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime lastScannedLoginTransDate = ParseExactDate(lastScannedLoginTransDateStr);
                 fromDate = lastScannedLoginTransDate.AddDays(1);
 
                 var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
-                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime maxBetTicketDate = ParseExactDate(maxBetTicketDateStr);
 
                 if (toDate == null || toDate > maxBetTicketDate)
                 {
@@ -181,7 +190,7 @@
 
                     if (isUpdateSystemSetting)
                     {
-                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate, transDate.ToString("yyyy-MM-dd"));
+                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedBetTransDate, transDate.ToString(formatDatetime));
                     }
                 }
                 else
@@ -203,11 +212,11 @@
             else
             {
                 var lastScannedLoginTransDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate);
-                DateTime lastScannedLoginTransDate = DateTime.ParseExact(lastScannedLoginTransDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime lastScannedLoginTransDate = ParseExactDate(lastScannedLoginTransDateStr);
                 fromDate = lastScannedLoginTransDate.AddDays(1);
 
                 var maxBetTicketDateStr = await dataAccess.GetSystemSettingParameterByID(CONST_SystemSetting_maxBetTransactionDateID);
-                DateTime maxBetTicketDate = DateTime.ParseExact(maxBetTicketDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime maxBetTicketDate = ParseExactDate(maxBetTicketDateStr);
 
                 if (toDate == null || toDate > maxBetTicketDate)
                 {
@@ -253,7 +262,7 @@
 
                     if (isUpdateSystemSetting)
                     {
-                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString("yyyy-MM-dd"));
+                        await dataAccess.UpdateSystemSettingParameterByID(CONST_SystemSetting_LastScannedLoginTransDate, transDate.ToString(formatDatetime));
                     }
                 }
                 else
@@ -263,6 +272,11 @@
             }
 
             return true;
+        }
+
+        private static DateTime ParseExactDate(string dateTimeString)
+        {
+            return DateTime.ParseExact(dateTimeString, formatDatetime, CultureInfo.InvariantCulture);
         }
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)

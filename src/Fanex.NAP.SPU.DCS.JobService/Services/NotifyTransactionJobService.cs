@@ -84,7 +84,8 @@
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
                 }
 
-                notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message));
+                var messageModel = new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message);
+                notificationService.Send(token, "-1001459619983", proxy, messageModel);
             }
         }
 

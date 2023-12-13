@@ -360,8 +360,7 @@
                         counter++;
                     }
 
-                    if (counter > maxChangesRule5)
-                        return false;
+                    if (counter > maxChangesRule5) return false;
                 }
             }
             catch (Exception ex)
@@ -375,6 +374,7 @@
 
         private async Task<bool> CheckRatio(string source, string destination)
         {
+            const int minRatio = 75;
             if ((string.IsNullOrEmpty(source) || string.IsNullOrEmpty(destination)) && source != destination) return false;
 
             using StringContent content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
@@ -385,7 +385,7 @@
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
 
-                if (decimal.TryParse(responseContent, out var ratio) && ratio < 75)
+                if (decimal.TryParse(responseContent, out var ratio) && ratio < minRatio)
                 {
                     return false;
                 }
