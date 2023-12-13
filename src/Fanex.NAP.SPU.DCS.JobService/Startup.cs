@@ -4,6 +4,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using System.Threading;
     using Fanex.Data;
     using Fanex.Data.MySql;
+    using Fanex.Data.Repository;
     using Fanex.Data.SqlServer;
     using Fanex.Logging;
     using Fanex.Logging.Sentry;
@@ -32,6 +33,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             var appSettings = new AppSettings(this.Configuration);
 
             services.AddSingleton<IAppSettings>(appSettings);
+            services.AddSingleton<IDynamicRepository>(new DynamicRepository());
 
             services.AddControllers();
             services.AddHealthChecks();

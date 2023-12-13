@@ -34,9 +34,9 @@
 
         public bool IsReadyDbExtra { get; set; }
 
-        public DeviceDataAccess()
+        public DeviceDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch)
