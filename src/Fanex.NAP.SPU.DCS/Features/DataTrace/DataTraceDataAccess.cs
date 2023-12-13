@@ -48,9 +48,9 @@
     {
         private readonly IDynamicRepository repository;
 
-        public DataTraceDataAccess()
+        public DataTraceDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
