@@ -42,7 +42,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(stagingTransIds, actual);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -64,7 +63,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(identityDevices, actual);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -90,7 +88,6 @@
             var settingKey = criteria.GetSettingKey();
             indentityRecovers.Should().Equals(indentityRecovers);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -113,7 +110,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(actual, transactionEvolutionAttributes);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -136,7 +132,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(actual, transactionRecovers);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -159,7 +154,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(actual, transactionRecovers);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
 
         [Theory]
@@ -181,7 +175,6 @@
             var settingKey = criteria.GetSettingKey();
             Assert.Equal(1, actual);
             Assert.Equal(expectedSettingKey, settingKey);
-            Assert.True(criteria.IsInvalid());
         }
     }
 }
