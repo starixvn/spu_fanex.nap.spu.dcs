@@ -31,6 +31,7 @@
 
         private readonly string proxy;
         private readonly string token = "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9";
+        private readonly int extraHour = 7;
 
         public NotifyTransactionJobService(IMonitoringServices monitoringServices, ILogService logService, IAppSettings appSettings, INotificationService notificationService)
         {
@@ -83,20 +84,20 @@
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
                 }
 
-                notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message));
+                notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message));
             }
         }
 
         public Task<bool> TestTelegramNotifyMessage()
         {
-            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "test"));
+            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, "test"));
 
             return Task.FromResult(true);
         }
 
-        private DateTime GetRptDate(string input)
+        private static DateTime GetRptDate(string input)
         {
-            string format = "MM/dd/yyyy";
+            const string format = "MM/dd/yyyy";
             DateTime parsedDate;
 
             if (DateTime.TryParseExact(input, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
@@ -207,7 +208,7 @@
         {
             if (model != null)
             {
-                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo));
+                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, model.Message, model.MoreInfo));
             }
         }
 

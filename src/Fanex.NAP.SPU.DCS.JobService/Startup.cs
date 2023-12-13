@@ -51,12 +51,12 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             services.AddHttpClient<DeviceJobService>().ConfigurePrimaryHttpMessageHandler(() =>
             {
-                return new SocketsHttpHandler()
+                return new SocketsHttpHandler
                 {
                     PooledConnectionLifetime = TimeSpan.FromMinutes(15)
                 };
             })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); ;
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

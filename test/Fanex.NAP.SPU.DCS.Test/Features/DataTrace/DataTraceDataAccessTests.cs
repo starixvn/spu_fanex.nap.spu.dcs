@@ -316,7 +316,7 @@
             // Arrange
             var reportMissingTransactions = fixture.CreateMany<ReportMissingTransactionModel>();
             var criteria = fixture.Create<GetReportMissingTransactionCriteria>();
-            var expectedSettingKey = "DCS_DT_Report_LoginTransaction_GetDetailByDate";
+            var expectedSettingKey = "DCS_DT_Report_MissingTransaction_Get";
 
             repository.FetchAsync<ReportMissingTransactionModel>(Arg.Do<GetReportMissingTransactionCriteria>(x => criteria = x)).Returns(reportMissingTransactions);
 

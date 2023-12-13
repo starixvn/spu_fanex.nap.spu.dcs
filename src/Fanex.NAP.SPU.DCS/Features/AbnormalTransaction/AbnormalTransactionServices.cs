@@ -45,13 +45,17 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                     _dataAccess.UpdateAbnormalTransactions(jsonTrans, rangeID.MinID, rangeID.MaxID);
                 }
                 else
+                {
                     return false;
+                }
             }
             else
             {
                 //Update MaxId
                 if (rangeID.MaxID > 0)
+                {
                     _dataAccess.UpdateAbnormalTransactions(string.Empty, rangeID.MinID, rangeID.MaxID);
+                }
             }
 
             return true;

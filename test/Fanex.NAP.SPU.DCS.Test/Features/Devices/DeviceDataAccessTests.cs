@@ -179,7 +179,7 @@
 
             // Assert
             var settingKey = criteria.GetSettingKey();
-            Assert.Equal(actual, 1);
+            Assert.Equal(1, actual);
             Assert.Equal(expectedSettingKey, settingKey);
             Assert.True(criteria.IsInvalid());
         }
