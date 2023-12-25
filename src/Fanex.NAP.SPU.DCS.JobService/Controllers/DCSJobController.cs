@@ -13,6 +13,7 @@
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
+        private readonly ILogService logService;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -20,7 +21,8 @@
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
-            IArchiveJobServices archiveJobServices)
+            IArchiveJobServices archiveJobServices,
+            ILogService logService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -28,6 +30,7 @@
             this.sumTransactionJobService = sumTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
+            this.logService = logService;
         }
 
         [HttpPost("useragent")]
@@ -45,12 +48,14 @@
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
+            await logService.InfoMessageAsync("transformdevice");
             return await this.deviceJobService.Execute(size, numberOfBatch, false);
         }
 
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
+            await logService.InfoMessageAsync("transformdevice");
             return await this.transactionJobService.Execute(size, numberOfBatch, false);
         }
 

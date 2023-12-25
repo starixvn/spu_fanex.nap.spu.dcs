@@ -155,6 +155,8 @@
                 DeviceFingerprintID = identityDevice.DeviceFingerprintID
             });
 
+            await logService.InfoMessageAsync("InsertTransfromTransaction");
+
             return await deviceService.TransformTransaction07InsertAsync(transformTransactions);
         }
 
