@@ -29,6 +29,8 @@
             this.deviceService = deviceService;
             this.appSettings = appSettings;
             this.httpClient = httpClient;
+
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
         }
 
         public async Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra)

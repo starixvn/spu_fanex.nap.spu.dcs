@@ -55,7 +55,7 @@
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            await logService.InfoMessageAsync("transformdevice");
+            await logService.InfoMessageAsync("transformtransaction");
             return await this.transactionJobService.Execute(size, numberOfBatch, false);
         }
 
