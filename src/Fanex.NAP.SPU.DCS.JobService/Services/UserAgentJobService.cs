@@ -64,7 +64,7 @@
 
                     if (transformUserAgent.Any())
                     {
-                        var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+                        var userAgentJson = JsonSerializer.Serialize(transformUserAgent);
 
                         userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
                     }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
 using Fanex.NAP.SPU.DCS.JobService.Services;
-using Newtonsoft.Json;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
@@ -40,7 +40,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 if (isResult)
                 {
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { ID = t.ID, Status = 1 });
-                    var jsonTrans = JsonConvert.SerializeObject(updateStatus);
+                    var jsonTrans = JsonSerializer.Serialize(updateStatus);
 
                     _dataAccess.UpdateAbnormalTransactions(jsonTrans, rangeID.MinID, rangeID.MaxID);
                 }
@@ -85,13 +85,13 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
         private async Task<bool> PushData(IEnumerable<AbnormalTransactionModel> modelsToPush, string abnormalTransactionUrl)
         {
             using var httpClient = new HttpClient();
-            var jsonContent = JsonConvert.SerializeObject(modelsToPush);
+            var jsonContent = JsonSerializer.Serialize(modelsToPush);
             var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
 
             var responseBody = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode || responseBody != "true")
             {
-                var exception = new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush));
+                var exception = new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonSerializer.Serialize(modelsToPush));
                 await _logService.ErrorAsync(exception);
                 return false;
             }

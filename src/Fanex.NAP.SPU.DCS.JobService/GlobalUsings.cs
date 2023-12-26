@@ -5,5 +5,5 @@ global using System.IO;
 global using System.Linq;
 global using System.Threading.Tasks;
 global using Microsoft.AspNetCore.Mvc;
-global using Newtonsoft.Json;
 global using Sentry;
+global using System.Text.Json;

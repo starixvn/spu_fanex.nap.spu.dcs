@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using System.Net.Http;
-    using System.Text.Json;
     using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;

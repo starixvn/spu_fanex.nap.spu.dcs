@@ -123,7 +123,7 @@
 
                     if (mainCust != null && mainCust.Any())
                     {
-                        monitoringServices.InsertMonitorTransaction(rptDate, JsonConvert.SerializeObject(mainCust));
+                        monitoringServices.InsertMonitorTransaction(rptDate, JsonSerializer.Serialize(mainCust));
                         minCustID = mainCust.Max(c => c.CustID);
                     }
                     else

@@ -4,11 +4,11 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Newtonsoft.Json;
 
     public interface IDataTraceServices
     {
@@ -362,7 +362,7 @@
             for (int startIndex = 0; startIndex < betTransactionInfos.Count(); startIndex += batchSize)
             {
                 var batch = betTransactionInfos.Skip(startIndex).Take(batchSize);
-                var rawTransJson = JsonConvert.SerializeObject(batch);
+                var rawTransJson = JsonSerializer.Serialize(batch);
 
                 var task = Task.Run(async () =>
                 {
