@@ -38,7 +38,7 @@
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
-                    deviceService.IsReadyDbExtra = isReadyDbExtra && appSettings.IsReadyDbExtra;
+                    deviceService.IsReadyDbExtra = isReadyDbExtra;
 
                     await TransformDevice(size, numberOfBatch);
                 }
