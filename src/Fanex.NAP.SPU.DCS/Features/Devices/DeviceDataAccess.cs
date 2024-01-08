@@ -8,66 +8,59 @@
 
     public interface IDeviceDataAccess
     {
-        bool IsReadyDbExtra { get; set; }
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch);
+        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra);
 
-        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson);
+        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra);
 
-        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds);
+        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(
-            string rawFingerPrintIDs,
-            string browserFamilyCode
-        );
+        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId);
+        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson);
-
-        Task<int> TransformTransaction07InsertAsync(string transJson);
+        Task<int> TransformTransaction07InsertAsync(string transJson, bool isReadyDbExtra);
     }
 
     public class DeviceDataAccess : IDeviceDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public bool IsReadyDbExtra { get; set; }
-
         public DeviceDataAccess(IDynamicRepository repository)
         {
             this.repository = repository ?? new DynamicRepository();
         }
 
-        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch)
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
         {
             var criteria = new GetDeviceStagingTransactionPackageCriteria
             {
                 Size = size,
                 NoOfBatch = noOfBatch,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchAsync<StagingTransId>(criteria);
         }
 
-        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson)
+        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(string transIdJson, bool isReadyDbExtra)
         {
             var criteria = new TransformDeviceInsertCriteria
             {
                 TransIdJson = transIdJson,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchAsync<IdentityDevice>(criteria);
         }
 
-        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds)
+        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra)
         {
             var criteria = new GetIdentityDeviceRecoverCriteria
             {
                 TransIds = transIds,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchMultipleAsync<TransactionRecover, TransactionEvolution>(criteria);
@@ -75,47 +68,48 @@
 
         public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(
             string rawFingerPrintIDs,
-            string browserFamilyCode
+            string browserFamilyCode,
+            bool isReadyDbExtra
             )
         {
             var criteria = new GetIdentityEvolutionAttributesCriteria
             {
                 RawFingerPrintIDs = rawFingerPrintIDs,
                 BrowserFamilyCode = browserFamilyCode,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchAsync<TransactionEvolutionAttributes>(criteria);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId)
+        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra)
         {
             var criteria = new IdentityDeviceInsertCriteria
             {
                 transIdJson = transId,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchAsync<TransactionRecover>(criteria);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson)
+        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(string transJson, bool isReadyDbExtra)
         {
             var criteria = new IdentityEvolutionInsertCriteria
             {
                 TransJson = transJson,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.FetchAsync<TransactionRecover>(criteria);
         }
 
-        public async Task<int> TransformTransaction07InsertAsync(string transJson)
+        public async Task<int> TransformTransaction07InsertAsync(string transJson, bool isReadyDbExtra)
         {
             var criteria = new TransformTransaction07InsertCommand
             {
                 transJson = transJson,
-                IsReadyDbExtra = IsReadyDbExtra
+                IsReadyDbExtra = isReadyDbExtra
             };
 
             return await repository.ExecuteAsync(criteria);

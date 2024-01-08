@@ -30,13 +30,13 @@
         {
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<GetDeviceStagingTransactionPackageCriteria>();
 
             repository.FetchAsync<StagingTransId>(Arg.Do<GetDeviceStagingTransactionPackageCriteria>(x => criteria = x)).Returns(stagingTransIds);
 
             // Act
-            var actual = await deviceDataAccess.GetStagingTransIdForDeviceAsync(1, 1);
+            var actual = await deviceDataAccess.GetStagingTransIdForDeviceAsync(1, 1, isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -51,13 +51,13 @@
         {
             // Arrange
             var identityDevices = fixture.CreateMany<IdentityDevice>();
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<TransformDeviceInsertCriteria>();
 
             repository.FetchAsync<IdentityDevice>(Arg.Do<TransformDeviceInsertCriteria>(x => criteria = x)).Returns(identityDevices);
 
             // Act
-            var actual = await deviceDataAccess.TransformDeviceInsertAsync("transIdJson");
+            var actual = await deviceDataAccess.TransformDeviceInsertAsync("transIdJson", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -76,13 +76,13 @@
 
             var indentityRecovers = (transactionRecovers, transactionEvolutions);
 
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<GetIdentityDeviceRecoverCriteria>();
 
             repository.FetchMultipleAsync<TransactionRecover, TransactionEvolution>(Arg.Do<GetIdentityDeviceRecoverCriteria>(x => criteria = x)).Returns(indentityRecovers);
 
             // Act
-            var actual = await deviceDataAccess.GetIdentityDeviceRecoverAsync("transIds");
+            var actual = await deviceDataAccess.GetIdentityDeviceRecoverAsync("transIds", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -98,13 +98,13 @@
             // Arrange
             var transactionEvolutionAttributes = fixture.CreateMany<TransactionEvolutionAttributes>();
 
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<GetIdentityEvolutionAttributesCriteria>();
 
             repository.FetchAsync<TransactionEvolutionAttributes>(Arg.Do<GetIdentityEvolutionAttributesCriteria>(x => criteria = x)).Returns(transactionEvolutionAttributes);
 
             // Act
-            var actual = await deviceDataAccess.GetIdentityEvolutionAttributesAsync("rawFingerPrintIDs", "browserFamilyCode");
+            var actual = await deviceDataAccess.GetIdentityEvolutionAttributesAsync("rawFingerPrintIDs", "browserFamilyCode", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -120,13 +120,13 @@
             // Arrange
             var transactionRecovers = fixture.CreateMany<TransactionRecover>();
 
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<IdentityDeviceInsertCriteria>();
 
             repository.FetchAsync<TransactionRecover>(Arg.Do<IdentityDeviceInsertCriteria>(x => criteria = x)).Returns(transactionRecovers);
 
             // Act
-            var actual = await deviceDataAccess.IdentityDeviceInsertAsync("transId");
+            var actual = await deviceDataAccess.IdentityDeviceInsertAsync("transId", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -142,13 +142,13 @@
             // Arrange
             var transactionRecovers = fixture.CreateMany<TransactionRecover>();
 
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<IdentityEvolutionInsertCriteria>();
 
             repository.FetchAsync<TransactionRecover>(Arg.Do<IdentityEvolutionInsertCriteria>(x => criteria = x)).Returns(transactionRecovers);
 
             // Act
-            var actual = await deviceDataAccess.IdentityEvolutionInsertAsync("transJson");
+            var actual = await deviceDataAccess.IdentityEvolutionInsertAsync("transJson", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
@@ -163,13 +163,13 @@
         {
             // Arrange
 
-            deviceDataAccess.IsReadyDbExtra = isExtra;
+            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<TransformTransaction07InsertCommand>();
 
             repository.ExecuteAsync(Arg.Do<TransformTransaction07InsertCommand>(x => criteria = x)).Returns(1);
 
             // Act
-            var actual = await deviceDataAccess.TransformTransaction07InsertAsync("transJson");
+            var actual = await deviceDataAccess.TransformTransaction07InsertAsync("transJson", isExtra);
 
             // Assert
             var settingKey = criteria.GetSettingKey();

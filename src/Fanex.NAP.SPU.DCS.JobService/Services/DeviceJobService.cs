@@ -16,6 +16,7 @@
         private readonly IDeviceServices deviceService;
         private readonly IAppSettings appSettings;
         private readonly HttpClient httpClient;
+        private readonly bool isExtra = false;
 
         private const int delayTime = 100; // milliseconds
 
@@ -38,9 +39,7 @@
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
-                    deviceService.IsReadyDbExtra = isReadyDbExtra;
-
-                    await TransformDevice(size, numberOfBatch);
+                    await TransformDevice(size, numberOfBatch, isReadyDbExtra);
                 }
             }
             catch (Exception ex)
@@ -53,16 +52,16 @@
             return await Task.FromResult(true);
         }
 
-        private async Task TransformDevice(int size, int numberOfBatch)
+        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
         {
-            var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch);
+            var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
 
             if (stagingTransIds != null && stagingTransIds.Any())
             {
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
 
-                var taskDevices = TaskDeviceIdentity(groupTrans);
-                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans);
+                var taskDevices = TaskDeviceIdentity(groupTrans, isReadyDbExtra);
+                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans, isReadyDbExtra);
 
                 await Task.WhenAll(taskDevices, taskRecovers);
 
@@ -71,12 +70,12 @@
 
                 if (identityDevices.Any())
                 {
-                    await InsertTransfromTransaction(identityDevices, evolutionDevices);
+                    await InsertTransfromTransaction(identityDevices, evolutionDevices, isReadyDbExtra);
                 }
             }
         }
 
-        private async Task<IEnumerable<IdentityDevice>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
+        private async Task<IEnumerable<IdentityDevice>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
         {
             var taskDevices = new List<Task<IEnumerable<IdentityDevice>>>();
 
@@ -86,7 +85,7 @@
                 {
                     try
                     {
-                        return deviceService.TransformDeviceInsertAsync(trans);
+                        return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
                     }
                     catch (Exception ex)
                     {
@@ -103,7 +102,7 @@
             return (await Task.WhenAll(taskDevices)).Where(result => result != null).SelectMany(result => result);
         }
 
-        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans)
+        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
         {
             var taskRecovers = new List<Task<IEnumerable<TransactionRecover>>>();
 
@@ -113,7 +112,7 @@
                 {
                     try
                     {
-                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)));
+                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)), isReadyDbExtra);
                     }
                     catch (Exception ex)
                     {
@@ -132,17 +131,17 @@
             return result;
         }
 
-        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds)
+        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds, bool isReadyDbExtra)
         {
-            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds);
+            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
 
-            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions);
+            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions, isReadyDbExtra);
 
             return evolutionDevices.Concat(transactionRecovers);
         }
 
 
-        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices)
+        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices, bool isReadyDbExtra)
         {
             var transformTransactions = identityDevices.Select(identityDevice => new TransformTransactionModel
             {
@@ -156,10 +155,10 @@
                 DeviceFingerprintID = identityDevice.DeviceFingerprintID
             });
 
-            return await deviceService.TransformTransaction07InsertAsync(transformTransactions);
+            return await deviceService.TransformTransaction07InsertAsync(transformTransactions, isReadyDbExtra);
         }
 
-        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions)
+        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions, bool isReadyDbExtra)
         {
             if (transactionEvolutions.Any())
             {
@@ -169,7 +168,7 @@
                 if (newDeviceTransIds != null && newDeviceTransIds.Any())
                 {
                     var transIds = string.Join(",", newDeviceTransIds);
-                    return await deviceService.IdentityDeviceInsertAsync(transIds);
+                    return await deviceService.IdentityDeviceInsertAsync(transIds, isReadyDbExtra);
                 }
 
                 // FPS Evolution
@@ -182,7 +181,7 @@
                                                 RecoverRawFingerPrintID = x.RecoverFingerPrintID
                                             });
 
-                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions);
+                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions, isReadyDbExtra);
                 }
             }
 
@@ -221,7 +220,7 @@
         {
             if (source != null && !string.IsNullOrEmpty(source.RawFingerPrintIDs) && !string.IsNullOrEmpty(source.BrowserFamilyCode))
             {
-                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode);
+                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode, isExtra);
 
                 TransactionEvolutionAttributes result = evolutionAttributes.FirstOrDefault(destination => CompareRules(source, destination));
 

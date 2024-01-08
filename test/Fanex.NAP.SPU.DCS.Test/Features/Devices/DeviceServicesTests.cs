@@ -14,6 +14,7 @@
         private IDeviceDataAccess deviceDataAcess;
         private IDeviceServices deviceServices;
         private IFixture fixture = new Fixture();
+        private bool isExtra = false;
 
         public DeviceServicesTests()
         {
@@ -25,12 +26,13 @@
         [Fact]
         public async Task GetStagingTransIdForDeviceAsync_WhenCall_ReturnExactData()
         {
+
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
-            deviceDataAcess.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
+            deviceDataAcess.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
 
             // Act
-            var actual = await deviceServices.GetStagingTransIdForDeviceAsync(1, 1);
+            var actual = await deviceServices.GetStagingTransIdForDeviceAsync(1, 1, isExtra);
 
             // Assert
             Assert.Equal(stagingTransIds, actual);
@@ -43,7 +45,7 @@
             var expected = new List<StagingTransId>();
 
             // Act
-            var actual = await deviceServices.GetStagingTransIdForDeviceAsync(0, 0);
+            var actual = await deviceServices.GetStagingTransIdForDeviceAsync(0, 0, isExtra);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -55,10 +57,10 @@
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
             var expected = fixture.CreateMany<IdentityDevice>();
-            deviceDataAcess.TransformDeviceInsertAsync(Arg.Any<string>()).Returns(expected);
+            deviceDataAcess.TransformDeviceInsertAsync(Arg.Any<string>(), isExtra).Returns(expected);
 
             // Act
-            var actual = await deviceServices.TransformDeviceInsertAsync(stagingTransIds);
+            var actual = await deviceServices.TransformDeviceInsertAsync(stagingTransIds, isExtra);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -73,10 +75,10 @@
 
             var expected = (transactionRecovers, transactionEvolutions);
 
-            deviceDataAcess.GetIdentityDeviceRecoverAsync(Arg.Any<string>()).Returns(expected);
+            deviceDataAcess.GetIdentityDeviceRecoverAsync(Arg.Any<string>(), isExtra).Returns(expected);
 
             // Act
-            var actual = await deviceServices.GetIdentityDeviceRecoverAsync("transIds");
+            var actual = await deviceServices.GetIdentityDeviceRecoverAsync("transIds", isExtra);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -88,7 +90,7 @@
             var expected = (new List<TransactionRecover>(), new List<TransactionEvolution>());
 
             // Act
-            var actual = await deviceServices.GetIdentityDeviceRecoverAsync("");
+            var actual = await deviceServices.GetIdentityDeviceRecoverAsync("", isExtra);
 
             // Assert
             actual.Should().Equals(expected);
@@ -99,10 +101,10 @@
         {
             // Arrange
             var transactionRecovers = fixture.CreateMany<TransactionRecover>();
-            deviceDataAcess.IdentityDeviceInsertAsync(Arg.Any<string>()).Returns(transactionRecovers);
+            deviceDataAcess.IdentityDeviceInsertAsync(Arg.Any<string>(), isExtra).Returns(transactionRecovers);
 
             // Act
-            var actual = await deviceServices.IdentityDeviceInsertAsync("transIds");
+            var actual = await deviceServices.IdentityDeviceInsertAsync("transIds", isExtra);
 
             // Assert
             Assert.Equal(transactionRecovers, actual);
@@ -114,10 +116,10 @@
             // Arrange
             var transactionRecovers = fixture.CreateMany<TransactionRecover>();
             var model = fixture.CreateMany<IdentifyEvolutionModel>();
-            deviceDataAcess.IdentityEvolutionInsertAsync(Arg.Any<string>()).Returns(transactionRecovers);
+            deviceDataAcess.IdentityEvolutionInsertAsync(Arg.Any<string>(), isExtra).Returns(transactionRecovers);
 
             // Act
-            var actual = await deviceServices.IdentityEvolutionInsertAsync(model);
+            var actual = await deviceServices.IdentityEvolutionInsertAsync(model, isExtra);
 
             // Assert
             Assert.Equal(transactionRecovers, actual);
@@ -128,10 +130,10 @@
         {
             // Arrange
             var model = fixture.CreateMany<TransformTransactionModel>();
-            deviceDataAcess.TransformTransaction07InsertAsync(Arg.Any<string>()).Returns(1);
+            deviceDataAcess.TransformTransaction07InsertAsync(Arg.Any<string>(), isExtra).Returns(1);
 
             // Act
-            var actual = await deviceServices.TransformTransaction07InsertAsync(model);
+            var actual = await deviceServices.TransformTransaction07InsertAsync(model, isExtra);
 
             // Assert
             Assert.Equal(1, actual);
@@ -144,7 +146,7 @@
             var model =  new List<TransformTransactionModel>();
 
             // Act
-            var actual = await deviceServices.TransformTransaction07InsertAsync(model);
+            var actual = await deviceServices.TransformTransaction07InsertAsync(model, isExtra);
 
             // Assert
             Assert.Equal(0, actual);
