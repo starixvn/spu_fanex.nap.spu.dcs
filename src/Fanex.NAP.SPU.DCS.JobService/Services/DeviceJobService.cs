@@ -400,7 +400,7 @@
             {
                 new ValuePair { Source = source.Resolution, Destination = destination.Resolution },
                 new ValuePair { Source = source.Timezone, Destination = destination.Timezone },
-                new ValuePair { Source = source.GLRenderer, Destination = destination.GLRenderer }
+                new ValuePair { Source = source.Encoding, Destination = destination.Encoding }
             };
 
             counter = 0;
