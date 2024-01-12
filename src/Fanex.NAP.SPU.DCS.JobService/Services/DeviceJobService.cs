@@ -343,7 +343,9 @@
                 new ValuePair { Source = source.Vendor, Destination = destination.Vendor },
                 new ValuePair { Source = source.GLRenderer, Destination = destination.GLRenderer },
                 new ValuePair { Source = source.Plugins, Destination = destination.Plugins },
-                new ValuePair { Source = source.Languages, Destination = destination.Languages }
+                new ValuePair { Source = source.Languages, Destination = destination.Languages },
+                new ValuePair { Source = source.Accept, Destination = destination.Accept },
+                new ValuePair { Source = source.Headers, Destination = destination.Headers }
             };
 
             try
