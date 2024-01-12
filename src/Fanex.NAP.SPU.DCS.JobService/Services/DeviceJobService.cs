@@ -162,7 +162,7 @@
         {
             if (transactionEvolutions.Any())
             {
-                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions);
+                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions, isReadyDbExtra);
 
                 // NewDevice
                 if (newDeviceTransIds != null && newDeviceTransIds.Any())
@@ -188,14 +188,14 @@
             return new List<TransactionRecover>();
         }
 
-        private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans)
+        private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans, bool isReadyDbExtra)
         {
             var newDeviceTransIds = new List<ulong>();
             var transRecover = new List<TransactionEvolutionModel>();
 
             foreach (var tran in trans)
             {
-                var recoverFingerPrintId = await GetRecoverFingerPrintIdByEvolutionAsync(tran);
+                var recoverFingerPrintId = await GetRecoverFingerPrintIdByEvolutionAsync(tran, isReadyDbExtra);
 
                 if (recoverFingerPrintId > 0)
                 {
@@ -216,11 +216,11 @@
             return (newDeviceTransIds, transRecover);
         }
 
-        private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source)
+        private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source, bool isReadyDbExtra)
         {
             if (source != null && !string.IsNullOrEmpty(source.RawFingerPrintIDs) && !string.IsNullOrEmpty(source.BrowserFamilyCode))
             {
-                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode, isExtra);
+                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode, isReadyDbExtra);
 
                 TransactionEvolutionAttributes result = evolutionAttributes.FirstOrDefault(destination => CompareRules(source, destination));
 
