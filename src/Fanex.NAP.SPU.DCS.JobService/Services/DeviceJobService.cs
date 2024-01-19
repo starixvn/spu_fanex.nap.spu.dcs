@@ -160,6 +160,8 @@
 
         private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions, bool isReadyDbExtra)
         {
+            var taskResult = new List<Task<IEnumerable<TransactionRecover>>>();
+
             if (transactionEvolutions.Any())
             {
                 var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions, isReadyDbExtra);
@@ -168,7 +170,7 @@
                 if (newDeviceTransIds != null && newDeviceTransIds.Any())
                 {
                     var transIds = string.Join(",", newDeviceTransIds);
-                    return await deviceService.IdentityDeviceInsertAsync(transIds, isReadyDbExtra);
+                    taskResult.Add(deviceService.IdentityDeviceInsertAsync(transIds, isReadyDbExtra));
                 }
 
                 // FPS Evolution
@@ -181,11 +183,11 @@
                                                 RecoverRawFingerPrintID = x.RecoverFingerPrintID
                                             });
 
-                    return await deviceService.IdentityEvolutionInsertAsync(identityEvolutions, isReadyDbExtra);
+                    taskResult.Add(deviceService.IdentityEvolutionInsertAsync(identityEvolutions, isReadyDbExtra));
                 }
             }
 
-            return new List<TransactionRecover>();
+            return (await Task.WhenAll(taskResult)).Where(result => result != null).SelectMany(result => result);
         }
 
         private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans, bool isReadyDbExtra)
