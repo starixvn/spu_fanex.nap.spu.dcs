@@ -13,14 +13,7 @@
 
         public override string GetSettingKey()
         {
-            if (IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_UserAgent_GetNullBrowserOSList";
-            }
-            else
-            {
-                return "DCS_DC_Transform_UserAgent_GetNullBrowserOSList";
-            }
+            return IsReadyDbExtra ? "DCS_ET_Transform_UserAgent_GetNullBrowserOSList" : "DCS_DC_Transform_UserAgent_GetNullBrowserOSList";
         }
 
         public override bool IsValid()

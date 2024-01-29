@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
-    internal class GetMainCustByDateCriteria : CriteriaBase
+    public class GetMainCustByDateCriteria : CriteriaBase
     {
         public DateTime RptDate { get; set; }
         public int MinCustID { get; set; }

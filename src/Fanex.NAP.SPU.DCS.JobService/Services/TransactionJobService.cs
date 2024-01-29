@@ -1,10 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.Transactions;
-    using Sentry;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     public interface ITransactionJobService
     {
@@ -13,16 +9,16 @@
 
     public class TransactionJobService : ITransactionJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly ITransactionServices transactionService;
         private readonly IAppSettings appSettings;
 
         private readonly IList<string> IgnoreMessages;
         private const int delayTime = 500; // milliseconds
 
-        public TransactionJobService(ISentryClient sentryClient, ITransactionServices transactionService, IAppSettings appSettings)
+        public TransactionJobService(ILogService logService, ITransactionServices transactionService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.transactionService = transactionService;
             this.appSettings = appSettings;
             IgnoreMessages = new List<string> {
@@ -45,7 +41,7 @@
             {
                 if (!this.IgnoreMessages.Contains(ex.Message))
                 {
-                    sentryClient.CaptureException(ex);
+                    await logService.ErrorAsync(ex);
 
                     return await Task.FromResult(false);
                 }
@@ -58,15 +54,7 @@
 
         private void JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
         {
-            if (isTransformExtra)
-            {
-                if (appSettings.IsReadyDbExtra)
-                    TransformTransaction(numberOfTrans, numberOfBatch, true).Wait();
-            }
-            else
-            {
-                TransformTransaction(numberOfTrans, numberOfBatch, false).Wait();
-            }
+            TransformTransaction(numberOfTrans, numberOfBatch, isTransformExtra).Wait();
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -92,7 +80,7 @@
                 }
                 catch (Exception ex)
                 {
-                    sentryClient.CaptureException(ex);
+                    await logService.ErrorAsync(ex);
 
                     throw;
                 }

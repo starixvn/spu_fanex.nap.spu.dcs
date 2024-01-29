@@ -1,24 +1,23 @@
-using Fanex.Data;
-using Fanex.Data.MySql;
-using Fanex.Data.SqlServer;
-using Fanex.Logging;
-using Fanex.Logging.Sentry;
-using Fanex.NAP.SPU.DCS.JobService.Services;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Sentry;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 namespace Fanex.NAP.SPU.DCS.JobService
 {
+    using System.Net.Http;
+    using System.Threading;
+    using Fanex.Data;
+    using Fanex.Data.MySql;
+    using Fanex.Data.Repository;
+    using Fanex.Data.SqlServer;
+    using Fanex.Logging;
+    using Fanex.Logging.Sentry;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
+    using HealthChecks.UI.Client;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.OpenApi.Models;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -34,6 +33,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             var appSettings = new AppSettings(this.Configuration);
 
             services.AddSingleton<IAppSettings>(appSettings);
+            services.AddSingleton<IDynamicRepository>(new DynamicRepository());
 
             services.AddControllers();
             services.AddHealthChecks();
@@ -44,10 +44,19 @@ namespace Fanex.NAP.SPU.DCS.JobService
             });
 
             services.RegisterService();
-            
+
             FanexDataConfig(appSettings);
 
             RegisterLogging(appSettings);
+
+            services.AddHttpClient<DeviceJobService>().ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+                };
+            })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

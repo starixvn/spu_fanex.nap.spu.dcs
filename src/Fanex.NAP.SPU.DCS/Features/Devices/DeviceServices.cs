@@ -1,16 +1,27 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
-    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
-    using Fanex.NAP.SPU.DCS.Shares;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
 
     public interface IDeviceServices
     {
-        IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra);
 
-        DataResult UpdateDevices(IEnumerable<StagingTransIdEntity> stagingTransId, bool isReadyDbExtra);
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
+
+        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+
+        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra);
+
+        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra);
+
+        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra);
+
+        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra);
+
+        Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra);
     }
 
     public class DeviceServices : IDeviceServices
@@ -22,30 +33,57 @@
             this.deviceDataAcess = deviceDataAcess;
         }
 
-        public IEnumerable<StagingTransIdEntity> GetStagingTransIdForDevice(int size, int noOfBatch, bool isReadyDbExtra)
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
         {
-            if(size != 0 && noOfBatch != 0)
+            if (size != 0 && noOfBatch != 0)
             {
-                return this.deviceDataAcess.GetStagingTransIdForDevice(size, noOfBatch, isReadyDbExtra);
+                return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch, isReadyDbExtra);
             }
 
-            return new List<StagingTransIdEntity>();
+            return new List<StagingTransId>();
         }
 
-        public DataResult UpdateDevices(IEnumerable<StagingTransIdEntity> stagingTransId, bool isReadyDbExtra)
-        {            
-            if(stagingTransId != null && stagingTransId.Any())
-            {
-                var transIdJson = JsonConvert.SerializeObject(stagingTransId);
+        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        {
+            var transIdJson = JsonSerializer.Serialize(stagingTransId);
+            return await deviceDataAcess.TransformDeviceInsertAsync(transIdJson, isReadyDbExtra);
+        }
 
-                return this.deviceDataAcess.UpdateDevice(transIdJson, isReadyDbExtra);
+        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra)
+        {
+            if (!string.IsNullOrEmpty(transIds))
+            {
+                return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
             }
 
-            return new DataResult
+            return (new List<TransactionRecover>(), new List<TransactionEvolution>());
+        }
+
+        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra)
+        {
+            return await deviceDataAcess.GetIdentityEvolutionAttributesAsync(rawFingerPrintIDs, browserFamilyCode, isReadyDbExtra);
+        }
+
+        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra)
+        {
+            return await deviceDataAcess.IdentityDeviceInsertAsync(transId, isReadyDbExtra);
+        }
+
+        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra)
+        {
+            var transJson = JsonSerializer.Serialize(models);
+            return await deviceDataAcess.IdentityEvolutionInsertAsync(transJson, isReadyDbExtra);
+        }
+
+        public async Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra)
+        {
+            if (transformTransactionModels != null && transformTransactionModels.Any())
             {
-                ErrorCode = -1,
-                ErrorMessage = "Parameter is empty."
-            };            
+                var transJson = JsonSerializer.Serialize(transformTransactionModels);
+                return await deviceDataAcess.TransformTransaction07InsertAsync(transJson, isReadyDbExtra);
+            }
+
+            return default;
         }
     }
 }

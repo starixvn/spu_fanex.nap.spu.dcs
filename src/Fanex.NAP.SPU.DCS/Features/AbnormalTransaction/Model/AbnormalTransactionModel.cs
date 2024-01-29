@@ -2,7 +2,7 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model
 {
-    internal class AbnormalTransactionModel
+    public class AbnormalTransactionModel
     {
         public ulong ID { get; set; }
 

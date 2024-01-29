@@ -16,14 +16,7 @@
 
         public override string GetSettingKey()
         {
-            if (IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_UserAgent_Insert";
-            }
-            else
-            {
-                return "DCS_DC_Transform_UserAgent_Insert";
-            }            
+            return IsReadyDbExtra ? "DCS_ET_Transform_UserAgent_Insert" : "DCS_DC_Transform_UserAgent_Insert";
         }
 
         public override bool IsValid()

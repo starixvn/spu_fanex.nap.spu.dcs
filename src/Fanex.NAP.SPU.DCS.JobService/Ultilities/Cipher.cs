@@ -1,9 +1,8 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Ultilities
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Ultilities
 {
+    using System.Security.Cryptography;
+    using System.Text;
+
     public static class Cipher
     {
         public static Int64 Hashing2Int(string original)

@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria
 {
-    public class UpdateUserAgentCriteria: NonQueryCommand
+    public class UpdateUserAgentCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_UserAgentJson")]
         public string UserAgentJson { get; set; }
@@ -13,14 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria
 
         public override string GetSettingKey()
         {
-            if (this.IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_UserAgent_UpdateOSBrowser";
-            }
-            else
-            {
-                return "DCS_DC_Transform_UserAgent_UpdateOSBrowser";
-            }            
+            return IsReadyDbExtra ? "DCS_ET_Transform_UserAgent_UpdateOSBrowser" : "DCS_DC_Transform_UserAgent_UpdateOSBrowser";
         }
 
         public override bool IsValid()

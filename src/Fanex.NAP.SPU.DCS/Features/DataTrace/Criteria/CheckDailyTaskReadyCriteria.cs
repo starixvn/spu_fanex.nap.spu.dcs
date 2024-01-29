@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    using System;
     using Fanex.Data.Repository;
     public class CheckDailyTaskReadyCriteria : CriteriaBase
     {

@@ -1,8 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Microsoft.AspNetCore.Mvc;
     using UAParser.FormFactor.Models;
 
     [ApiController]
@@ -22,7 +20,8 @@
             ITransactionJobService transactionJobService,
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
-            IArchiveJobServices archiveJobServices)
+            IArchiveJobServices archiveJobServices,
+            ILogService logService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;

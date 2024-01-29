@@ -1,10 +1,10 @@
-﻿using Fanex.Data;
+﻿using System;
+using Fanex.Data;
 using Fanex.Data.Repository;
-using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetReportBotDTransactionCriteria : CriteriaBase
+    public class GetReportBotDTransactionCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_FromDate")]
         public DateTime FromDate { get; set; }

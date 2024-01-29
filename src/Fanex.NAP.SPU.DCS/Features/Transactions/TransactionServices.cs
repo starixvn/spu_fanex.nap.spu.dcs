@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Transactions
 {
-    using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
     using System.Collections.Generic;
+    using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
 
     public interface ITransactionServices
     {

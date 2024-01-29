@@ -1,12 +1,12 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     public interface IDataTraceDataAccess
     {
@@ -22,7 +22,7 @@
 
         Task<int> DeleteBetTransactionSummaryByDateAsync(DateTime transDate);
 
-        Task<string> GetSystemSettingParameterByID(int id);
+        Task<string> GetSystemSettingParameterByID(int parameterID);
 
         Task<int> UpdateSystemSettingParameterByID(int id, string value);
 
@@ -48,9 +48,9 @@
     {
         private readonly IDynamicRepository repository;
 
-        public DataTraceDataAccess()
+        public DataTraceDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)

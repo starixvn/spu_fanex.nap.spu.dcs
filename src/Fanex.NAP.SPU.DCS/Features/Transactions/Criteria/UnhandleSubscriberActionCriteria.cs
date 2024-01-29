@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
-    public class UnhandleSubscriberActionCriteria: NonQueryCommand
+    public class UnhandleSubscriberActionCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_FromTransID")]
         public long FromTransId { get; set; }
@@ -16,14 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 
         public override string GetSettingKey()
         {
-            if (IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_UnhandleSubscriberAction";
-            }
-            else
-            {
-                return "DCS_DC_Transform_UnhandleSubscriberAction";
-            }            
+            return IsReadyDbExtra ? "DCS_ET_Transform_UnhandleSubscriberAction" : "DCS_DC_Transform_UnhandleSubscriberAction";
         }
 
         public override bool IsValid()

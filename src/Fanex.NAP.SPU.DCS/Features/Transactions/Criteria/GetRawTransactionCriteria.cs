@@ -3,7 +3,7 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
-    public class GetRawTransactionCriteria: CriteriaBase
+    public class GetRawTransactionCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_IsProcessed")]
         public int IsProcessed { get; set; }
@@ -19,14 +19,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 
         public override string GetSettingKey()
         {
-            if (IsReadyDbExtra)
-            {
-                return "DCS_ET_Transform_RawTrans_GetPackage";
-            }
-            else
-            {
-                return "DCS_DC_Transform_RawTrans_GetPackage";
-            }            
+            return IsReadyDbExtra ? "DCS_ET_Transform_RawTrans_GetPackage" : "DCS_DC_Transform_RawTrans_GetPackage";
         }
 
         public override bool IsValid()

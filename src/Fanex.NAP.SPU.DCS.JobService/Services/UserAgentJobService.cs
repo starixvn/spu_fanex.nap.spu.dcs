@@ -1,11 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
-    using Newtonsoft.Json;
-    using Sentry;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using UAParser.FormFactor.Models;
 
     public interface IUserAgentJobService
@@ -17,13 +12,13 @@
     }
     public class UserAgentJobService : IUserAgentJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IUserAgentServices userAgentService;
         private readonly IAppSettings appSettings;
 
-        public UserAgentJobService(ISentryClient sentryClient, IUserAgentServices userAgentService, IAppSettings appSettings)
+        public UserAgentJobService(ILogService logService, IUserAgentServices userAgentService, IAppSettings appSettings)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.userAgentService = userAgentService;
             this.appSettings = appSettings;
         }
@@ -37,32 +32,24 @@
         {
             try
             {
-                if(size > 0)
+                if (size > 0)
                 {
                     JobRun(size, isTransformExtra);
-                }                                
+                }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                await logService.ErrorAsync(ex);
 
                 return await Task.FromResult(false);
             }
 
-            return await Task.FromResult(true);            
+            return await Task.FromResult(true);
         }
 
         private void JobRun(int size, bool isTransformExtra)
-        {            
-            if (isTransformExtra)
-            {
-                if(appSettings.IsReadyDbExtra)
-                    TransformUserAgent(size, true);
-            }
-            else
-            {
-                TransformUserAgent(size, false);
-            }
+        {
+            TransformUserAgent(size, isTransformExtra && appSettings.IsReadyDbExtra);
         }
 
         private void TransformUserAgent(int size, bool isReadyDbExtra)
@@ -77,18 +64,18 @@
 
                     if (transformUserAgent.Any())
                     {
-                        var userAgentJson = JsonConvert.SerializeObject(transformUserAgent);
+                        var userAgentJson = JsonSerializer.Serialize(transformUserAgent);
 
                         userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
 
                 throw;
-            }            
+            }
         }
     }
 }

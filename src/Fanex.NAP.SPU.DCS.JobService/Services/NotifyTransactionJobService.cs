@@ -1,18 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
     using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.Notification.Services;
-    using Newtonsoft.Json;
-    using Sentry;
 
     public interface INotifyTransactionJobService
     {
@@ -31,17 +24,21 @@
 
     public class NotifyTransactionJobService : INotifyTransactionJobService
     {
-        private readonly ISentryClient sentryClient;
+        private readonly ILogService logService;
         private readonly IMonitoringServices monitoringServices;
         private readonly IAppSettings appSettings;
+        private readonly INotificationService notificationService;
 
         private readonly string proxy;
+        private readonly string token = "0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9";
+        private readonly int extraHour = 7;
 
-        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ISentryClient sentryClient, IAppSettings appSettings)
+        public NotifyTransactionJobService(IMonitoringServices monitoringServices, ILogService logService, IAppSettings appSettings, INotificationService notificationService)
         {
-            this.sentryClient = sentryClient;
+            this.logService = logService;
             this.monitoringServices = monitoringServices;
             this.appSettings = appSettings;
+            this.notificationService = notificationService;
 
             proxy = appSettings.EnvironmentString == "PROD" ? appSettings.TelegramProxy : null;
         }
@@ -56,13 +53,11 @@
             }
             catch (Exception ex)
             {
-                sentryClient.CaptureException(ex);
+                logService.ErrorAsync(ex);
 
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - Notify Transaction job Execute exeption message:  {logMessage}");
+                logService.InfoMessageAsync($"DCS - Notify Transaction job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -80,33 +75,30 @@
                 var message = $"Monitoring Transaction job run COMPLETED.";
 
                 if (!string.IsNullOrWhiteSpace(data.YesterdayLess50Percent))
+                {
                     message += $"\n\r - Total Trans Today < 50% Yesterday: {data.YesterdayLess50Percent}";
+                }
 
                 if (!string.IsNullOrWhiteSpace(data.ValidLess50Percent))
+                {
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
+                }
 
-                var telegramService = new NotificationService();
-                telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-                   .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, message))
-                   .SendWithDelay(300, true);
+                var messageModel = new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message);
+                notificationService.Send(token, "-1001459619983", proxy, messageModel);
             }
         }
 
         public Task<bool> TestTelegramNotifyMessage()
         {
-            var telegramService = new NotificationService();
-            telegramService
-               .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", "-1001459619983", "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-               .Message(new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, "Test"))
-               .SendWithDelay(300, true);
+            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, "test"));
 
             return Task.FromResult(true);
         }
 
-        private DateTime GetRptDate(string input)
+        private static DateTime GetRptDate(string input)
         {
-            string format = "MM/dd/yyyy";
+            const string format = "MM/dd/yyyy";
             DateTime parsedDate;
 
             if (DateTime.TryParseExact(input, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
@@ -131,7 +123,7 @@
 
                     if (mainCust != null && mainCust.Any())
                     {
-                        monitoringServices.InsertMonitorTransaction(rptDate, JsonConvert.SerializeObject(mainCust));
+                        monitoringServices.InsertMonitorTransaction(rptDate, JsonSerializer.Serialize(mainCust));
                         minCustID = mainCust.Max(c => c.CustID);
                     }
                     else
@@ -145,11 +137,9 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - MonitorTransactionLevelAccount job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - MonitorTransactionLevelAccount job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -178,11 +168,9 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - NotifyMessageByID job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -207,11 +195,9 @@
             }
             catch (Exception ex)
             {
-                var logMessage = new LogMessage(ex.Message)
-                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+                var logMessage = LogMessage(ex);
 
-                LogService.Error($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
+                logService.ErrorMessageAsync($"DCS - NotifyMessageByNotifyType job Execute exeption message:  {logMessage}");
 
                 return Task.FromResult(false);
             }
@@ -223,18 +209,20 @@
         {
             if (model != null)
             {
-                var telegramService = new NotificationService();
-
-                telegramService
-                   .Config("0A40aOc7CtpzjbBSJu8KNWQRoXyjRvf9", model.GroupID, "https://bot.nexdev.net/skynex/api/messages/forwardwithtoken", proxy)
-                   .Message(new MessageModel(model.Title, DateTime.UtcNow.AddHours(7), appSettings.EnvironmentString, model.Message, model.MoreInfo))
-                   .SendWithoutDelay(true);
+                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, model.Message, model.MoreInfo));
             }
+        }
+
+        private static string LogMessage(Exception ex)
+        {
+            return new LogMessage(ex.Message)
+                        .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                        .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
         }
 
         public Task<bool> TestSentryCaptureMessage(string message)
         {
-            sentryClient.CaptureMessage(message);
+            logService.InfoMessageAsync(message);
             return Task.FromResult(true);
         }
     }

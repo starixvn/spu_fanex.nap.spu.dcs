@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
-using Sentry;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
+
     public interface IAbnormalTransactionJobService
     {
         Task<bool> PushAbnormalTransaction(int size);
@@ -12,14 +9,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
     public class AbnormalTransactionJobService : IAbnormalTransactionJobService
     {
-        private readonly ISentryClient _sentryClient;
+        private readonly ILogService _logService;
         private readonly IAbnormalTransactionServices _abnormalTransactionServices;
-
         private readonly string _abnormalTransactionUrl;
 
-        public AbnormalTransactionJobService(ISentryClient sentryClient, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
+        public AbnormalTransactionJobService(ILogService logService, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
         {
-            _sentryClient = sentryClient;
+            _logService = logService;
+
             _abnormalTransactionServices = abnormalTransactionJobServices;
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
@@ -37,12 +34,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 }
                 catch (Exception ex)
                 {
-                    _sentryClient.CaptureException(ex);
+                    await _logService.ErrorAsync(ex);
                     return false;
                 }
             }
 
-            _sentryClient.CaptureMessage("PushAbnormalTransaction size = 0");
+            await _logService.InfoMessageAsync("PushAbnormalTransaction size = 0");
             return false;
         }
     }

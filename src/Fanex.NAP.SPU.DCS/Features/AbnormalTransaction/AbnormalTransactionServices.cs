@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
-using Newtonsoft.Json;
-using Sentry;
+using Fanex.NAP.SPU.DCS.JobService.Services;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
@@ -19,12 +19,12 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
     public class AbnormalTransactionServices : IAbnormalTransactionServices
     {
-        private readonly ISentryClient _sentryClient;
+        private readonly ILogService _logService;
         private readonly IAbnormalTransactionDataAccess _dataAccess;
 
-        public AbnormalTransactionServices(ISentryClient sentryClient, IAbnormalTransactionDataAccess dataAccess)
+        public AbnormalTransactionServices(ILogService logService, IAbnormalTransactionDataAccess dataAccess)
         {
-            _sentryClient = sentryClient;
+            _logService = logService;
             _dataAccess = dataAccess;
         }
 
@@ -40,24 +40,28 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
                 if (isResult)
                 {
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { ID = t.ID, Status = 1 });
-                    var jsonTrans = JsonConvert.SerializeObject(updateStatus);
+                    var jsonTrans = JsonSerializer.Serialize(updateStatus);
 
                     _dataAccess.UpdateAbnormalTransactions(jsonTrans, rangeID.MinID, rangeID.MaxID);
                 }
                 else
+                {
                     return false;
+                }
             }
             else
             {
                 //Update MaxId
                 if (rangeID.MaxID > 0)
+                {
                     _dataAccess.UpdateAbnormalTransactions(string.Empty, rangeID.MinID, rangeID.MaxID);
+                }
             }
 
             return true;
         }
 
-        private IEnumerable<AbnormalTransactionModel> TransformData(IEnumerable<AbnormalTransactionEntity> entities)
+        private static IEnumerable<AbnormalTransactionModel> TransformData(IEnumerable<AbnormalTransactionEntity> entities)
         {
             if (entities.Any())
             {
@@ -81,13 +85,14 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
         private async Task<bool> PushData(IEnumerable<AbnormalTransactionModel> modelsToPush, string abnormalTransactionUrl)
         {
             using var httpClient = new HttpClient();
-            var jsonContent = JsonConvert.SerializeObject(modelsToPush);
+            var jsonContent = JsonSerializer.Serialize(modelsToPush);
             var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);
 
             var responseBody = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode || responseBody != "true")
             {
-                _sentryClient.CaptureException(new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonConvert.SerializeObject(modelsToPush)));
+                var exception = new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonSerializer.Serialize(modelsToPush));
+                await _logService.ErrorAsync(exception);
                 return false;
             }
 

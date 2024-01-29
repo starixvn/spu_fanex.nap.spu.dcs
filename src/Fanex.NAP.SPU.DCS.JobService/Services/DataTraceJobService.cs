@@ -1,19 +1,10 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.Logging;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using OfficeOpenXml;
-    using Sentry;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public interface IDataTraceJobService
     {
@@ -43,13 +34,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     }
     public class DataTraceJobService : IDataTraceJobService
     {
-        private readonly ISentryClient sentryClient;
         private readonly IDataTraceServices dataTraceServices;
+        private readonly ILogService logService;
 
-        public DataTraceJobService(ISentryClient sentryClient, IDataTraceServices dataTraceServices)
+        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService)
         {
-            this.sentryClient = sentryClient;
             this.dataTraceServices = dataTraceServices;
+            this.logService = logService;
         }
 
         public async Task<bool> SummaryLoginTransactionsAsync(int batchSize)
@@ -139,7 +130,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
         }
 
-        private async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
+#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
+        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
         {
             try
             {
@@ -164,11 +156,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     return GenerateMemoryStream(package, data);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
         }
+#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
 
         public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
         {
@@ -180,7 +173,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     return GenerateMemoryStream(package, data);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -219,9 +212,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
+        private static List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
         {
             var weekRanges = new List<Tuple<DateTime, DateTime>>();
+
+            const int week = 7;
 
             DateTime currentDate = fromDate;
             while (currentDate <= toDate)
@@ -233,13 +228,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 weekEnd = weekEnd > toDate ? toDate : weekEnd;
 
                 weekRanges.Add(new Tuple<DateTime, DateTime>(weekStart, weekEnd));
-                currentDate = currentDate.AddDays(7);
+                currentDate = currentDate.AddDays(week);
             }
 
             return weekRanges;
         }
 
-        private MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        private static MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
         {
             var dataWorksheet = package.Workbook.Worksheets["Data"];
 
@@ -251,14 +246,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
             }
 
-            //var dashboardWorksheet = package.Workbook.Worksheets["Dashboard"];
-
-            //foreach (var chart in dashboardWorksheet.Drawings.OfType<ExcelChart>())
-            //{
-            //    chart.Series[0].XSeries = pivotWorksheet.Cells["A2:A4"]; ;  // Clear existing data
-            //    chart.Series.Add(dashboardWorksheet.Cells["NewDataRange"], worksheet.Cells["XValuesRange"]);
-            //}
-
             return new MemoryStream(package.GetAsByteArray());
         }
 
@@ -268,7 +255,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-            LogService.Error(extraLogMessage + logMessage);
+            logService.ErrorMessageAsync(extraLogMessage + logMessage);
         }
     }
 }

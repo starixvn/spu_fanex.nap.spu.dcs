@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Linq;
-
-namespace Fanex.NAP.SPU.DCS.JobService.Ultilities
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Ultilities
 {
     public static class Utilities
     {

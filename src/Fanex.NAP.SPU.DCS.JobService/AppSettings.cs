@@ -1,8 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService
 {
-    using Microsoft.Extensions.Configuration;
-    using System;
     using System.ComponentModel;
+    using Microsoft.Extensions.Configuration;
 
     public interface IAppSettings
     {
@@ -20,9 +19,13 @@
 
         string TelegramGroupIDMonitorTransaction { get; }
 
-        string DCSExtraSite { get; }
-
         bool IsReadyDbExtra { get; }
+
+        string RatioUrl { get; }
+
+        T GetValue<T>(string key);
+
+        T GetSection<T>(string key);
     }
 
     public class AppSettings : IAppSettings
@@ -36,7 +39,7 @@
         private readonly string telegramProxy;
         private readonly string telegramGroupIDMonitorTransaction;
         private readonly bool isReadyDbExtra;
-        private readonly string dcsExtraSite;
+        private readonly string ratioUrl;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -56,7 +59,7 @@
 
             isReadyDbExtra = GetValue<bool>("IsReadyDbExtra");
 
-            dcsExtraSite = GetValue<string>("DCSExtra:Site");
+            ratioUrl = GetValue<string>("RatioUrl");
         }
 
         public int Environment
@@ -95,7 +98,7 @@
 
         public bool IsReadyDbExtra => isReadyDbExtra;
 
-        public string DCSExtraSite => dcsExtraSite;
+        public string RatioUrl => ratioUrl;
 
         public T GetValue<T>(string key)
         {

@@ -1,8 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
+    using System;
     using Fanex.Data;
     using Fanex.Data.Repository;
-    using System;
 
     public class UpdateSumTransactionCriteria : NonQueryCommand
     {

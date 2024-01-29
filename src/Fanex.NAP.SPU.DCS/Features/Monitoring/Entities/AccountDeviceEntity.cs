@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Entities
 {
-    using System;  
+    using System;
 
     public class AccountDeviceEntity
     {

@@ -1,10 +1,10 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Transactions
 {
+    using System.Collections.Generic;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.Transactions.Criteria;
     using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
-    using System.Collections.Generic;
 
     public interface ITransactionDataAccess
     {

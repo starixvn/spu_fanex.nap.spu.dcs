@@ -1,15 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.UserAgent
 {
-    using Fanex.Logging;
-    using Fanex.Logging.Extensions;
-    using Fanex.Logging.Extensions.Database;
-    using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
-    using Fanex.NAP.SPU.DCS.Shares;
-    using Fanex.NAP.SPU.DCS.Shares.Models;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Fanex.Logging.Extensions;
+    using Fanex.Logging.Extensions.Database;
+    using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
+    using Fanex.NAP.SPU.DCS.Shares;
+    using Fanex.NAP.SPU.DCS.Shares.Models;
     using UAParser.FormFactor;
     using UAParser.FormFactor.Models;
 
@@ -27,11 +26,13 @@
     public class UserAgentServices : IUserAgentServices
     {
         private readonly IUserAgentDataAccess dataAccess;
+        private readonly ILogService logService;
         private const string Unknown = "Unknown";
 
-        public UserAgentServices(IUserAgentDataAccess dataAccess)
+        public UserAgentServices(IUserAgentDataAccess dataAccess, ILogService logService)
         {
             this.dataAccess = dataAccess;
+            this.logService = logService;
         }
 
         public List<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
@@ -41,7 +42,7 @@
 
         public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
         {
-            if(!string.IsNullOrWhiteSpace(userAgentJson))
+            if (!string.IsNullOrWhiteSpace(userAgentJson))
             {
                 return dataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra);
             }
@@ -83,7 +84,7 @@
                             CreatedDate = x.CreatedDate
                         };
                     }
-                   
+
                 }).ToList();
             }
 
@@ -106,18 +107,18 @@
                           .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                           .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
-                    LogService.Error($"DCS - Parse User Agent { userAgent } exception message:  { logMessage }");
+                    logService.ErrorMessageAsync($"DCS - Parse User Agent {userAgent} exception message:  {logMessage}");
 
                     return null;
                 }
             }
 
-            LogService.Info($"DCS - Parse User Agent null:");
+            logService.InfoMessageAsync($"DCS - Parse User Agent null:");
 
             return null;
         }
 
-        private string GetDeviceTypeName(ClientInfo clientInfo)
+        private static string GetDeviceTypeName(ClientInfo clientInfo)
         {
             if (clientInfo != null && clientInfo.Device != null)
             {

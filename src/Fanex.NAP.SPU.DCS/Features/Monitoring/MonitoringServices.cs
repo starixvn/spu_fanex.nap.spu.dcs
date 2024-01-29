@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using Fanex.NAP.SPU.DCS.Features.Monitoring.Model;
-    using Newtonsoft.Json;
 
     public interface IMonitoringServices
     {
@@ -43,23 +43,25 @@
 
         public int UpdateSumRawTransaction(SumTransactionModel sumTransaction)
         {
-            if (sumTransaction != null && sumTransaction.MaxTransID != 0)
+            if (sumTransaction != null && sumTransaction.MaxTransID != 0 && CheckValidTrans(sumTransaction))
             {
-                if (sumTransaction.SumSubscriberList.Any()
-                    || sumTransaction.SumDeviceTypeList.Any()
-                    || sumTransaction.AccountIPList.Any()
-                    || sumTransaction.AccountDeviceList.Any())
-                {
-                    var sumSubsJson = JsonConvert.SerializeObject(sumTransaction.SumSubscriberList);
-                    var sumDeviceTypeJson = JsonConvert.SerializeObject(sumTransaction.SumDeviceTypeList);
-                    var accountIPJson = JsonConvert.SerializeObject(sumTransaction.AccountIPList);
-                    var accountDeviceJson = JsonConvert.SerializeObject(sumTransaction.AccountDeviceList);
+                var sumSubsJson = JsonSerializer.Serialize(sumTransaction.SumSubscriberList);
+                var sumDeviceTypeJson = JsonSerializer.Serialize(sumTransaction.SumDeviceTypeList);
+                var accountIPJson = JsonSerializer.Serialize(sumTransaction.AccountIPList);
+                var accountDeviceJson = JsonSerializer.Serialize(sumTransaction.AccountDeviceList);
 
-                    return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction, sumSubsJson, sumDeviceTypeJson, accountIPJson, accountDeviceJson);
-                }
+                return this.monitoringDataAccess.UpdateSumRawTransaction(sumTransaction, sumSubsJson, sumDeviceTypeJson, accountIPJson, accountDeviceJson);
             }
 
             return 1;
+        }
+
+        private static bool CheckValidTrans(SumTransactionModel sumTransaction)
+        {
+            return sumTransaction.SumSubscriberList.Any()
+                                || sumTransaction.SumDeviceTypeList.Any()
+                                || sumTransaction.AccountIPList.Any()
+                                || sumTransaction.AccountDeviceList.Any();
         }
 
         public NotifyTransactionModel GetNotificationTransaction()
