@@ -330,7 +330,12 @@
                 return fontsSource == fontsDestination;
             }
 
-            var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
+            if (fontsSource == "error" || fontsDestination == "error")
+            {
+                return false;
+            }
+
+                var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
             var arrDestination = JsonSerializer.Deserialize<string[]>(fontsDestination);
 
             return Array.TrueForAll(arrSrc, element => arrDestination.Contains(element))
