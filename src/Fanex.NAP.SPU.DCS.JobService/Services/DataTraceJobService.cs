@@ -4,6 +4,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using OfficeOpenXml;
 
     public interface IDataTraceJobService
@@ -18,6 +19,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
+        Task<bool> InitBetTransactionAsync(DateTime transDate);
+
+        Task<int> CountDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CookDataLoginTransaction(int size);
+
         Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate);
 
         Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate);
@@ -26,13 +35,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate);
 
-        Task<bool> InitBetTransactionAsync(DateTime transDate);
+        Task<MemoryStream> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
 
-        Task<int> CountDWBetTransactionByDate(DateTime transDate);
+        Task<MemoryStream> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
 
-        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+        Task<MemoryStream> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
 
-        Task<int> CookDataLoginTransaction(int size);
+        Task<MemoryStream> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
+
+        Task<MemoryStream> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -115,70 +126,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
 
             return false;
-        }
-
-        public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransaction);
-        }
-
-        public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportBotDTransaction_Template.xlsx", dataTraceServices.GetReportBotDTransaction);
-        }
-
-        public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
-        }
-
-#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
-        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo($"Template/{templateFileName}")))
-                {
-                    var weekRanges = GetWeekRanges(fromDate, toDate);
-                    var data = new List<TModel>();
-
-                    var tasks = weekRanges.Select(async weekRange =>
-                    {
-                        var result = await getDataFunc(weekRange.Item1, weekRange.Item2);
-                        lock (data)
-                        {
-                            data.AddRange(result);
-                        }
-                    });
-
-                    await Task.WhenAll(tasks);
-
-                    data = data.OrderBy(x => ((dynamic)x).TransDate).ToList();
-
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
-
-        public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransactionDetail_Template.xlsx")))
-                {
-                    var data = await dataTraceServices.GetReportLoginTransactionDetail(transDate);
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
 
         public async Task<bool> InitBetTransactionAsync(DateTime transDate)
@@ -269,5 +216,97 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             return 0;
         }
+
+
+        #region Report
+        public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransaction);
+        }
+
+        public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportBotDTransaction_Template.xlsx", dataTraceServices.GetReportBotDTransaction);
+        }
+
+        public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionBySubscriber);
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionBySite);
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByAccount);
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByBrowser);
+        }
+
+        public async Task<MemoryStream> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        {
+            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByFlagged);
+        }
+
+#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
+        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo($"Template/{templateFileName}")))
+                {
+                    var weekRanges = GetWeekRanges(fromDate, toDate);
+                    var data = new List<TModel>();
+
+                    var tasks = weekRanges.Select(async weekRange =>
+                    {
+                        var result = await getDataFunc(weekRange.Item1, weekRange.Item2);
+                        lock (data)
+                        {
+                            data.AddRange(result);
+                        }
+                    });
+
+                    await Task.WhenAll(tasks);
+
+                    data = data.OrderBy(x => ((dynamic)x).TransDate).ToList();
+
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
+
+        public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
+        {
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransactionDetail_Template.xlsx")))
+                {
+                    var data = await dataTraceServices.GetReportLoginTransactionDetail(transDate);
+                    return GenerateMemoryStream(package, data);
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        #endregion
     }
 }

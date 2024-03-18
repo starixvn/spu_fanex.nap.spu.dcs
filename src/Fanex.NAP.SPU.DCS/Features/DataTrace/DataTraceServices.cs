@@ -22,6 +22,14 @@
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
+        Task<bool> ProcessInitBetTransactionAsync(DateTime transDate);
+
+        Task<int> CountDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CookDataLoginTransaction(int size);
+
         Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
@@ -30,13 +38,15 @@
 
         Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
 
-        Task<bool> ProcessInitBetTransactionAsync(DateTime transDate);
+        Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
 
-        Task<int> CountDWBetTransactionByDate(DateTime transDate);
+        Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
 
-        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+        Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
 
-        Task<int> CookDataLoginTransaction(int size);
+        Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -289,26 +299,6 @@
             return true;
         }
 
-        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await dataAccess.GetReportLoginTransaction(fromDate, toDate);
-        }
-
-        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await dataAccess.GetReportBotDTransaction(fromDate, toDate);
-        }
-
-        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
-        {
-            return await dataAccess.GetReportLoginTransactionDetail(transDate);
-        }
-
-        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await dataAccess.GetReportMissingTransaction(fromDate, toDate);
-        }
-
         public async Task<bool> ProcessInitBetTransactionAsync(DateTime transDate)
         {
             const int batchSize = 25000;
@@ -396,5 +386,52 @@
         {
             return await dataAccess.CookDataLoginTransaction(size);
         }
+
+        #region Report
+        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransaction(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportBotDTransaction(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
+        {
+            return await dataAccess.GetReportLoginTransactionDetail(transDate);
+        }
+
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportMissingTransaction(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransactionBySubscriber(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransactionBySite(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransactionByAccount(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransactionByBrowser(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        {
+            return await dataAccess.GetReportLoginTransactionByFlagged(fromDate, toDate);
+        }
+        #endregion
     }
 }

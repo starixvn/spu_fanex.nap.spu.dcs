@@ -59,6 +59,27 @@
             return await dataTraceJobService.CountInitDWBetTransactionByDate(transDate);
         }
 
+        [HttpPost("checktimeout")]
+        public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
+        {
+            await Task.Delay(delayTime);
+            return true;
+        }
+
+        [HttpPost("updatesystemsetting")]
+        public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
+        {
+            return await dataTraceJobService.UpdateSystemSetting(id, value);
+        }
+
+        [HttpPost("cook-data-login-transaction")]
+        public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
+        {
+            var result = await dataTraceJobService.CookDataLoginTransaction(batchSize);
+            return result > 0;
+        }
+
+        #region Report
         [HttpGet("report-login-transaction-daily")]
         public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
         {
@@ -126,27 +147,7 @@
 
             return null;
         }
-
-
-        [HttpPost("checktimeout")]
-        public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
-        {
-            await Task.Delay(delayTime);
-            return true;
-        }
-
-        [HttpPost("updatesystemsetting")]
-        public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
-        {
-            return await dataTraceJobService.UpdateSystemSetting(id, value);
-        }
-
-        [HttpPost("cook-data-login-transaction")]
-        public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
-        {
-            var result = await dataTraceJobService.CookDataLoginTransaction(batchSize);
-            return result > 0;
-        }
+        #endregion
 
     }
 }

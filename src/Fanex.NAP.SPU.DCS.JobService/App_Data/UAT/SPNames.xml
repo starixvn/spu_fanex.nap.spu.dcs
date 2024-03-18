@@ -66,6 +66,11 @@
         <Setting Key="DCS_DT_Report_BotDTransaction_Get" SpName="DCS_DT_Report_BotDTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_Report_LoginTransaction_GetDetailByDate" SpName="DCS_DT_Report_LoginTransaction_GetDetailByDate" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
