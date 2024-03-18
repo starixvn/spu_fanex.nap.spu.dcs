@@ -31,6 +31,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CookDataLoginTransaction(int size);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -256,6 +258,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
 
             logService.ErrorMessageAsync(extraLogMessage + logMessage);
+        }
+
+        public async Task<int> CookDataLoginTransaction(int size)
+        {
+            if(size > 0)
+            {
+                return await dataTraceServices.CookDataLoginTransaction(size);
+            }
+
+            return 0;
         }
     }
 }

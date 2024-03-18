@@ -141,5 +141,12 @@
             return await dataTraceJobService.UpdateSystemSetting(id, value);
         }
 
+        [HttpPost("cook-data-login-transaction")]
+        public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
+        {
+            var result = await dataTraceJobService.CookDataLoginTransaction(batchSize);
+            return result > 0;
+        }
+
     }
 }

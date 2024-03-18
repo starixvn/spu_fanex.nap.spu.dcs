@@ -43,6 +43,8 @@
         Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<int> CookDataLoginTransaction(int size);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -235,6 +237,16 @@
             };
 
             return await repository.FetchAsync<ReportMissingTransactionModel>(criteria);
+        }
+
+        public async Task<int> CookDataLoginTransaction(int size)
+        {
+            var criteria = new CookDataLoginTransactionCriteria
+            {
+                Size = size
+            };
+
+            return await repository.ExecuteAsync(criteria);
         }
     }
 }

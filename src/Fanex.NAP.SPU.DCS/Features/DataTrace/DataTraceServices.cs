@@ -35,6 +35,8 @@
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+
+        Task<int> CookDataLoginTransaction(int size);
     }
 
     public class DataTraceServices : IDataTraceServices
@@ -388,6 +390,11 @@
         private async Task<bool> IsDailyTaskReadyAsync()
         {
             return await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
+        }
+
+        public async Task<int> CookDataLoginTransaction(int size)
+        {
+            return await dataAccess.CookDataLoginTransaction(size);
         }
     }
 }
