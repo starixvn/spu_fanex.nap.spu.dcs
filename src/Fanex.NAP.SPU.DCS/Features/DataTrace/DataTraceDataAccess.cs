@@ -10,8 +10,6 @@
 
     public interface IDataTraceDataAccess
     {
-        Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
-
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
         Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate);
@@ -38,12 +36,6 @@
 
         Task<int> CookDataLoginTransaction(int size);
 
-        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
-
-        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
-
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -63,16 +55,6 @@
         public DataTraceDataAccess(IDynamicRepository repository)
         {
             this.repository = repository ?? new DynamicRepository();
-        }
-
-        public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
-        {
-            var criteria = new InsertSumaryLoginTransactionCriteria
-            {
-                BatchSize = batchSize
-            };
-
-            return await repository.ExecuteAsync(criteria);
         }
 
         public async Task<bool> IsDailyTaskReadyAsync(int taskID)
@@ -217,37 +199,6 @@
         }
 
         #region Report
-        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetReportLoginTransactionCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return await repository.FetchAsync<ReportLoginTransactionModel>(criteria);
-        }
-
-        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetReportBotDTransactionCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return await repository.FetchAsync<ReportBotDTransactionModel>(criteria);
-        }
-
-        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
-        {
-            var criteria = new GetReportLoginTransactionDetailCriteria
-            {
-                TransDate = transDate
-            };
-
-            return await repository.FetchAsync<ReportLoginTransactionDetailModel>(criteria);
-        }
 
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {

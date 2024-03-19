@@ -12,8 +12,6 @@
 
     public interface IDataTraceServices
     {
-        Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
-
         Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> ProcessSummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
@@ -29,10 +27,6 @@
         Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CookDataLoginTransaction(int size);
-
-        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -69,12 +63,6 @@
             this.dataAccess = dataAccess;
             this.logService = logService;
         }
-
-        public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
-        {
-            return await dataAccess.InsertSummaryLoginTransactionAsync(batchSize);
-        }
-
 
         public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
@@ -388,20 +376,6 @@
         }
 
         #region Report
-        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await dataAccess.GetReportLoginTransaction(fromDate, toDate);
-        }
-
-        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await dataAccess.GetReportBotDTransaction(fromDate, toDate);
-        }
-
-        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
-        {
-            return await dataAccess.GetReportLoginTransactionDetail(transDate);
-        }
 
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {

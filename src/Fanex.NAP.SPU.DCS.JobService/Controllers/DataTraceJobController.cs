@@ -1,9 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using System.Runtime.InteropServices;
     using System.Text;
 
     [ApiController]
@@ -19,12 +17,6 @@
         public DataTraceJobController(IDataTraceJobService dataTraceJobService)
         {
             this.dataTraceJobService = dataTraceJobService;
-        }
-
-        [HttpPost("summarylogintransaction")]
-        public async Task<bool> SummaryLoginTransaction([FromForm] int batchSize = 50000)
-        {
-            return await dataTraceJobService.SummaryLoginTransactionsAsync(batchSize);
         }
 
         [HttpPost("summarybettransaction")]
@@ -84,39 +76,6 @@
         }
 
         #region Report
-        [HttpGet("report-login-transaction-daily")]
-        public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
-        {
-            var stream = await dataTraceJobService.ReportLoginTransaction(fromDate, toDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportLoginTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-        [HttpGet("report-botd-transaction-daily")]
-        public async Task<IActionResult> ReportBotDTransactionDaily(DateTime fromDate, DateTime toDate)
-        {
-            var stream = await dataTraceJobService.ReportBotDTransaction(fromDate, toDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportBotDTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
 
         [HttpGet("report-missing-transaction-daily")]
         public async Task<IActionResult> ReportMissingTransactionDaily(DateTime fromDate, DateTime toDate)
@@ -128,23 +87,6 @@
                 Response.ContentType = contentType;
                 Response.Headers.Add(keyHeader, keyValue);
                 var file = File(stream, contentType, "ReportMissingTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-        [HttpGet("report-login-transaction-detail")]
-        public async Task<IActionResult> ReportLoginTransactionDetail(DateTime transDate)
-        {
-            var stream = await dataTraceJobService.ReportLoginTransactionDetail(transDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportLoginTransactionDetail" + transDate.ToString("yyyymmdd") + ".xlsx");
 
                 return file;
             }

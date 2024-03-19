@@ -9,8 +9,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
     public interface IDataTraceJobService
     {
-        Task<bool> SummaryLoginTransactionsAsync(int batchSize);
-
         Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
@@ -27,13 +25,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<int> CookDataLoginTransaction(int size);
 
-        Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate);
-
         Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
 
@@ -54,22 +46,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
-        }
-
-        public async Task<bool> SummaryLoginTransactionsAsync(int batchSize)
-        {
-            try
-            {
-                await dataTraceServices.InsertSummaryLoginTransactionAsync(batchSize);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace SummaryLoginTransactionsAsync execute exeption message: ");
-
-                return false;
-            }
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -219,15 +195,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
 
         #region Report
-        public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransaction);
-        }
-
-        public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportBotDTransaction_Template.xlsx", dataTraceServices.GetReportBotDTransaction);
-        }
 
         public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
@@ -326,22 +293,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 #pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
-
-        public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransactionDetail_Template.xlsx")))
-                {
-                    var data = await dataTraceServices.GetReportLoginTransactionDetail(transDate);
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
         #endregion
     }
 }
