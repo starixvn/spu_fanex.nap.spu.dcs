@@ -35,15 +35,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate);
 
-        Task<MemoryStream> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
 
-        Task<MemoryStream> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
 
-        Task<MemoryStream> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
 
-        Task<MemoryStream> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
 
-        Task<MemoryStream> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -234,29 +234,64 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionBySubscriber);
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionBySubscriber(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionBySite);
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionBySite(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByAccount);
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByAccount(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByBrowser);
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByBrowser(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public async Task<MemoryStream> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransactionByFlagged);
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByFlagged(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
 #pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
