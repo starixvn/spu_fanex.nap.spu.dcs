@@ -5,7 +5,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using OfficeOpenXml;
 
     public interface IDataTraceJobService
     {
@@ -21,7 +20,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<int> CookDataLoginTransaction(int size);
 
-        Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
 
@@ -114,55 +113,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private static List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
-        {
-            var weekRanges = new List<Tuple<DateTime, DateTime>>();
-
-            const int week = 7;
-
-            DateTime currentDate = fromDate;
-            while (currentDate <= toDate)
-            {
-                DateTime weekStart = currentDate.AddDays(-(int)currentDate.DayOfWeek);
-                DateTime weekEnd = weekStart.AddDays(6);
-
-                weekStart = weekStart < fromDate ? fromDate : weekStart;
-                weekEnd = weekEnd > toDate ? toDate : weekEnd;
-
-                weekRanges.Add(new Tuple<DateTime, DateTime>(weekStart, weekEnd));
-                currentDate = currentDate.AddDays(week);
-            }
-
-            return weekRanges;
-        }
-
-        private static MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
-        {
-            var dataWorksheet = package.Workbook.Worksheets["Data"];
-
-            dataWorksheet.Cells["A" + firstRowData].LoadFromCollection(data, true);
-            var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
-
-            foreach (var pivotTable in pivotWorksheet.PivotTables)
-            {
-                pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
-            }
-
-            return new MemoryStream(package.GetAsByteArray());
-        }
-
-        private void HandleException(Exception ex, string extraLogMessage)
-        {
-            string logMessage = new LogMessage(ex.Message)
-                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
-                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
-
-            logService.ErrorMessageAsync(extraLogMessage + logMessage);
-        }
-
         public async Task<int> CookDataLoginTransaction(int size)
         {
-            if(size > 0)
+            if (size > 0)
             {
                 return await dataTraceServices.CookDataLoginTransaction(size);
             }
@@ -173,9 +126,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         #region Report
 
-        public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
-            return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
+            try
+            {
+                return await dataTraceServices.GetReportMissingTransaction(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
@@ -237,39 +197,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 return null;
             }
         }
-
-#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
-        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo($"Template/{templateFileName}")))
-                {
-                    var weekRanges = GetWeekRanges(fromDate, toDate);
-                    var data = new List<TModel>();
-
-                    var tasks = weekRanges.Select(async weekRange =>
-                    {
-                        var result = await getDataFunc(weekRange.Item1, weekRange.Item2);
-                        lock (data)
-                        {
-                            data.AddRange(result);
-                        }
-                    });
-
-                    await Task.WhenAll(tasks);
-
-                    data = data.OrderBy(x => ((dynamic)x).TransDate).ToList();
-
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
         #endregion
+
+        private void HandleException(Exception ex, string extraLogMessage)
+        {
+            string logMessage = new LogMessage(ex.Message)
+                .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
+                .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex)).ToString();
+
+            logService.ErrorMessageAsync(extraLogMessage + logMessage);
+        }
     }
 }

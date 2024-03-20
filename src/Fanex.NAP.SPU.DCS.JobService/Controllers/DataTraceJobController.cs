@@ -10,10 +10,6 @@
     {
         private readonly IDataTraceJobService dataTraceJobService;
 
-        private readonly string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        private readonly string keyHeader = "content-disposition";
-        private readonly string keyValue = "attachment; filename=ExcelFile.xlsx";
-
         public DataTraceJobController(IDataTraceJobService dataTraceJobService)
         {
             this.dataTraceJobService = dataTraceJobService;
@@ -43,13 +39,6 @@
             return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
         }
 
-        [HttpPost("checktimeout")]
-        public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
-        {
-            await Task.Delay(delayTime);
-            return true;
-        }
-
         [HttpPost("updatesystemsetting")]
         public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
         {
@@ -65,21 +54,33 @@
 
         #region Report
 
-        [HttpGet("report-missing-transaction-daily")]
-        public async Task<IActionResult> ReportMissingTransactionDaily(DateTime fromDate, DateTime toDate)
+        [HttpGet("report-missing-transaction")]
+        public async Task<IEnumerable<ReportMissingTransactionModel>> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
-            var stream = await dataTraceJobService.ReportMissingTransaction(fromDate, toDate);
+            return await dataTraceJobService.GetReportMissingTransaction(fromDate, toDate);
+        }
 
-            if (stream != null)
+        [HttpGet("report-missing-transaction-csv")]
+        public async Task<IActionResult> ReportMissingTransactionCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportMissingTransaction(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,CountCustWithoutTrans,CountCustMissingTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
             {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportMissingTransactionDaily.xlsx");
-
-                return file;
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.SubscriberID}" +
+                    $",{item.SubscriberName}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.CountCustWithoutTrans}" +
+                    $",{item.CountCustMissingTrans}");
             }
 
-            return null;
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportMissingTransaction.csv");
         }
 
         [HttpGet("report-login-transaction-by-subscriber")]

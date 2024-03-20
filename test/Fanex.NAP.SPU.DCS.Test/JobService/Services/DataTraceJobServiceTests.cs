@@ -239,7 +239,7 @@
             dataTraceServices.GetReportMissingTransaction(DateTime.Now, DateTime.Now.AddDays(1)).Returns(model);
 
             // Act
-            var result = await service.ReportMissingTransaction(DateTime.Now, DateTime.Now.AddDays(1));
+            var result = await service.GetReportMissingTransaction(DateTime.Now, DateTime.Now.AddDays(1));
 
             // Assert
             Assert.NotNull(result);
