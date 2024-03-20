@@ -23,24 +23,6 @@
         }
 
         [Fact]
-        public async Task InsertSummaryLoginTransactionAsync_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            var criteria = fixture.Create<InsertSumaryLoginTransactionCriteria>();
-            var expectedSettingKey = "DCS_DT_Summary_LoginTransaction_Insert";
-
-            repository.ExecuteAsync(Arg.Do<InsertSumaryLoginTransactionCriteria>(x => criteria = x)).Returns(1);
-
-            // Act
-            var actual = await dataTraceDataAccess.InsertSummaryLoginTransactionAsync(1);
-
-            // Assert
-            var settingKey = criteria.GetSettingKey();
-            Assert.Equal(1, actual);
-            Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
         public async Task IsDailyTaskReadyAsync_WhenCall_ReturnExactData()
         {
             // Arrange
@@ -241,69 +223,6 @@
             var isValid = criteria.IsInvalid();
 
             Assert.Equal(1, actual);
-            Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
-        public async Task GetReportLoginTransaction_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            var loginTransactionModels = fixture.CreateMany<ReportLoginTransactionModel>();
-            var criteria = fixture.Create<GetReportLoginTransactionCriteria>();
-            var expectedSettingKey = "DCS_DT_Report_LoginTransaction_Get";
-
-            repository.FetchAsync<ReportLoginTransactionModel>(Arg.Do<GetReportLoginTransactionCriteria>(x => criteria = x)).Returns(loginTransactionModels);
-
-            // Act
-            var actual = await dataTraceDataAccess.GetReportLoginTransaction(DateTime.Now, DateTime.Now);
-
-            // Assert
-            var settingKey = criteria.GetSettingKey();
-            var isValid = criteria.IsInvalid();
-
-            Assert.Equal(loginTransactionModels, actual);
-            Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
-        public async Task GetReportBotDTransaction_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            var reportBotDTransactions = fixture.CreateMany<ReportBotDTransactionModel>();
-            var criteria = fixture.Create<GetReportBotDTransactionCriteria>();
-            var expectedSettingKey = "DCS_DT_Report_BotDTransaction_Get";
-
-            repository.FetchAsync<ReportBotDTransactionModel>(Arg.Do<GetReportBotDTransactionCriteria>(x => criteria = x)).Returns(reportBotDTransactions);
-
-            // Act
-            var actual = await dataTraceDataAccess.GetReportBotDTransaction(DateTime.Now, DateTime.Now);
-
-            // Assert
-            var settingKey = criteria.GetSettingKey();
-            var isValid = criteria.IsInvalid();
-
-            Assert.Equal(reportBotDTransactions, actual);
-            Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
-        public async Task GetReportLoginTransactionDetail_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            var reportLoginTransactions = fixture.CreateMany<ReportLoginTransactionDetailModel>();
-            var criteria = fixture.Create<GetReportLoginTransactionDetailCriteria>();
-            var expectedSettingKey = "DCS_DT_Report_LoginTransaction_GetDetailByDate";
-
-            repository.FetchAsync<ReportLoginTransactionDetailModel>(Arg.Do<GetReportLoginTransactionDetailCriteria>(x => criteria = x)).Returns(reportLoginTransactions);
-
-            // Act
-            var actual = await dataTraceDataAccess.GetReportLoginTransactionDetail(DateTime.Now);
-
-            // Assert
-            var settingKey = criteria.GetSettingKey();
-            var isValid = criteria.IsInvalid();
-
-            Assert.Equal(reportLoginTransactions, actual);
             Assert.Equal(expectedSettingKey, settingKey);
         }
 

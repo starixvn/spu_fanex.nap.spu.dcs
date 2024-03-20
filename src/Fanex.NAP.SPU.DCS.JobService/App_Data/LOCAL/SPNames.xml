@@ -59,7 +59,6 @@
     </Function>
 
     <Function Name="DCSDataTrace">
-        <Setting Key="DCS_DT_Summary_LoginTransaction_Insert" SpName="DCS_DT_Summary_LoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_BetTransaction_Insert" SpName="DCS_DT_Summary_BetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_BetTransaction_Delete" SpName="DCS_DT_Summary_BetTransaction_Delete" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_MissingBetTransaction_GetPackage" SpName="DCS_DT_Summary_MissingBetTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
@@ -67,9 +66,6 @@
         <Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Report_LoginTransaction_Get" SpName="DCS_DT_Report_LoginTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_Report_BotDTransaction_Get" SpName="DCS_DT_Report_BotDTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_Report_LoginTransaction_GetDetailByDate" SpName="DCS_DT_Report_LoginTransaction_GetDetailByDate" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
 		<Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
