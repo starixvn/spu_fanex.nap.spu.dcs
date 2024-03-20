@@ -186,27 +186,6 @@
         }
 
         [Fact]
-        public async Task GetInitBetTransactionAsync_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            var betTransactionInfos = fixture.CreateMany<BetTransactionInfo>();
-            var criteria = fixture.Create<GetInitBetTransactionCriteria>();
-            var expectedSettingKey = "Ned_Acc_Rpt_FPS_GetCustBettingInfo";
-
-            repository.FetchAsync<BetTransactionInfo>(Arg.Do<GetInitBetTransactionCriteria>(x => criteria = x)).Returns(betTransactionInfos);
-
-            // Act
-            var actual = await dataTraceDataAccess.GetInitBetTransactionAsync(DateTime.Now);
-
-            // Assert
-            var settingKey = criteria.GetSettingKey();
-            var isValid = criteria.IsInvalid();
-
-            Assert.Equal(betTransactionInfos, actual);
-            Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
         public async Task DeleteMissingTransactionByDate_WhenCall_ReturnExactData()
         {
             // Arrange

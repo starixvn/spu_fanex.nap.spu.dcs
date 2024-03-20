@@ -43,18 +43,6 @@
             return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
         }
 
-        [HttpPost("init-summary-bet-transaction")]
-        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime transDate)
-        {
-            return await dataTraceJobService.InitBetTransactionAsync(transDate);
-        }
-
-        [HttpPost("count-init-dw-bet-transaction-by-date")]
-        public async Task<int> CountInitDWBetTransactionByDate([FromForm] DateTime transDate)
-        {
-            return await dataTraceJobService.CountInitDWBetTransactionByDate(transDate);
-        }
-
         [HttpPost("checktimeout")]
         public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
         {

@@ -20,11 +20,7 @@
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
-        Task<bool> ProcessInitBetTransactionAsync(DateTime transDate);
-
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
-
-        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CookDataLoginTransaction(int size);
 
@@ -285,19 +281,6 @@
             return true;
         }
 
-        public async Task<bool> ProcessInitBetTransactionAsync(DateTime transDate)
-        {
-            const int batchSize = 25000;
-            var betTransactionInfos = await dataAccess.GetInitBetTransactionAsync(transDate);
-            if (betTransactionInfos != null && betTransactionInfos.Any())
-            {
-                _ = await dataAccess.DeleteBetTransactionSummaryByDateAsync(transDate);
-                await InsertSummaryBetTransactionByBatchAsync(TransformBetTransactionInfo(betTransactionInfos), batchSize);
-            }
-
-            return true;
-        }
-
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
         {
             if (!await IsDailyTaskReadyAsync())
@@ -307,17 +290,6 @@
 
             var data = await dataAccess.GetBetTransactionAsync(transDate);
 
-            return data != null && data.Any() ? data.Count() : 0;
-        }
-
-        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
-        {
-            if (!await IsDailyTaskReadyAsync())
-            {
-                return 0;
-            }
-
-            var data = await dataAccess.GetInitBetTransactionAsync(transDate);
             return data != null && data.Any() ? data.Count() : 0;
         }
 

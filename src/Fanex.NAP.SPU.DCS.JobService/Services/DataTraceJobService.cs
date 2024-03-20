@@ -17,11 +17,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
-        Task<bool> InitBetTransactionAsync(DateTime transDate);
-
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
-
-        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CookDataLoginTransaction(int size);
 
@@ -104,11 +100,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return false;
         }
 
-        public async Task<bool> InitBetTransactionAsync(DateTime transDate)
-        {
-            return await dataTraceServices.ProcessInitBetTransactionAsync(transDate);
-        }
-
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
         {
             try
@@ -118,20 +109,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace CountDWBetTransactionByDate execute exeption message: ");
-
-                return 0;
-            }
-        }
-
-        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
-        {
-            try
-            {
-                return await dataTraceServices.CountInitDWBetTransactionByDate(transDate);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace CountInitDWBetTransactionByDate execute exeption message: ");
 
                 return 0;
             }
