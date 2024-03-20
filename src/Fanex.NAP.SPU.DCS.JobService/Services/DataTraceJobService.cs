@@ -5,6 +5,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using System.Drawing;
 
     public interface IDataTraceJobService
     {
@@ -19,6 +20,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CookDataLoginTransaction(int size);
+
+        Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -118,6 +121,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             if (size > 0)
             {
                 return await dataTraceServices.CookDataLoginTransaction(size);
+            }
+
+            return 0;
+        }
+
+        public async Task<int> DeleteLoginTransactionSummary(int retentionDays)
+        {
+            if (retentionDays > 0)
+            {
+                return await dataTraceServices.DeleteLoginTransactionSummary(retentionDays);
             }
 
             return 0;

@@ -45,10 +45,17 @@
             return await dataTraceJobService.UpdateSystemSetting(id, value);
         }
 
-        [HttpPost("cook-data-login-transaction")]
+        [HttpPost("cookdatalogintransaction")]
         public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
         {
             var result = await dataTraceJobService.CookDataLoginTransaction(batchSize);
+            return result > 0;
+        }
+
+        [HttpPost("deletelogintransactionsummary")]
+        public async Task<bool> DeleteLoginTransactionSummary([FromForm] int retentionDays = 15)
+        {
+            var result = await dataTraceJobService.DeleteLoginTransactionSummary(retentionDays);
             return result > 0;
         }
 

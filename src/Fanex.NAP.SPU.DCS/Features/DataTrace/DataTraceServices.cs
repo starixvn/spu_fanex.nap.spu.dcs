@@ -1,14 +1,14 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.DataTrace
 {
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
-    using Fanex.NAP.SPU.DCS.JobService.Services;
 
     public interface IDataTraceServices
     {
@@ -23,6 +23,8 @@
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<int> CookDataLoginTransaction(int size);
+
+        Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -343,6 +345,11 @@
         public async Task<int> CookDataLoginTransaction(int size)
         {
             return await dataAccess.CookDataLoginTransaction(size);
+        }
+
+        public async Task<int> DeleteLoginTransactionSummary(int retentionDays)
+        {
+            return await dataAccess.DeleteLoginTransactionSummary(retentionDays);
         }
 
         #region Report

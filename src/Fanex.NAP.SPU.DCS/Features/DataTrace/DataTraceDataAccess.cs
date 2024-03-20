@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Threading.Tasks;
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -33,6 +34,8 @@
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
         Task<int> CookDataLoginTransaction(int size);
+
+        Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -180,6 +183,16 @@
             var criteria = new CookDataLoginTransactionCriteria
             {
                 Size = size
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<int> DeleteLoginTransactionSummary(int retentionDays)
+        {
+            var criteria = new DeleteLoginTransactionSummaryCriteria
+            {
+                RetentionDays = retentionDays
             };
 
             return await repository.ExecuteAsync(criteria);
