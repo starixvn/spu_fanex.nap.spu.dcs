@@ -21,7 +21,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<int> DeleteLoginTransactionSummary(int retentionDays);
+        Task<int> AlterPartitionLoginTransactionSummary(int retentionDays);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -126,11 +126,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return 0;
         }
 
-        public async Task<int> DeleteLoginTransactionSummary(int retentionDays)
+        public async Task<int> AlterPartitionLoginTransactionSummary(int retentionDays)
         {
             if (retentionDays > 0)
             {
-                return await dataTraceServices.DeleteLoginTransactionSummary(retentionDays);
+                return await dataTraceServices.AlterPartitionLoginTransactionSummary(retentionDays);
             }
 
             return 0;

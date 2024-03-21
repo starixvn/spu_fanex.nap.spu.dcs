@@ -52,10 +52,10 @@
             return result > 0;
         }
 
-        [HttpPost("deletelogintransactionsummary")]
-        public async Task<bool> DeleteLoginTransactionSummary([FromForm] int retentionDays = 15)
+        [HttpPost("alterPartitionlogintransactionsummary")]
+        public async Task<bool> AlterPartitionLoginTransactionSummary([FromForm] int retentionDays = 15)
         {
-            var result = await dataTraceJobService.DeleteLoginTransactionSummary(retentionDays);
+            var result = await dataTraceJobService.AlterPartitionLoginTransactionSummary(retentionDays);
             return result > 0;
         }
 

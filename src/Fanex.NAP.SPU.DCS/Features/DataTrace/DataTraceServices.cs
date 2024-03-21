@@ -24,7 +24,7 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<int> DeleteLoginTransactionSummary(int retentionDays);
+        Task<int> AlterPartitionLoginTransactionSummary(int retentionDays);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -347,9 +347,9 @@
             return await dataAccess.CookDataLoginTransaction(batchSize);
         }
 
-        public async Task<int> DeleteLoginTransactionSummary(int retentionDays)
+        public async Task<int> AlterPartitionLoginTransactionSummary(int retentionDays)
         {
-            return await dataAccess.DeleteLoginTransactionSummary(retentionDays);
+            return await dataAccess.AlterPartitionLoginTransactionSummary(retentionDays);
         }
 
         #region Report
