@@ -19,7 +19,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
-        Task<int> CookDataLoginTransaction(int size);
+        Task<int> CookDataLoginTransaction(int batchSize);
 
         Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
@@ -116,11 +116,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<int> CookDataLoginTransaction(int size)
+        public async Task<int> CookDataLoginTransaction(int batchSize)
         {
-            if (size > 0)
+            if (batchSize > 0)
             {
-                return await dataTraceServices.CookDataLoginTransaction(size);
+                return await dataTraceServices.CookDataLoginTransaction(batchSize);
             }
 
             return 0;

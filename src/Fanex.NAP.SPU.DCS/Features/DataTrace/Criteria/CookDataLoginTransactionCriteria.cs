@@ -5,8 +5,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
     public class CookDataLoginTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_Size")]
-        public int Size { get; set; }
+        [SpParam(SqlParamName = "ip_BatchSize")]
+        public int BatchSize { get; set; }
 
         public override string GetSettingKey()
         {

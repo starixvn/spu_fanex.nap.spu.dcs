@@ -22,7 +22,7 @@
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
-        Task<int> CookDataLoginTransaction(int size);
+        Task<int> CookDataLoginTransaction(int batchSize);
 
         Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
@@ -342,9 +342,9 @@
             return await dataAccess.IsDailyTaskReadyAsync(dailyTaskFPSID);
         }
 
-        public async Task<int> CookDataLoginTransaction(int size)
+        public async Task<int> CookDataLoginTransaction(int batchSize)
         {
-            return await dataAccess.CookDataLoginTransaction(size);
+            return await dataAccess.CookDataLoginTransaction(batchSize);
         }
 
         public async Task<int> DeleteLoginTransactionSummary(int retentionDays)

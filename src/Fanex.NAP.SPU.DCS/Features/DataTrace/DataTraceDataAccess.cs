@@ -33,7 +33,7 @@
 
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
-        Task<int> CookDataLoginTransaction(int size);
+        Task<int> CookDataLoginTransaction(int batchSize);
 
         Task<int> DeleteLoginTransactionSummary(int retentionDays);
 
@@ -178,11 +178,11 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<int> CookDataLoginTransaction(int size)
+        public async Task<int> CookDataLoginTransaction(int batchSize)
         {
             var criteria = new CookDataLoginTransactionCriteria
             {
-                Size = size
+                BatchSize = batchSize
             };
 
             return await repository.ExecuteAsync(criteria);
