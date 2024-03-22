@@ -53,9 +53,9 @@
         }
 
         [HttpPost("alterPartitionlogintransactionsummary")]
-        public async Task<bool> AlterPartitionLoginTransactionSummary([FromForm] int retentionDays = 15)
+        public async Task<bool> AlterPartitionLoginTransactionSummary([FromForm] int retentionPartitions = 15)
         {
-            var result = await dataTraceJobService.AlterPartitionLoginTransactionSummary(retentionDays);
+            var result = await dataTraceJobService.AlterPartitionLoginTransactionSummary(retentionPartitions);
             return result > 0;
         }
 
