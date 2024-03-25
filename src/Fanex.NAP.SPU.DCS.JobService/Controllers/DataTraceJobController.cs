@@ -52,13 +52,6 @@
             return result > 0;
         }
 
-        [HttpPost("alterPartitionlogintransactionsummary")]
-        public async Task<bool> AlterPartitionLoginTransactionSummary([FromForm] int retentionPartitions = 15)
-        {
-            var result = await dataTraceJobService.AlterPartitionLoginTransactionSummary(retentionPartitions);
-            return result > 0;
-        }
-
         #region Report
 
         [HttpGet("report-missing-transaction")]

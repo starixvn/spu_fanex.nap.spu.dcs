@@ -35,8 +35,6 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<int> AlterPartitionLoginTransactionSummary(int retentionDays);
-
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -183,16 +181,6 @@
             var criteria = new CookDataLoginTransactionCriteria
             {
                 BatchSize = batchSize
-            };
-
-            return await repository.ExecuteAsync(criteria);
-        }
-
-        public async Task<int> AlterPartitionLoginTransactionSummary(int retentionDays)
-        {
-            var criteria = new AlterPartitionLoginTransactionSummaryCriteria
-            {
-                RetentionPartitions = retentionDays
             };
 
             return await repository.ExecuteAsync(criteria);
