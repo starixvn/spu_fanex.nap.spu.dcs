@@ -29,19 +29,6 @@
         }
 
         [Fact]
-        public async Task InsertSummaryLoginTransactionAsync_WhenCall_ReturnExactData()
-        {
-            // Arrange
-            dataAccess.InsertSummaryLoginTransactionAsync(Arg.Any<int>()).Returns(1);
-
-            // Act
-            var actual = await dataTraceServices.InsertSummaryLoginTransactionAsync(1);
-
-            // Assert
-            Assert.Equal(1, actual);
-        }
-
-        [Fact]
         public async Task ProcessSummaryBetTransactionAsync_IsTaskDailyNotReady_ReturnCallExactFunction()
         {
             // Arrange
@@ -185,36 +172,6 @@
         }
 
         [Fact]
-        public async Task GetReportLoginTransaction_WhenCall_ShouldCallExactFunction()
-        {
-            // Arrange
-            var reportLoginTransactionDetails = fixture.CreateMany<ReportLoginTransactionDetailModel>();
-            dataAccess.GetReportLoginTransactionDetail(Arg.Any<DateTime>()).Returns(reportLoginTransactionDetails);
-
-            // Act
-            var actual = await dataTraceServices.GetReportLoginTransactionDetail(DateTime.Now);
-
-            // Assert
-
-            Assert.Equal(reportLoginTransactionDetails, actual);
-        }
-
-        [Fact]
-        public async Task GetReportBotDTransaction_WhenCall_ShouldCallExactFunction()
-        {
-            // Arrange
-            var reportBotDTransactions = fixture.CreateMany<ReportBotDTransactionModel>();
-            dataAccess.GetReportBotDTransaction(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportBotDTransactions);
-
-            // Act
-            var actual = await dataTraceServices.GetReportBotDTransaction(DateTime.Now, DateTime.Now);
-
-            // Assert
-
-            Assert.Equal(reportBotDTransactions, actual);
-        }
-
-        [Fact]
         public async Task GetReportMissingTransaction_WhenCall_ShouldCallExactFunction()
         {
             // Arrange
@@ -227,22 +184,6 @@
             // Assert
 
             Assert.Equal(reportMissingTransactions, actual);
-        }
-
-        [Fact]
-        public async Task GetReportMissingTransaction_WhenHasData_ShouldCallExactFunction()
-        {
-            // Arrange
-            var betTransactions = fixture.CreateMany<BetTransactionInfo>();
-            dataAccess.GetInitBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactions);
-
-            // Act
-            var actual = await dataTraceServices.ProcessInitBetTransactionAsync(DateTime.Now);
-
-            // Assert
-            Assert.True(actual);
-            await dataAccess.Received().DeleteBetTransactionSummaryByDateAsync(Arg.Any<DateTime>());
-            await dataAccess.Received().InsertSummaryBetTransactionAsync(Arg.Any<string>());
         }
 
         [Fact]
@@ -268,34 +209,6 @@
 
             // Act
             var actual = await dataTraceServices.CountDWBetTransactionByDate(DateTime.Now);
-
-            // Assert
-            Assert.Equal(3, actual);
-        }
-
-        [Fact]
-        public async Task CountInitDWBetTransactionByDate_WhenDailyTaskNotReady_ShouldReturnExactData()
-        {
-            // Arrange
-            dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(false);
-
-            // Act
-            var actual = await dataTraceServices.CountInitDWBetTransactionByDate(DateTime.Now);
-
-            // Assert
-            Assert.Equal(0, actual);
-        }
-
-        [Fact]
-        public async Task CountInitDWBetTransactionByDate_WhenDailyTaskReadyAndHasData_ShouldReturnExactData()
-        {
-            // Arrange
-            var betTransactions = fixture.CreateMany<BetTransactionInfo>();
-            dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
-            dataAccess.GetInitBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactions);
-
-            // Act
-            var actual = await dataTraceServices.CountInitDWBetTransactionByDate(DateTime.Now);
 
             // Assert
             Assert.Equal(3, actual);

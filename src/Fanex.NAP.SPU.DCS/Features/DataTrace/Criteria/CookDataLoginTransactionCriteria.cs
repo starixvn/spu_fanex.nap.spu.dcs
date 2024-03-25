@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Fanex.Data;
 using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    public class GetInitBetTransactionCriteria : CriteriaBase
+    public class CookDataLoginTransactionCriteria : NonQueryCommand
     {
-        public DateTime FromTransDate { get; set; }
-        public DateTime ToTransDate { get; set; }
+        [SpParam(SqlParamName = "ip_BatchSize")]
+        public int BatchSize { get; set; }
 
         public override string GetSettingKey()
         {
-            return "Ned_Acc_Rpt_FPS_GetCustBettingInfo";
+            return "DCS_DT_Summary_LoginTransaction_CookData";
         }
 
         public override bool IsValid()

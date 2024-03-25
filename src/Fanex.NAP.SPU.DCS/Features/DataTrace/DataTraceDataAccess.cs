@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Threading.Tasks;
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -10,13 +11,9 @@
 
     public interface IDataTraceDataAccess
     {
-        Task<int> InsertSummaryLoginTransactionAsync(int batchSize);
-
         Task<bool> IsDailyTaskReadyAsync(int taskID);
 
         Task<IEnumerable<BetTransactionInfo>> GetBetTransactionAsync(DateTime transDate);
-
-        Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate);
 
         Task<int> InsertSummaryBetTransactionAsync(string rawTransJson);
 
@@ -36,13 +33,19 @@
 
         Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType);
 
-        Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate);
-
-        Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate);
+        Task<int> CookDataLoginTransaction(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceDataAccess : IDataTraceDataAccess
     {
@@ -51,16 +54,6 @@
         public DataTraceDataAccess(IDynamicRepository repository)
         {
             this.repository = repository ?? new DynamicRepository();
-        }
-
-        public async Task<int> InsertSummaryLoginTransactionAsync(int batchSize)
-        {
-            var criteria = new InsertSumaryLoginTransactionCriteria
-            {
-                BatchSize = batchSize
-            };
-
-            return await repository.ExecuteAsync(criteria);
         }
 
         public async Task<bool> IsDailyTaskReadyAsync(int taskID)
@@ -172,17 +165,6 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<BetTransactionInfo>> GetInitBetTransactionAsync(DateTime transDate)
-        {
-            var criteria = new GetInitBetTransactionCriteria
-            {
-                FromTransDate = transDate,
-                ToTransDate = transDate
-            };
-
-            return await repository.FetchAsync<BetTransactionInfo>(criteria);
-        }
-
         public async Task<int> DeleteMissingTransactionByDate(DateTime transDate, int missingType)
         {
             var criteria = new DeleteMissingTransactionByDateCriteria
@@ -194,37 +176,17 @@
             return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<ReportLoginTransactionModel>> GetReportLoginTransaction(DateTime fromDate, DateTime toDate)
+        public async Task<int> CookDataLoginTransaction(int batchSize)
         {
-            var criteria = new GetReportLoginTransactionCriteria
+            var criteria = new CookDataLoginTransactionCriteria
             {
-                FromDate = fromDate,
-                ToDate = toDate
+                BatchSize = batchSize
             };
 
-            return await repository.FetchAsync<ReportLoginTransactionModel>(criteria);
+            return await repository.ExecuteAsync(criteria);
         }
 
-        public async Task<IEnumerable<ReportBotDTransactionModel>> GetReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            var criteria = new GetReportBotDTransactionCriteria
-            {
-                FromDate = fromDate,
-                ToDate = toDate
-            };
-
-            return await repository.FetchAsync<ReportBotDTransactionModel>(criteria);
-        }
-
-        public async Task<IEnumerable<ReportLoginTransactionDetailModel>> GetReportLoginTransactionDetail(DateTime transDate)
-        {
-            var criteria = new GetReportLoginTransactionDetailCriteria
-            {
-                TransDate = transDate
-            };
-
-            return await repository.FetchAsync<ReportLoginTransactionDetailModel>(criteria);
-        }
+        #region Report
 
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
@@ -236,5 +198,61 @@
 
             return await repository.FetchAsync<ReportMissingTransactionModel>(criteria);
         }
+
+        public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionBySubscriberCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionBySubscriberModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionBySiteCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionBySiteModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionByAccountCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionByAccountModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionByBrowserCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionByBrowserModel>(criteria);
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        {
+            var criteria = new GetReportLoginTransactionByFlaggedCriteria
+            {
+                FromDate = fromDate,
+                ToDate = toDate
+            };
+
+            return await repository.FetchAsync<ReportLoginTransactionByFlaggedModel>(criteria);
+        }
+        #endregion
     }
 }

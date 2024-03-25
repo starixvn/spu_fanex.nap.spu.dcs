@@ -1,6 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.JobService.Services;
+    using System.Text;
 
     [ApiController]
     [Route("api/datatracejob")]
@@ -8,19 +10,9 @@
     {
         private readonly IDataTraceJobService dataTraceJobService;
 
-        private readonly string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        private readonly string keyHeader = "content-disposition";
-        private readonly string keyValue = "attachment; filename=ExcelFile.xlsx";
-
         public DataTraceJobController(IDataTraceJobService dataTraceJobService)
         {
             this.dataTraceJobService = dataTraceJobService;
-        }
-
-        [HttpPost("summarylogintransaction")]
-        public async Task<bool> SummaryLoginTransaction([FromForm] int batchSize = 50000)
-        {
-            return await dataTraceJobService.SummaryLoginTransactionsAsync(batchSize);
         }
 
         [HttpPost("summarybettransaction")]
@@ -47,99 +39,207 @@
             return await dataTraceJobService.CountDWBetTransactionByDate(transDate);
         }
 
-        [HttpPost("init-summary-bet-transaction")]
-        public async Task<bool> InitSummaryBetTransaction([FromForm] DateTime transDate)
-        {
-            return await dataTraceJobService.InitBetTransactionAsync(transDate);
-        }
-
-        [HttpPost("count-init-dw-bet-transaction-by-date")]
-        public async Task<int> CountInitDWBetTransactionByDate([FromForm] DateTime transDate)
-        {
-            return await dataTraceJobService.CountInitDWBetTransactionByDate(transDate);
-        }
-
-        [HttpGet("report-login-transaction-daily")]
-        public async Task<IActionResult> ReportLoginTransactionDaily(DateTime fromDate, DateTime toDate)
-        {
-            var stream = await dataTraceJobService.ReportLoginTransaction(fromDate, toDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportLoginTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-        [HttpGet("report-botd-transaction-daily")]
-        public async Task<IActionResult> ReportBotDTransactionDaily(DateTime fromDate, DateTime toDate)
-        {
-            var stream = await dataTraceJobService.ReportBotDTransaction(fromDate, toDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportBotDTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-        [HttpGet("report-missing-transaction-daily")]
-        public async Task<IActionResult> ReportMissingTransactionDaily(DateTime fromDate, DateTime toDate)
-        {
-            var stream = await dataTraceJobService.ReportMissingTransaction(fromDate, toDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportMissingTransactionDaily.xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-        [HttpGet("report-login-transaction-detail")]
-        public async Task<IActionResult> ReportLoginTransactionDetail(DateTime transDate)
-        {
-            var stream = await dataTraceJobService.ReportLoginTransactionDetail(transDate);
-
-            if (stream != null)
-            {
-                Response.ContentType = contentType;
-                Response.Headers.Add(keyHeader, keyValue);
-                var file = File(stream, contentType, "ReportLoginTransactionDetail" + transDate.ToString("yyyymmdd") + ".xlsx");
-
-                return file;
-            }
-
-            return null;
-        }
-
-
-        [HttpPost("checktimeout")]
-        public async Task<bool> CheckTimeoutAsync([FromForm] int delayTime = 10000)
-        {
-            await Task.Delay(delayTime);
-            return true;
-        }
-
         [HttpPost("updatesystemsetting")]
         public async Task<bool> UpdateSystemSetting([FromForm] int id, [FromForm] string value)
         {
             return await dataTraceJobService.UpdateSystemSetting(id, value);
         }
 
+        [HttpPost("cookdatalogintransaction")]
+        public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
+        {
+            return await dataTraceJobService.CookDataLoginTransaction(batchSize);
+        }
+
+        #region Report
+
+        [HttpGet("report-missing-transaction")]
+        public async Task<IEnumerable<ReportMissingTransactionModel>> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportMissingTransaction(fromDate, toDate);
+        }
+
+        [HttpGet("report-missing-transaction-csv")]
+        public async Task<IActionResult> ReportMissingTransactionCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportMissingTransaction(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,CountCustWithoutTrans,CountCustMissingTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.SubscriberID}" +
+                    $",{item.SubscriberName}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.CountCustWithoutTrans}" +
+                    $",{item.CountCustMissingTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportMissingTransaction.csv");
+        }
+
+        [HttpGet("report-login-transaction-by-subscriber")]
+        public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> ReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportLoginTransactionBySubscriber(fromDate, toDate);
+        }
+
+        [HttpGet("report-login-transaction-by-subscriber-csv")]
+        public async Task<IActionResult> ReportLoginTransactionBySubscriberCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportLoginTransactionBySubscriber(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.SubscriberID}" +
+                    $",{item.SubscriberName}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.TotalInvalidBrowers}" +
+                    $",{item.TotalBotTrans}" +
+                    $",{item.TotalNoDeviceTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionBySubscriber.csv");
+        }
+
+        [HttpGet("report-login-transaction-by-site")]
+        public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> ReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportLoginTransactionBySite(fromDate, toDate);
+        }
+
+        [HttpGet("report-login-transaction-by-site-csv")]
+        public async Task<IActionResult> ReportLoginTransactionBySiteCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportLoginTransactionBySite(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,SubscriberID,SubscriberName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.SubscriberID}" +
+                    $",{item.SubscriberName}" +
+                    $",{item.Site}" +
+                    $",{item.PaymentType}" +
+                    $",{item.LicenseeType}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.TotalInvalidBrowers}" +
+                    $",{item.TotalBotTrans}" +
+                    $",{item.TotalNoDeviceTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionBySite.csv");
+        }
+
+        [HttpGet("report-login-transaction-by-account")]
+        public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> ReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportLoginTransactionByAccount(fromDate, toDate);
+        }
+
+        [HttpGet("report-login-transaction-by-account-csv")]
+        public async Task<IActionResult> ReportLoginTransactionByAccountCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportLoginTransactionByAccount(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,SubscriberID,SubscriberName,AccountID,CustID,LoginName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.SubscriberID}" +
+                    $",{item.SubscriberName}" +
+                    $",{item.AccountID}" +
+                    $",{item.CustID}" +
+                    $",{item.LoginName}" +
+                    $",{item.Site}" +
+                    $",{item.PaymentType}" +
+                    $",{item.LicenseeType}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.TotalInvalidBrowers}" +
+                    $",{item.TotalBotTrans}" +
+                    $",{item.TotalNoDeviceTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionByAccount.csv");
+        }
+
+        [HttpGet("report-login-transaction-by-browser")]
+        public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> ReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportLoginTransactionByBrowser(fromDate, toDate);
+        }
+
+        [HttpGet("report-login-transaction-by-browser-csv")]
+        public async Task<IActionResult> ReportLoginTransactionByBrowserCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportLoginTransactionByBrowser(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,BrowserID,BrowserName,OSID,OSName,DeviceTypeID,DeviceType,TotalTrans,TotalInvalidBrowers,TotalBotTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.BrowserID}" +
+                    $",{item.BrowserName}" +
+                    $",{item.OSID}" +
+                    $",{item.OSName}" +
+                    $",{item.DeviceTypeID}" +
+                    $",{item.DeviceType}" +
+                    $",{item.TotalTrans}" +
+                    $",{item.TotalInvalidBrowers}" +
+                    $",{item.TotalBotTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionByBrowser.csv");
+        }
+
+        [HttpGet("report-login-transaction-by-flagged")]
+        public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> ReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        {
+            return await dataTraceJobService.GetReportLoginTransactionByFlagged(fromDate, toDate);
+        }
+
+        [HttpGet("report-login-transaction-by-flagged-csv")]
+        public async Task<IActionResult> ReportLoginTransactionByFlaggedCSV(DateTime fromDate, DateTime toDate)
+        {
+            var data = await dataTraceJobService.GetReportLoginTransactionByFlagged(fromDate, toDate);
+
+            var builder = new StringBuilder();
+            var keyName = "TransDate,Flagged,FlaggedName,TotalTrans";
+            builder.AppendLine(keyName);
+
+            foreach (var item in data)
+            {
+                builder.AppendLine($"" +
+                    $"{item.TransDate.ToString("yyyy-MM-dd")}" +
+                    $",{item.Flagged}" +
+                    $",{item.FlaggedName}" +
+                    $",{item.TotalTrans}");
+            }
+
+            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionByFlagged.csv");
+        }
+        #endregion
     }
 }

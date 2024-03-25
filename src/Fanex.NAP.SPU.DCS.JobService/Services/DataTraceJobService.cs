@@ -4,12 +4,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using OfficeOpenXml;
+    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using System.Drawing;
 
     public interface IDataTraceJobService
     {
-        Task<bool> SummaryLoginTransactionsAsync(int batchSize);
-
         Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
 
         Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize);
@@ -18,19 +17,21 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue);
 
-        Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate);
-
-        Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate);
-
-        Task<bool> InitBetTransactionAsync(DateTime transDate);
-
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
-        Task<int> CountInitDWBetTransactionByDate(DateTime transDate);
+        Task<bool> CookDataLoginTransaction(int batchSize);
+
+        Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
+
+        Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -41,22 +42,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
-        }
-
-        public async Task<bool> SummaryLoginTransactionsAsync(int batchSize)
-        {
-            try
-            {
-                await dataTraceServices.InsertSummaryLoginTransactionAsync(batchSize);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace SummaryLoginTransactionsAsync execute exeption message: ");
-
-                return false;
-            }
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -115,75 +100,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return false;
         }
 
-        public async Task<MemoryStream> ReportLoginTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportLoginTransaction_Template.xlsx", dataTraceServices.GetReportLoginTransaction);
-        }
-
-        public async Task<MemoryStream> ReportBotDTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportBotDTransaction_Template.xlsx", dataTraceServices.GetReportBotDTransaction);
-        }
-
-        public async Task<MemoryStream> ReportMissingTransaction(DateTime fromDate, DateTime toDate)
-        {
-            return await GenerateReport(fromDate, toDate, "ReportMissingTransaction_Template.xlsx", dataTraceServices.GetReportMissingTransaction);
-        }
-
-#pragma warning disable S6507 // Do not lock on local variable 'data', use a readonly field instead.
-        private static async Task<MemoryStream> GenerateReport<TModel>(DateTime fromDate, DateTime toDate, string templateFileName, Func<DateTime, DateTime, Task<IEnumerable<TModel>>> getDataFunc)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo($"Template/{templateFileName}")))
-                {
-                    var weekRanges = GetWeekRanges(fromDate, toDate);
-                    var data = new List<TModel>();
-
-                    var tasks = weekRanges.Select(async weekRange =>
-                    {
-                        var result = await getDataFunc(weekRange.Item1, weekRange.Item2);
-                        lock (data)
-                        {
-                            data.AddRange(result);
-                        }
-                    });
-
-                    await Task.WhenAll(tasks);
-
-                    data = data.OrderBy(x => ((dynamic)x).TransDate).ToList();
-
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-#pragma warning restore S6507 // Do not lock on local variable 'data', use a readonly field instead.
-
-        public async Task<MemoryStream> ReportLoginTransactionDetail(DateTime transDate)
-        {
-            try
-            {
-                using (var package = new ExcelPackage(new FileInfo("Template/ReportLoginTransactionDetail_Template.xlsx")))
-                {
-                    var data = await dataTraceServices.GetReportLoginTransactionDetail(transDate);
-                    return GenerateMemoryStream(package, data);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public async Task<bool> InitBetTransactionAsync(DateTime transDate)
-        {
-            return await dataTraceServices.ProcessInitBetTransactionAsync(transDate);
-        }
-
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
         {
             try
@@ -198,56 +114,104 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<int> CountInitDWBetTransactionByDate(DateTime transDate)
+        public async Task<bool> CookDataLoginTransaction(int batchSize)
         {
             try
             {
-                return await dataTraceServices.CountInitDWBetTransactionByDate(transDate);
+                if (batchSize > 0)
+                {
+                    await dataTraceServices.CookDataLoginTransaction(batchSize);
+
+                    return true;
+                }
+
+                await logService.ErrorMessageAsync("DCS - DataTrace CookDataLoginTransaction has batchSize = 0!");
+
+                return false;
             }
             catch (Exception ex)
             {
-                HandleException(ex, "DCS - DataTrace CountInitDWBetTransactionByDate execute exeption message: ");
+                HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
 
-                return 0;
+                return false;
             }
         }
 
-        private static List<Tuple<DateTime, DateTime>> GetWeekRanges(DateTime fromDate, DateTime toDate)
+
+        #region Report
+
+        public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
-            var weekRanges = new List<Tuple<DateTime, DateTime>>();
-
-            const int week = 7;
-
-            DateTime currentDate = fromDate;
-            while (currentDate <= toDate)
+            try
             {
-                DateTime weekStart = currentDate.AddDays(-(int)currentDate.DayOfWeek);
-                DateTime weekEnd = weekStart.AddDays(6);
-
-                weekStart = weekStart < fromDate ? fromDate : weekStart;
-                weekEnd = weekEnd > toDate ? toDate : weekEnd;
-
-                weekRanges.Add(new Tuple<DateTime, DateTime>(weekStart, weekEnd));
-                currentDate = currentDate.AddDays(week);
+                return await dataTraceServices.GetReportMissingTransaction(fromDate, toDate);
             }
-
-            return weekRanges;
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        private static MemoryStream GenerateMemoryStream<T>(ExcelPackage package, IEnumerable<T> data, int firstRowData = 1)
+        public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
         {
-            var dataWorksheet = package.Workbook.Worksheets["Data"];
-
-            dataWorksheet.Cells["A" + firstRowData].LoadFromCollection(data, true);
-            var pivotWorksheet = package.Workbook.Worksheets["Pivot"];
-
-            foreach (var pivotTable in pivotWorksheet.PivotTables)
+            try
             {
-                pivotTable.CacheDefinition.SourceRange = dataWorksheet.Cells[firstRowData, dataWorksheet.Dimension.Start.Column, dataWorksheet.Dimension.End.Row, dataWorksheet.Dimension.End.Column];
+                return await dataTraceServices.GetReportLoginTransactionBySubscriber(fromDate, toDate);
             }
-
-            return new MemoryStream(package.GetAsByteArray());
+            catch (Exception)
+            {
+                return null;
+            }
         }
+
+        public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionBySite(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByAccount(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByBrowser(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                return await dataTraceServices.GetReportLoginTransactionByFlagged(fromDate, toDate);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        #endregion
 
         private void HandleException(Exception ex, string extraLogMessage)
         {

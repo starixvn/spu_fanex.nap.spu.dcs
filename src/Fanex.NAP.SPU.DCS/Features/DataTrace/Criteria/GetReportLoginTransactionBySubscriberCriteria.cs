@@ -1,10 +1,10 @@
-﻿using System;
-using Fanex.Data;
+﻿using Fanex.Data;
 using Fanex.Data.Repository;
+using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    public class GetReportBotDTransactionCriteria : CriteriaBase
+    public class GetReportLoginTransactionBySubscriberCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_FromDate")]
         public DateTime FromDate { get; set; }
@@ -14,7 +14,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DT_Report_BotDTransaction_Get";
+            return "DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange";
         }
 
         public override bool IsValid()
