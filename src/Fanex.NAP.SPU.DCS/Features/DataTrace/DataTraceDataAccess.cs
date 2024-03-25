@@ -35,6 +35,8 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
+        Task<int> InitialDataLoginTransaction(int batchSize);
+
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -179,6 +181,16 @@
         public async Task<int> CookDataLoginTransaction(int batchSize)
         {
             var criteria = new CookDataLoginTransactionCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<int> InitialDataLoginTransaction(int batchSize)
+        {
+            var criteria = new InitialDataLoginTransactionCriteria
             {
                 BatchSize = batchSize
             };

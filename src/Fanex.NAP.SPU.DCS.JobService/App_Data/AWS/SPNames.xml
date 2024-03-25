@@ -75,6 +75,7 @@
         <Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataTrace.ctsService"/>
         <Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
         <Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+        <Setting Key="DCS_DT_Summary_LoginTransaction_InitialData" SpName="DCS_DT_Summary_LoginTransaction_InitialData" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 		
         <Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
         <Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>

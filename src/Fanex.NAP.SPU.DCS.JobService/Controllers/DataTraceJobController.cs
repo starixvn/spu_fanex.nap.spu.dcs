@@ -51,6 +51,12 @@
             return await dataTraceJobService.CookDataLoginTransaction(batchSize);
         }
 
+        [HttpPost("initialdatalogintransaction")]
+        public async Task<bool> InitialDataLoginTransaction([FromForm] int batchSize = 5000)
+        {
+            return await dataTraceJobService.InitialDataLoginTransaction(batchSize);
+        }
+
         #region Report
 
         [HttpGet("report-missing-transaction")]
