@@ -19,7 +19,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
-        Task<int> CookDataLoginTransaction(int batchSize);
+        Task<bool> CookDataLoginTransaction(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -114,14 +114,27 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<int> CookDataLoginTransaction(int batchSize)
+        public async Task<bool> CookDataLoginTransaction(int batchSize)
         {
-            if (batchSize > 0)
+            try
             {
-                return await dataTraceServices.CookDataLoginTransaction(batchSize);
-            }
+                if (batchSize > 0)
+                {
+                    await dataTraceServices.CookDataLoginTransaction(batchSize);
 
-            return 0;
+                    return true;
+                }
+
+                await logService.ErrorMessageAsync("DCS - DataTrace CookDataLoginTransaction has batchSize = 0!");
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
+
+                return false;
+            }
         }
 
 

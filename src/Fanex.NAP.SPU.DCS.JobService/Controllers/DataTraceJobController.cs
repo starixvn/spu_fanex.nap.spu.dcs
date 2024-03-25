@@ -48,8 +48,7 @@
         [HttpPost("cookdatalogintransaction")]
         public async Task<bool> CookDataLoginTransaction([FromForm] int batchSize = 5000)
         {
-            var result = await dataTraceJobService.CookDataLoginTransaction(batchSize);
-            return result > 0;
+            return await dataTraceJobService.CookDataLoginTransaction(batchSize);
         }
 
         #region Report
