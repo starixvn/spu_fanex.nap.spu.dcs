@@ -24,8 +24,6 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<int> InitialDataLoginTransaction(int batchSize);
-
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -345,11 +343,6 @@
         public async Task<int> CookDataLoginTransaction(int batchSize)
         {
             return await dataAccess.CookDataLoginTransaction(batchSize);
-        }
-
-        public async Task<int> InitialDataLoginTransaction(int batchSize)
-        {
-            return await dataAccess.InitialDataLoginTransaction(batchSize);
         }
 
         #region Report
