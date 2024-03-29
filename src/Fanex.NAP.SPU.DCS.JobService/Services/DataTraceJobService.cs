@@ -5,7 +5,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using System.Drawing;
 
     public interface IDataTraceJobService
     {
@@ -20,8 +19,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<int> CountDWBetTransactionByDate(DateTime transDate);
 
         Task<bool> CookDataLoginTransaction(int batchSize);
-
-        Task<bool> InitialDataLoginTransaction(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -134,29 +131,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
-
-                return false;
-            }
-        }
-
-        public async Task<bool> InitialDataLoginTransaction(int batchSize)
-        {
-            try
-            {
-                if (batchSize > 0)
-                {
-                    await dataTraceServices.InitialDataLoginTransaction(batchSize);
-
-                    return true;
-                }
-
-                await logService.ErrorMessageAsync("DCS - DataTrace InitialDataLoginTransaction has batchSize = 0!");
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace InitialDataLoginTransaction execute exeption message: ");
 
                 return false;
             }
