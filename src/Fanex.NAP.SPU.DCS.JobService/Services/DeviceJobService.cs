@@ -320,7 +320,7 @@
                 new ValuePair { Source = source.Canvas, Destination = destination.Canvas }
             };
 
-            return values.TrueForAll(value => value.Source.Equals(value.Destination));
+            return values.TrueForAll(value => Object.Equals(value.Source, value.Destination));
         }
 
         private static bool CheckFonts(string fontsSource, string fontsDestination)
@@ -354,7 +354,7 @@
                 new ValuePair { Source = source.Accept, Destination = destination.Accept },
                 new ValuePair { Source = source.Headers, Destination = destination.Headers }
             };
-
+             
             try
             {
                 counter = 0;
