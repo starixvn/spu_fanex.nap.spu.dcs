@@ -78,5 +78,17 @@
         {
             return await archiveJobServices.DeleteBotComponent(retentionDays, false);
         }
+
+        [HttpPost("cookarchiveaccount")]
+        public async Task<bool> CookArchiveAccount([FromForm] int batchSize = 100, [FromForm] int numberOfBatch = 4)
+        {
+            return await archiveJobServices.CookArchiveAccountAsync(batchSize, numberOfBatch);
+        }
+
+        [HttpPost("archiveaccount")]
+        public async Task<bool> ArchiveAccount([FromForm] int batchSize = 100)
+        {
+            return await archiveJobServices.ArchiveAccountAsync(batchSize);
+        }
     }
 }

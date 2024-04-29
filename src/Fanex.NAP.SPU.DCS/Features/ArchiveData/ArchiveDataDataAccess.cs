@@ -1,5 +1,10 @@
-﻿using Fanex.Data.Repository;
+﻿using Fanex.Data;
+using Fanex.Data.Repository;
+using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
+using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
 using Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
 {
@@ -8,6 +13,12 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
         void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
         void DeleteBotComponent(int retentionDays, bool isTransformExtra);
+
+        Task<int> CookArchiveAccountAsync(int batchSize);
+
+        Task RecheckArchiveAccountAsync();
+
+        Task<int> ArchiveAccountAsync(int batchSize);
     }
 
     public class ArchiveDataDataAccess : IArchiveDataDataAccess
@@ -39,6 +50,37 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             };
 
             repository.Execute(criteria);
+        }
+
+        public async Task<int> CookArchiveAccountAsync(int batchSize)
+        {
+            var criteria = new CookArchiveAccountCriteria
+            {
+                BatchSize = batchSize,
+                ShouldContinue = 0
+            };
+
+            await repository.ExecuteAsync(criteria);
+            return criteria.ShouldContinue;
+        }
+
+        public async Task RecheckArchiveAccountAsync()
+        {
+            var criteria = new RecheckArchiveAccountCriteria {};
+
+            await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<int> ArchiveAccountAsync(int batchSize)
+        {
+            var criteria = new ArchiveAccountCriteria
+            {
+                BatchSize = batchSize,
+                RowCount = 0
+            };
+
+            await repository.ExecuteAsync(criteria);
+            return criteria.RowCount;
         }
     }
 }

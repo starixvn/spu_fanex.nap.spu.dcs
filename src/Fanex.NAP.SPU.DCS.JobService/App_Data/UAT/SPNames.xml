@@ -38,6 +38,10 @@
         <Setting Key="DCS_DC_Identity_Device_Insert" SpName="DCS_DC_Identity_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_Identity_Evolution_Insert" SpName="DCS_DC_Identity_Evolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_Transform_Transaction07_Insert" SpName="DCS_DC_Transform_Transaction07_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		
+        <Setting Key="DCS_DC_ArchiveData_Account_Cook" SpName="DCS_DC_ArchiveData_Account_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+        <Setting Key="DCS_DC_ArchiveData_Account_Recheck" SpName="DCS_DC_ArchiveData_Account_Recheck" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+        <Setting Key="DCS_DC_ArchiveData_Account_Archive" SpName="DCS_DC_ArchiveData_Account_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
     </Function>
 
     <Function Name="DCS_Extra">

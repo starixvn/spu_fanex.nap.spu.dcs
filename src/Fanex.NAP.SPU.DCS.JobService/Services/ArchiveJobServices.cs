@@ -1,12 +1,17 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
+    using System.Net.WebSockets;
 
     public interface IArchiveJobServices
     {
         Task<bool> Execute(int batchSize, bool isTransformExtra);
 
         Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra);
+
+        Task<bool> CookArchiveAccountAsync(int batchSize, int numberOfBatch);
+
+        Task<bool> ArchiveAccountAsync(int batchSize);
     }
 
     public class ArchiveJobServices : IArchiveJobServices
@@ -64,6 +69,49 @@
             }
 
             return Task.FromResult(true);
+        }
+
+        public async Task<bool> CookArchiveAccountAsync(int batchSize, int numberOfBatch)
+        {
+            try
+            {
+                var i = 0;
+                var shouldContinue = 1;
+                while (i < numberOfBatch && shouldContinue == 1)
+                {
+                    shouldContinue = await archiveDataService.CookArchiveAccountAsync(batchSize);
+                    await Task.Delay(100);
+                    i++;
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ArchiveAccountAsync(int batchSize)
+        {
+            try
+            {
+                await archiveDataService.RecheckArchiveAccountAsync();
+
+                var rowCount = 1;
+                while (rowCount > 0)
+                {
+                    rowCount = await archiveDataService.ArchiveAccountAsync(batchSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return false;
+            }
+
+            return true;
         }
     }
 }

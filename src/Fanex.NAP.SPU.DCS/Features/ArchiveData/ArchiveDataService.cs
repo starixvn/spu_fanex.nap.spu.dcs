@@ -1,10 +1,18 @@
-﻿namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
+﻿using System.Threading.Tasks;
+
+namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
 {
     public interface IArchiveDataService
     {
         void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
         void DeleteBotComponent(int retentionDays, bool isTransformExtra);
+
+        Task<int> CookArchiveAccountAsync(int batchSize);
+
+        Task RecheckArchiveAccountAsync();
+
+        Task<int> ArchiveAccountAsync(int batchSize);
     }
 
     public class ArchiveDataService : IArchiveDataService
@@ -24,6 +32,21 @@
         public void DeleteBotComponent(int retentionDays, bool isTransformExtra)
         {
             archiveDataAccess.DeleteBotComponent(retentionDays, isTransformExtra);
+        }
+
+        public async Task<int> CookArchiveAccountAsync(int batchSize)
+        {
+            return await archiveDataAccess.CookArchiveAccountAsync(batchSize);
+        }
+
+        public async Task RecheckArchiveAccountAsync()
+        {
+            await archiveDataAccess.RecheckArchiveAccountAsync();
+        }
+
+        public async Task<int> ArchiveAccountAsync(int batchSize)
+        {
+            return await archiveDataAccess.ArchiveAccountAsync(batchSize);
         }
     }
 }
