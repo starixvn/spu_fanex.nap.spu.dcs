@@ -12,6 +12,10 @@
         Task<bool> CookArchiveAccountAsync(int batchSize, int numberOfBatch);
 
         Task<bool> ArchiveAccountAsync(int batchSize);
+
+        Task<bool> CookArchiveDeviceAsync(int batchSize, int numberOfBatch);
+
+        Task<bool> ArchiveDeviceAsync(int batchSize);
     }
 
     public class ArchiveJobServices : IArchiveJobServices
@@ -103,6 +107,47 @@
                 while (rowCount > 0)
                 {
                     rowCount = await archiveDataService.ArchiveAccountAsync(batchSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> CookArchiveDeviceAsync(int batchSize, int numberOfBatch)
+        {
+            try
+            {
+                var i = 0;
+                var shouldContinue = 1;
+                while (i < numberOfBatch && shouldContinue == 1)
+                {
+                    shouldContinue = await archiveDataService.CookArchiveDeviceAsync(batchSize);
+                    await Task.Delay(100);
+                    i++;
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ArchiveDeviceAsync(int batchSize)
+        {
+            try
+            {
+                var rowCount = 1;
+                while (rowCount > 0)
+                {
+                    rowCount = await archiveDataService.ArchiveDeviceAsync(batchSize);
                 }
             }
             catch (Exception ex)

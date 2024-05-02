@@ -19,6 +19,10 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
         Task RecheckArchiveAccountAsync();
 
         Task<int> ArchiveAccountAsync(int batchSize);
+
+        Task<int> CookArchiveDeviceAsync(int batchSize);
+
+        Task<int> ArchiveDeviceAsync(int batchSize);
     }
 
     public class ArchiveDataDataAccess : IArchiveDataDataAccess
@@ -74,6 +78,30 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
         public async Task<int> ArchiveAccountAsync(int batchSize)
         {
             var criteria = new ArchiveAccountCriteria
+            {
+                BatchSize = batchSize,
+                RowCount = 0
+            };
+
+            await repository.ExecuteAsync(criteria);
+            return criteria.RowCount;
+        }
+
+        public async Task<int> CookArchiveDeviceAsync(int batchSize)
+        {
+            var criteria = new CookArchiveDeviceCriteria
+            {
+                BatchSize = batchSize,
+                ShouldContinue = 0
+            };
+
+            await repository.ExecuteAsync(criteria);
+            return criteria.ShouldContinue;
+        }
+
+        public async Task<int> ArchiveDeviceAsync(int batchSize)
+        {
+            var criteria = new ArchiveDeviceCriteria
             {
                 BatchSize = batchSize,
                 RowCount = 0
