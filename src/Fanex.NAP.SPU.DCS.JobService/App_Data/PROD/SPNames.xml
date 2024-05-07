@@ -40,10 +40,11 @@
 		<Setting Key="DCS_DC_Transform_Transaction07_Insert" SpName="DCS_DC_Transform_Transaction07_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		
 		<Setting Key="DCS_DC_ArchiveData_Account_Cook" SpName="DCS_DC_ArchiveData_Account_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Account_Recheck" SpName="DCS_DC_ArchiveData_Account_Recheck" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_Account_CheckReActive" SpName="DCS_DC_ArchiveData_Account_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_ArchiveData_Account_Archive" SpName="DCS_DC_ArchiveData_Account_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="DCS_DC_ArchiveData_Device_Cook" SpName="DCS_DC_ArchiveData_Device_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_Device_CheckReActive" SpName="DCS_DC_ArchiveData_Device_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_ArchiveData_Device_Archive" SpName="DCS_DC_ArchiveData_Device_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 	</Function>
 

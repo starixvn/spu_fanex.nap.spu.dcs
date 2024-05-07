@@ -101,12 +101,12 @@
         {
             try
             {
-                await archiveDataService.RecheckArchiveAccountAsync();
+                await archiveDataService.CheckReActiveArchiveAccountAsync();
 
-                var rowCount = 1;
-                while (rowCount > 0)
+                var shouldContinue = 1;
+                while (shouldContinue > 0)
                 {
-                    rowCount = await archiveDataService.ArchiveAccountAsync(batchSize);
+                    shouldContinue = await archiveDataService.ArchiveAccountAsync(batchSize);
                 }
             }
             catch (Exception ex)
@@ -144,10 +144,12 @@
         {
             try
             {
-                var rowCount = 1;
-                while (rowCount > 0)
+                await archiveDataService.CheckReActiveArchiveDeviceAsync();
+
+                var shouldContinue = 1;
+                while (shouldContinue > 0)
                 {
-                    rowCount = await archiveDataService.ArchiveDeviceAsync(batchSize);
+                    shouldContinue = await archiveDataService.ArchiveDeviceAsync(batchSize);
                 }
             }
             catch (Exception ex)

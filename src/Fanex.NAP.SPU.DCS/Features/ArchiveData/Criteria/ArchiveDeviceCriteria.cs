@@ -8,8 +8,8 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
         [SpParam(SqlParamName = "ip_BatchSize")]
         public int BatchSize { get; set; }
 
-        [SpParam(SqlParamName = "op_RowCount")]
-        public int RowCount { get; set; }
+        [SpParam(SqlParamName = "op_ShouldContinue")]
+        public int ShouldContinue { get; set; }
 
         public override string GetSettingKey()
         {

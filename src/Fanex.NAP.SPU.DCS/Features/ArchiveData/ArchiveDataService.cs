@@ -10,11 +10,13 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
 
         Task<int> CookArchiveAccountAsync(int batchSize);
 
-        Task RecheckArchiveAccountAsync();
+        Task CheckReActiveArchiveAccountAsync();
 
         Task<int> ArchiveAccountAsync(int batchSize);
 
         Task<int> CookArchiveDeviceAsync(int batchSize);
+
+        Task CheckReActiveArchiveDeviceAsync();
 
         Task<int> ArchiveDeviceAsync(int batchSize);
     }
@@ -43,9 +45,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             return await archiveDataAccess.CookArchiveAccountAsync(batchSize);
         }
 
-        public async Task RecheckArchiveAccountAsync()
+        public async Task CheckReActiveArchiveAccountAsync()
         {
-            await archiveDataAccess.RecheckArchiveAccountAsync();
+            await archiveDataAccess.CheckReActiveArchiveAccountAsync();
         }
 
         public async Task<int> ArchiveAccountAsync(int batchSize)
@@ -56,6 +58,11 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
         public async Task<int> CookArchiveDeviceAsync(int batchSize)
         {
             return await archiveDataAccess.CookArchiveDeviceAsync(batchSize);
+        }
+
+        public async Task CheckReActiveArchiveDeviceAsync()
+        {
+            await archiveDataAccess.CheckReActiveArchiveDeviceAsync();
         }
 
         public async Task<int> ArchiveDeviceAsync(int batchSize)

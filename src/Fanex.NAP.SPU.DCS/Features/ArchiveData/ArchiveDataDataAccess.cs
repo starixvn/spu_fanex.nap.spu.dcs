@@ -16,11 +16,13 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
 
         Task<int> CookArchiveAccountAsync(int batchSize);
 
-        Task RecheckArchiveAccountAsync();
+        Task CheckReActiveArchiveAccountAsync();
 
         Task<int> ArchiveAccountAsync(int batchSize);
 
         Task<int> CookArchiveDeviceAsync(int batchSize);
+
+        Task CheckReActiveArchiveDeviceAsync();
 
         Task<int> ArchiveDeviceAsync(int batchSize);
     }
@@ -68,9 +70,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             return criteria.ShouldContinue;
         }
 
-        public async Task RecheckArchiveAccountAsync()
+        public async Task CheckReActiveArchiveAccountAsync()
         {
-            var criteria = new RecheckArchiveAccountCriteria {};
+            var criteria = new CheckReActiveArchiveAccountCriteria {};
 
             await repository.ExecuteAsync(criteria);
         }
@@ -80,11 +82,11 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             var criteria = new ArchiveAccountCriteria
             {
                 BatchSize = batchSize,
-                RowCount = 0
+                ShouldContinue = 0
             };
 
             await repository.ExecuteAsync(criteria);
-            return criteria.RowCount;
+            return criteria.ShouldContinue;
         }
 
         public async Task<int> CookArchiveDeviceAsync(int batchSize)
@@ -99,16 +101,23 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             return criteria.ShouldContinue;
         }
 
+        public async Task CheckReActiveArchiveDeviceAsync()
+        {
+            var criteria = new CheckReActiveArchiveDeviceCriteria { };
+
+            await repository.ExecuteAsync(criteria);
+        }
+
         public async Task<int> ArchiveDeviceAsync(int batchSize)
         {
             var criteria = new ArchiveDeviceCriteria
             {
                 BatchSize = batchSize,
-                RowCount = 0
+                ShouldContinue = 0
             };
 
             await repository.ExecuteAsync(criteria);
-            return criteria.RowCount;
+            return criteria.ShouldContinue;
         }
     }
 }

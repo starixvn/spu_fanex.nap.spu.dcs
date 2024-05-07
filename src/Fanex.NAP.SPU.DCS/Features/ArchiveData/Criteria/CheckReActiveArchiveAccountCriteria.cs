@@ -2,11 +2,11 @@
 
 namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 {
-    public class RecheckArchiveAccountCriteria : NonQueryCommand
+    public class CheckReActiveArchiveAccountCriteria : NonQueryCommand
     {
         public override string GetSettingKey()
         {
-            return "DCS_DC_ArchiveData_Account_Recheck";
+            return "DCS_DC_ArchiveData_Account_CheckReActive";
         }
 
         public override bool IsValid()
