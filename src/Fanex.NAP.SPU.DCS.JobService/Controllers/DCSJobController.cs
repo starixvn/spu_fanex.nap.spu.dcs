@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
 
@@ -13,6 +14,7 @@
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
+        private readonly ISystemSettingServices systemSettingServices;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -21,6 +23,7 @@
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
+            ISystemSettingServices systemSettingServices,
             ILogService logService)
         {
             this.userAgentJobService = userAgentJobService;
@@ -29,6 +32,7 @@
             this.sumTransactionJobService = sumTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
+            this.systemSettingServices = systemSettingServices;
         }
 
         [HttpPost("useragent")]
@@ -71,6 +75,12 @@
         public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
         {
             return await archiveJobServices.Execute(batchSize, false);
+        }
+
+        [HttpPost("updatedcsystemsettingbyid")]
+        public async Task<bool> UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
+        {
+            return await systemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
