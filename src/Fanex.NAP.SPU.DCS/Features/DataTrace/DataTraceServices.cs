@@ -60,7 +60,6 @@
 
         public async Task<bool> ProcessSummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            throw new Exception("ab");
             if (!await IsDailyTaskReadyAsync())
             {
                 return false;
