@@ -23,6 +23,8 @@
 
         string RatioUrl { get; }
 
+        string ELKUrl { get; }
+
         T GetValue<T>(string key);
 
         T GetSection<T>(string key);
@@ -40,6 +42,7 @@
         private readonly string telegramGroupIDMonitorTransaction;
         private readonly bool isReadyDbExtra;
         private readonly string ratioUrl;
+        private readonly string elkUrl;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -60,6 +63,9 @@
             isReadyDbExtra = GetValue<bool>("IsReadyDbExtra");
 
             ratioUrl = GetValue<string>("RatioUrl");
+
+            elkUrl = GetValue<string>("ELK:Url");
+
         }
 
         public int Environment
@@ -98,7 +104,9 @@
 
         public bool IsReadyDbExtra => isReadyDbExtra;
 
-        public string RatioUrl => ratioUrl;
+        public string RatioUrl => ratioUrl;       
+
+        public string ELKUrl => elkUrl;
 
         public T GetValue<T>(string key)
         {

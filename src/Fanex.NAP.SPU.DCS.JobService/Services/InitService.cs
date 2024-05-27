@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
+    using Fanex.NAP.SPU.DCS.Features.ELK;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
@@ -25,6 +26,7 @@
             RegisterLogService(services);
             RegisterTelegramService(services);
             RegisterOtherServices(services);
+            RegisterELKService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -92,6 +94,7 @@
         {
             services.AddSingleton<ISystemSettingServices, SystemSettingServices>();
             services.AddSingleton<ISystemSettingDataAccess, SystemSettingDataAccess>();
+            services.AddSingleton<IELKDataAccess, ELKDataAccess>();
         }
     }
 }

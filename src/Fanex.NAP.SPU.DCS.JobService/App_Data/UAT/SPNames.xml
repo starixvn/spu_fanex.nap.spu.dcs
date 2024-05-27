@@ -86,4 +86,10 @@
         <Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
         <Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
     </Function>
+  <Function Name="ELK">
+
+    <Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+
+  </Function>
 </Functions>
