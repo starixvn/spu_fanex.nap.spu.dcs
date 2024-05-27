@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
 
@@ -13,6 +14,7 @@
         private readonly ISumTransactionJobService sumTransactionJobService;
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
+        private readonly ISystemSettingServices systemSettingServices;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -21,6 +23,7 @@
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
+            ISystemSettingServices systemSettingServices,
             ILogService logService)
         {
             this.userAgentJobService = userAgentJobService;
@@ -29,6 +32,7 @@
             this.sumTransactionJobService = sumTransactionJobService;
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
+            this.systemSettingServices = systemSettingServices;
         }
 
         [HttpPost("useragent")]
@@ -73,10 +77,40 @@
             return await archiveJobServices.Execute(batchSize, false);
         }
 
+        [HttpPost("updatedcsystemsettingbyid")]
+        public async Task<bool> UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
+        {
+            return await systemSettingServices.UpdateDCSystemSettingByID(id, value);
+        }
+
         [HttpPost("deletebotcomponent")]
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
             return await archiveJobServices.DeleteBotComponent(retentionDays, false);
+        }
+
+        [HttpPost("cookarchiveaccount")]
+        public async Task<bool> CookArchiveAccount([FromForm] int batchSize = 100, [FromForm] int numberOfBatch = 4)
+        {
+            return await archiveJobServices.CookArchiveAccountAsync(batchSize, numberOfBatch);
+        }
+
+        [HttpPost("archiveaccount")]
+        public async Task<bool> ArchiveAccount([FromForm] int batchSize = 100)
+        {
+            return await archiveJobServices.ArchiveAccountAsync(batchSize);
+        }
+
+        [HttpPost("cookarchivedevice")]
+        public async Task<bool> CookArchiveDevice([FromForm] int batchSize = 100, [FromForm] int numberOfBatch = 4)
+        {
+            return await archiveJobServices.CookArchiveDeviceAsync(batchSize, numberOfBatch);
+        }
+
+        [HttpPost("archivedevice")]
+        public async Task<bool> ArchiveDevice([FromForm] int batchSize = 100)
+        {
+            return await archiveJobServices.ArchiveDeviceAsync(batchSize);
         }
     }
 }

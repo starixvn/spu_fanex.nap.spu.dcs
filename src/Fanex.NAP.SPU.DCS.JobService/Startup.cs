@@ -1,7 +1,5 @@
 namespace Fanex.NAP.SPU.DCS.JobService
 {
-    using System.Net.Http;
-    using System.Threading;
     using Fanex.Data;
     using Fanex.Data.MySql;
     using Fanex.Data.Repository;
@@ -17,6 +15,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
+    using System.Net.Http;
+    using System.Threading;
 
     public class Startup
     {

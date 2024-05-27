@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@
             RegisterDWTransactionService(services);
             RegisterLogService(services);
             RegisterTelegramService(services);
+            RegisterOtherServices(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -84,6 +86,12 @@
         private static void RegisterTelegramService(this IServiceCollection services)
         {
             services.AddSingleton<INotificationService, NotificationService>();
+        }
+
+        private static void RegisterOtherServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ISystemSettingServices, SystemSettingServices>();
+            services.AddSingleton<ISystemSettingDataAccess, SystemSettingDataAccess>();
         }
     }
 }

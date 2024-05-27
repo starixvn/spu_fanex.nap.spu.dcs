@@ -30,7 +30,6 @@
         {
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
-            // deviceDataAccess.IsReadyDbExtra = isExtra;
             var criteria = fixture.Create<GetDeviceStagingTransactionPackageCriteria>();
 
             repository.FetchAsync<StagingTransId>(Arg.Do<GetDeviceStagingTransactionPackageCriteria>(x => criteria = x)).Returns(stagingTransIds);
