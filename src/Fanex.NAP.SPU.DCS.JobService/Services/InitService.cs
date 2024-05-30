@@ -94,6 +94,12 @@
         {
             services.AddSingleton<ISystemSettingServices, SystemSettingServices>();
             services.AddSingleton<ISystemSettingDataAccess, SystemSettingDataAccess>();
+           
+        }
+
+        private static void RegisterELKService(this IServiceCollection services)
+        {
+           
             services.AddSingleton<IELKDataAccess, ELKDataAccess>();
         }
     }
