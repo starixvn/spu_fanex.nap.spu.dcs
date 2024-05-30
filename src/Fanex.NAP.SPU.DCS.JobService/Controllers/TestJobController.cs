@@ -22,6 +22,14 @@
         public async Task<bool> Sentry([FromForm] string message)
         {
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
+
+            
+        }
+
+        [HttpPost("Decrypt")]
+        public async Task<string> Decrypt()
+        {
+            return Fanex.Data.Cryptography.DecryptPassword("l4exNQ2KUgCjzhehUWfktg==");
         }
     }
 }
