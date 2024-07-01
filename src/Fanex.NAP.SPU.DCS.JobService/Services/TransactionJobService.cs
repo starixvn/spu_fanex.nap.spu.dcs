@@ -69,7 +69,7 @@
                     var task = Task.Run(() =>
                     {
                         this.transactionService
-                               .UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
+                               //.UnhandleSubscriberAccountProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
                                .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
                     });
