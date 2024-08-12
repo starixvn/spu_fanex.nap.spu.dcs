@@ -5,8 +5,8 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 {
     public class TransformDeviceInsertCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_TransJson")]
-        public string TransIdJson { get; set; }
+        [SpParam(SqlParamName = "ip_TransIDs")]
+        public string TransIDs { get; set; }
 
         [SpParam(Ignored = true)]
         public bool IsReadyDbExtra { get; set; }
