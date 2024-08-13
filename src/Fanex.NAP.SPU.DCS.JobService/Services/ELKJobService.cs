@@ -75,7 +75,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
-        private string BuildConfig(SportSetting sportSetting, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
+        private string BuildConfigForMixParlay(SportSetting sportSetting, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
         {
             var mustRange = new Must
             {
@@ -263,7 +263,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private async Task<IEnumerable<SuccessRateModel>> GetELKData(DateTime startTime, DateTime endTime, SportSetting sportSetting, SiteTypeSetting siteTypeSetting)
         {
-            var config = BuildConfig(sportSetting, siteTypeSetting, startTime, endTime);
+            var config = BuildConfigForMixParlay(sportSetting, siteTypeSetting, startTime, endTime);
 
             var httpClient = new HttpClient()
             {
