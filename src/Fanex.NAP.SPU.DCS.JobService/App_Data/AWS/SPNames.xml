@@ -33,7 +33,7 @@
         
 		<Setting Key="DCS_DC_Transform_FP_DeviceEvolution_Get" SpName="DCS_DC_Transform_FP_DeviceEvolution_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_Transform_FP_DeviceEvolution_GetAttributes" SpName="DCS_DC_Transform_FP_DeviceEvolution_GetAttributes" DbName="MySQL.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_Transform_DeviceEvolution_Insert" SpName="DCS_DC_Transform_DeviceEvolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolution_Insert" SpName="DCS_DC_Transform_FP_DeviceEvolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		
         <Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
         <Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
