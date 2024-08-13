@@ -29,7 +29,6 @@
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
             transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(rawTrans);
-            transactionService.UnhandleSubscriberAccountProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(transactionService);
             transactionService.UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(transactionService);
             transactionService.TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(transactionService);
 
@@ -38,7 +37,6 @@
 
             // Assert
             Assert.True(result);
-            transactionService.Received(3).UnhandleSubscriberAccountProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
             transactionService.Received(3).UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
             transactionService.Received(3).TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
 
@@ -55,7 +53,6 @@
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
             transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(rawTrans);
-            transactionService.UnhandleSubscriberAccountProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Throws(new Exception("Simulate exception"));
 
             // Act
             var result = await service.Execute(1, 1, true);

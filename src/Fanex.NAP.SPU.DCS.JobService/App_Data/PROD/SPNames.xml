@@ -11,7 +11,6 @@
 		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_UnhandleSubscriberAction" SpName="DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
@@ -33,6 +32,11 @@
 		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceMapping_Insert" SpName="DCS_DC_Transform_FP_DeviceMapping_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolution_Get" SpName="DCS_DC_Transform_FP_DeviceEvolution_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolution_GetAttributes" SpName="DCS_DC_Transform_FP_DeviceEvolution_GetAttributes" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_Transform_DeviceEvolution_Insert" SpName="DCS_DC_Transform_DeviceEvolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>

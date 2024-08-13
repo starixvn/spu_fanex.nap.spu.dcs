@@ -1,35 +1,26 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.Devices;
-    using System.Net.Http;
     using System.Threading.Tasks;
 
     public interface IDeviceJobService
     {
         Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra);
+
+        Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra);
     }
 
     public class DeviceJobService : IDeviceJobService
     {
         private readonly ILogService logService;
         private readonly IDeviceServices deviceService;
-        private readonly IAppSettings appSettings;
-        private readonly HttpClient httpClient;
-        private readonly bool isExtra = false;
 
         private const int delayTime = 100; // milliseconds
 
-        private readonly int maxChangesRule5 = 2;
-        private readonly int maxChangesRule6 = 1;
-
-        public DeviceJobService(ILogService logService, IDeviceServices deviceService, IAppSettings appSettings, HttpClient httpClient)
+        public DeviceJobService(ILogService logService, IDeviceServices deviceService)
         {
             this.logService = logService;
             this.deviceService = deviceService;
-            this.appSettings = appSettings;
-            this.httpClient = httpClient;
-
-            httpClient.Timeout = TimeSpan.FromSeconds(10);
         }
 
         public async Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra)
@@ -38,7 +29,49 @@
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
+                    await deviceService.InsertFPDeviceMappingAsync(size * numberOfBatch, isReadyDbExtra);
                     await TransformDevice(size, numberOfBatch, isReadyDbExtra);
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+                return await Task.FromResult(false);
+            }
+
+            return await Task.FromResult(true);
+        }
+
+        public async Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra)
+        {
+            try
+            {
+                if (batchSize > 0)
+                {
+                    var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
+
+                    var dataEvolution = resultDeviceEvolution.Item1;
+                    var dataEvolutionAttribute = resultDeviceEvolution.Item2;
+
+                    if (dataEvolution != null && dataEvolution.Any())
+                    {
+                        foreach (var itemEvolution in dataEvolution)
+                        {
+                            if (!string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
+                            {
+                                var refIds = itemEvolution.FPDeviceFingerprintAccountIDRef
+                                                      .Split(',')
+                                                      .Select(ulong.Parse)
+                                                      .ToList();
+
+                                var matchingRecords = dataEvolutionAttribute
+                                    .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
+                                    .ToList();
+
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
