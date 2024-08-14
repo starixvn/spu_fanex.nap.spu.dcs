@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceMapping_Insert";
+            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceMappingInsert";
         }
 
         public override bool IsValid()

@@ -52,17 +52,6 @@
             return await repository.FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(criteria);
         }
 
-        public async Task<IEnumerable<DeviceEvolutionEntity>> GetAttributesFPDeviceEvolutionAsync(string fpFingerprintIDs, bool isReadyDbExtra)
-        {
-            var criteria = new GetAttributesFPDeviceEvolutionCriteria
-            {
-                FPFingerprintIDs = fpFingerprintIDs,
-                IsReadyDbExtra = isReadyDbExtra
-            };
-
-            return await repository.FetchAsync<DeviceEvolutionEntity>(criteria);
-        }
-
         public async Task TransformDeviceInsertAsync(string transIDs, bool isReadyDbExtra)
         {
             var criteria = new TransformDeviceInsertCriteria

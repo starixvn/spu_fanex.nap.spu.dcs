@@ -13,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceEvolution_Get";
+            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceEvolutionGet";
         }
 
         public override bool IsValid() => true;
