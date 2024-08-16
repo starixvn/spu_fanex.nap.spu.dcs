@@ -90,5 +90,8 @@
     <Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet.61"/>
     <Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet.62"/>
 
+    <Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet.61"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet.62"/>
+
   </Function>
 </Functions>

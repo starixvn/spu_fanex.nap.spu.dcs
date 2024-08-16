@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig
+namespace Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig
 {
     public class Aggs
     {

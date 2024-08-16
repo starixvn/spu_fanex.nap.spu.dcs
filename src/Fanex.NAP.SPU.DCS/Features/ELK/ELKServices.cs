@@ -9,7 +9,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 {
     public interface IELKServices
     {
-        void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningTime);
+        void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
+
+        void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
 
     }
 
@@ -21,9 +23,14 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
             this.elkDataAccess = elkDataAccess;
         }
 
-        public void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningTime)
+        public void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
         {
-            elkDataAccess.PrepareStagingForParlayValidationStats(month, sport, siteType, bettingMessageCount, runningTime);
+            elkDataAccess.PrepareStagingForBetMessage(month, sport, siteType, bettingMessageCount, runningCounter);
+        }
+
+        public void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
+        {
+            elkDataAccess.PrepareStagingForParlayValidationStats(month, sport, siteType, bettingMessageCount, runningCounter);
         }
     }
 }
