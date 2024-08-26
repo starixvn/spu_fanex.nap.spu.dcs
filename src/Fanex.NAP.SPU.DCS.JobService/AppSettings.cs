@@ -15,6 +15,8 @@
 
         string AbnormalTransactionUrl { get; }
 
+        bool AbnormalTransactionIgnorePushData { get; }
+
         string TelegramProxy { get; }
 
         string TelegramGroupIDMonitorTransaction { get; }
@@ -38,6 +40,7 @@
         private readonly string spName;
         private readonly string sentryDsn;
         private readonly string abnormalTransactionUrl;
+        private readonly bool abnormalTransactionIgnorePushData;
         private readonly string telegramProxy;
         private readonly string telegramGroupIDMonitorTransaction;
         private readonly bool isReadyDbExtra;
@@ -55,6 +58,8 @@
             sentryDsn = GetValue<string>("Sentry:Dsn");
 
             abnormalTransactionUrl = GetValue<string>("AbnormalTransaction:Url");
+
+            abnormalTransactionIgnorePushData = GetValue<bool>("AbnormalTransaction:IgnorePushData");
 
             telegramProxy = GetValue<string>("Telegram:Proxy");
 
@@ -97,6 +102,8 @@
         public string SentryDsn => sentryDsn;
 
         public string AbnormalTransactionUrl => abnormalTransactionUrl;
+
+        public bool AbnormalTransactionIgnorePushData => abnormalTransactionIgnorePushData;
 
         public string TelegramProxy => telegramProxy;
 
