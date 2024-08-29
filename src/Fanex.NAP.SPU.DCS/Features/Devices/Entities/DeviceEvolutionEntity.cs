@@ -5,5 +5,7 @@
         public ulong FPDeviceFingerprintAccountID { get; set; }
 
         public string FPDeviceFingerprintAccountIDRef { get; set; }
+
+        public ulong AccountID { get; set; }
     }
 }

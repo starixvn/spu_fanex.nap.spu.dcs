@@ -74,30 +74,22 @@
                     if (dataEvolution != null && dataEvolution.Any())
                     {
                         var listInsert = new List<InsertDeviceEvolutionEntity>();
+                        var listCandidate = new List<DeviceEvolutionEntity>();
                         foreach (var itemEvolution in dataEvolution)
                         {
-                            var itemEntity = new InsertDeviceEvolutionEntity { FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID };
-                            if (!string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
+                            var itemEntity = new InsertDeviceEvolutionEntity
                             {
-                                var refIds = itemEvolution.FPDeviceFingerprintAccountIDRef
-                                                      .Split(',')
-                                                      .Select(ulong.Parse)
-                                                      .ToList();
+                                FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID,
+                                EvolveByID = FindMatchingCandidate(itemEvolution, listCandidate)
+                            };
 
-                                var matchingRecords = dataEvolutionAttribute
-                                    .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
-                                    .ToList();
-
-
-                                var result = matchingRecords.FirstOrDefault(destination => CompareRules(source: itemEvolution, destination));
-
-                                if (result != null)
-                                {
-                                    itemEntity.EvolveByID = result.FPDeviceFingerprintAccountID;
-                                }
+                            if (itemEntity.EvolveByID == 0 && !string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
+                            {
+                                itemEntity.EvolveByID = FindMatchingReference(itemEvolution, dataEvolutionAttribute);
                             }
 
                             listInsert.Add(itemEntity);
+                            listCandidate.Add(itemEvolution);
                         }
 
                         if (listInsert.Any())
@@ -122,6 +114,34 @@
             }
 
             return await Task.FromResult(true);
+        }
+
+        private ulong FindMatchingCandidate(DeviceEvolutionEntity itemEvolution, List<DeviceEvolutionEntity> listCandidate)
+        {
+            var filteredByAccount = listCandidate
+                                    .Where(candidate => candidate.AccountID == itemEvolution.AccountID)
+                                    .OrderByDescending(candidate => candidate.FPDeviceFingerprintAccountID)
+                                    .ToList();
+
+            var resultCandidate = filteredByAccount.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+
+            return resultCandidate?.FPDeviceFingerprintAccountID ?? 0;
+        }
+
+        private ulong FindMatchingReference(DeviceEvolutionEntity itemEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
+        {
+            var refIds = itemEvolution.FPDeviceFingerprintAccountIDRef
+                                    .Split(',')
+                                    .Select(ulong.Parse)
+                                    .ToList();
+
+            var matchingRecords = dataEvolutionAttribute
+                                .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
+                                .ToList();
+
+            var result = matchingRecords.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+
+            return result?.FPDeviceFingerprintAccountID ?? 0;
         }
 
         private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
