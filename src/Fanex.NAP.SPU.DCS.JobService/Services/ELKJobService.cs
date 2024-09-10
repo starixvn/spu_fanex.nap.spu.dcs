@@ -448,11 +448,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 BaseAddress = new Uri(appSettings.ELKUrl),
                 DefaultRequestHeaders =
                 {
-                     Authorization = new AuthenticationHeaderValue("Basic", "ZWxhc3RpYzpwMGFseEA5ZGxj")
+                     Authorization = new AuthenticationHeaderValue("Basic", "bG9nc3Rhc2gud3JpdGVyOmxvZ3N0YXNoLndyaXRlcg==")
                 }
             };
 
-            var httpResponseMessage = await httpClient.PostAsync("logs-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
+            var httpResponseMessage = await httpClient.PostAsync("infinity-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
 
             var elasticResponse = await httpResponseMessage.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<ElasticResponse>();
 
@@ -476,11 +476,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 BaseAddress = new Uri(appSettings.ELKUrl),
                 DefaultRequestHeaders =
                 {
-                     Authorization = new AuthenticationHeaderValue("Basic", "ZWxhc3RpYzpwMGFseEA5ZGxj")
+                     Authorization = new AuthenticationHeaderValue("Basic", "bG9nc3Rhc2gud3JpdGVyOmxvZ3N0YXNoLndyaXRlcg==")
                 }
             };
 
-            var httpResponseMessage = await httpClient.PostAsync("logs-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
+            var httpResponseMessage = await httpClient.PostAsync("infinity-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
 
             var elasticResponse = await httpResponseMessage.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<ElasticResponse>();
 
