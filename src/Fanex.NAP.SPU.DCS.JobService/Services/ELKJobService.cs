@@ -4,6 +4,7 @@ using Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.Responses;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Numeric;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -445,6 +446,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             var httpClient = new HttpClient()
             {
+                Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
                 DefaultRequestHeaders =
                 {
@@ -473,12 +475,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             var httpClient = new HttpClient()
             {
+                Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
                 DefaultRequestHeaders =
                 {
                      Authorization = new AuthenticationHeaderValue("Basic", "bG9nc3Rhc2gud3JpdGVyOmxvZ3N0YXNoLndyaXRlcg==")
                 }
-            };
+            };                        
 
             var httpResponseMessage = await httpClient.PostAsync("infinity-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
 
