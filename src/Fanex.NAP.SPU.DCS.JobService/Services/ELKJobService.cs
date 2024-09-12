@@ -444,7 +444,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var config = BuildConfigForMixParlay(sportSetting, siteTypeSetting, startTime, endTime);
 
-            var httpClient = new HttpClient()
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                // Bypass SSL certificate validation for testing purposes
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+
+            var httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
@@ -473,7 +479,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var config = BuildConfigForSoccerBasketball(sportType, siteType, startTime, endTime);
 
-            var httpClient = new HttpClient()
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                // Bypass SSL certificate validation for testing purposes
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+
+            var httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
