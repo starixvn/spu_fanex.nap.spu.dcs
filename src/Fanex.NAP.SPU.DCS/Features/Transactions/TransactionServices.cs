@@ -11,8 +11,6 @@
         ITransactionServices UserAgentProcessing(long fromId, long toId, bool isReadyDbExtra);
 
         ITransactionServices TransactionProcessing(long fromId, long toId, bool isReadyDbExtra);
-
-        ITransactionServices UnhandleSubscriberAccountProcessing(long fromId, long toId, bool isReadyDbExtra);
     }
 
     public class TransactionServices : ITransactionServices
@@ -32,12 +30,6 @@
         public ITransactionServices TransactionProcessing(long fromId, long toId, bool isReadyDbExtra)
         {
             this.transactionDataAccess.InsertTransaction(fromId, toId, isReadyDbExtra);
-            return this;
-        }
-
-        public ITransactionServices UnhandleSubscriberAccountProcessing(long fromId, long toId, bool isReadyDbExtra)
-        {
-            this.transactionDataAccess.UnhandleSubscriberActionProcess(fromId, toId, isReadyDbExtra);
             return this;
         }
 

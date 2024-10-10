@@ -11,7 +11,6 @@
         <Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
         <Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" />
-        <Setting Key="DCS_DC_Transform_UnhandleSubscriberAction" SpName="DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 
         <Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
         <Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
@@ -33,19 +32,10 @@
         <Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
         <Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Device_Recover" SpName="DCS_DC_Identity_Device_Recover" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Evolution_GetAttributes" SpName="DCS_DC_Identity_Evolution_GetAttributes" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_Identity_Device_Insert" SpName="DCS_DC_Identity_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Evolution_Insert" SpName="DCS_DC_Identity_Evolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Transform_Transaction07_Insert" SpName="DCS_DC_Transform_Transaction07_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		
-        <Setting Key="DCS_DC_ArchiveData_Account_Cook" SpName="DCS_DC_ArchiveData_Account_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_ArchiveData_Account_CheckReActive" SpName="DCS_DC_ArchiveData_Account_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_ArchiveData_Account_Archive" SpName="DCS_DC_ArchiveData_Account_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+        <Setting Key="DCS_DC_Transform_FP_DeviceMappingInsert" SpName="DCS_DC_Transform_FP_DeviceMappingInsert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_ArchiveData_Device_Cook" SpName="DCS_DC_ArchiveData_Device_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Device_CheckReActive" SpName="DCS_DC_ArchiveData_Device_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Device_Archive" SpName="DCS_DC_ArchiveData_Device_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionGet" SpName="DCS_DC_Transform_FP_DeviceEvolutionGet" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionInsert" SpName="DCS_DC_Transform_FP_DeviceEvolutionInsert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>

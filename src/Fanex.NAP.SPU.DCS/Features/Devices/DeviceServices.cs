@@ -1,27 +1,22 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices
 {
+    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.Json;
     using System.Threading.Tasks;
-    using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
 
     public interface IDeviceServices
     {
 
         Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
 
-        Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
+        Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra);
 
-        Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra);
+        Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
 
-        Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra);
+        Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra);
 
-        Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra);
-
-        Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra);
-
-        Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra);
+        Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra);
     }
 
     public class DeviceServices : IDeviceServices
@@ -43,47 +38,31 @@
             return new List<StagingTransId>();
         }
 
-        public async Task<IEnumerable<IdentityDevice>> TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        public async Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra)
         {
-            var transIdJson = JsonSerializer.Serialize(stagingTransId);
-            return await deviceDataAcess.TransformDeviceInsertAsync(transIdJson, isReadyDbExtra);
-        }
-
-        public async Task<(IEnumerable<TransactionRecover>, IEnumerable<TransactionEvolution>)> GetIdentityDeviceRecoverAsync(string transIds, bool isReadyDbExtra)
-        {
-            if (!string.IsNullOrEmpty(transIds))
+            if (batchSize > 0)
             {
-                return await deviceDataAcess.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
+                return await deviceDataAcess.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
             }
 
-            return (new List<TransactionRecover>(), new List<TransactionEvolution>());
+            return (new List<DeviceEvolutionEntity>(), new List<DeviceEvolutionEntity>());
         }
 
-        public async Task<IEnumerable<TransactionEvolutionAttributes>> GetIdentityEvolutionAttributesAsync(string rawFingerPrintIDs, string browserFamilyCode, bool isReadyDbExtra)
+        public async Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
         {
-            return await deviceDataAcess.GetIdentityEvolutionAttributesAsync(rawFingerPrintIDs, browserFamilyCode, isReadyDbExtra);
+            string transIDs = string.Join(",", stagingTransId.Select(t => t.TransId.ToString()));
+
+            await deviceDataAcess.TransformDeviceInsertAsync(transIDs, isReadyDbExtra);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityDeviceInsertAsync(string transId, bool isReadyDbExtra)
+        public async Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra)
         {
-            return await deviceDataAcess.IdentityDeviceInsertAsync(transId, isReadyDbExtra);
+            await deviceDataAcess.InsertFPDeviceMappingAsync(batchSize, isTransformExtra);
         }
 
-        public async Task<IEnumerable<TransactionRecover>> IdentityEvolutionInsertAsync(IEnumerable<IdentifyEvolutionModel> models, bool isReadyDbExtra)
+        public async Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra)
         {
-            var transJson = JsonSerializer.Serialize(models);
-            return await deviceDataAcess.IdentityEvolutionInsertAsync(transJson, isReadyDbExtra);
-        }
-
-        public async Task<int> TransformTransaction07InsertAsync(IEnumerable<TransformTransactionModel> transformTransactionModels, bool isReadyDbExtra)
-        {
-            if (transformTransactionModels != null && transformTransactionModels.Any())
-            {
-                var transJson = JsonSerializer.Serialize(transformTransactionModels);
-                return await deviceDataAcess.TransformTransaction07InsertAsync(transJson, isReadyDbExtra);
-            }
-
-            return default;
+            await deviceDataAcess.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isTransformExtra);
         }
     }
 }

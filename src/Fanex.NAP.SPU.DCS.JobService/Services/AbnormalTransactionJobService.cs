@@ -12,6 +12,7 @@
         private readonly ILogService _logService;
         private readonly IAbnormalTransactionServices _abnormalTransactionServices;
         private readonly string _abnormalTransactionUrl;
+        private readonly bool _ignorePushData;
 
         public AbnormalTransactionJobService(ILogService logService, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
         {
@@ -20,6 +21,8 @@
             _abnormalTransactionServices = abnormalTransactionJobServices;
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
+
+            _ignorePushData = appSettings.AbnormalTransactionIgnorePushData;
         }
 
         public async Task<bool> PushAbnormalTransaction(int size)
@@ -28,7 +31,7 @@
             {
                 try
                 {
-                    var result = await _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl);
+                    var result = await _abnormalTransactionServices.PushAbnormalTransaction(size, _abnormalTransactionUrl, _ignorePushData);
 
                     return result;
                 }

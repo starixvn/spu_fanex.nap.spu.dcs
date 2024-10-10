@@ -1,98 +1,83 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <Functions>
-    <Function Name="JobSerice">
-        <Setting Key="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_DC_Transform_UserAgent_UpdateOSBrowser" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+	<Function Name="JobSerice">
+		<Setting Key="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_DC_Transform_UserAgent_UpdateOSBrowser" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-        <Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-        <Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" />
-        <Setting Key="DCS_DC_Transform_UnhandleSubscriberAction" SpName="DCS_DC_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-        <Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
-        <Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-        <Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
+		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
 
-        <Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
+		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="MySQL.DCS_DataCenter.ctsService" Timeout="600" />
 
-        <Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_NotifyMessage_GetByID" SpName="DCS_DC_NotifyMessage_GetByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_NotifyMessage_GetByNotifyType" SpName="DCS_DC_NotifyMessage_GetByNotifyType" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_NotifyMessage_UpdateNotified" SpName="DCS_DC_NotifyMessage_UpdateNotified" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
-        <Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
+		<Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByID" SpName="DCS_DC_NotifyMessage_GetByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByNotifyType" SpName="DCS_DC_NotifyMessage_GetByNotifyType" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_UpdateNotified" SpName="DCS_DC_NotifyMessage_UpdateNotified" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
-        <Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Device_Recover" SpName="DCS_DC_Identity_Device_Recover" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Evolution_GetAttributes" SpName="DCS_DC_Identity_Evolution_GetAttributes" DbName="MySQL.DCS_DataCenter.ctsService"/>
-        <Setting Key="DCS_DC_Identity_Device_Insert" SpName="DCS_DC_Identity_Device_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Identity_Evolution_Insert" SpName="DCS_DC_Identity_Evolution_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-        <Setting Key="DCS_DC_Transform_Transaction07_Insert" SpName="DCS_DC_Transform_Transaction07_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="SQLServer.bodb_VR2Model.bodbSPUNet"/>
 
-		<Setting Key="DCS_DC_ArchiveData_Account_Cook" SpName="DCS_DC_ArchiveData_Account_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Account_CheckReActive" SpName="DCS_DC_ArchiveData_Account_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Account_Archive" SpName="DCS_DC_ArchiveData_Account_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceMappingInsert" SpName="DCS_DC_Transform_FP_DeviceMappingInsert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_ArchiveData_Device_Cook" SpName="DCS_DC_ArchiveData_Device_Cook" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Device_CheckReActive" SpName="DCS_DC_ArchiveData_Device_CheckReActive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_Device_Archive" SpName="DCS_DC_ArchiveData_Device_Archive" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionGet" SpName="DCS_DC_Transform_FP_DeviceEvolutionGet" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionInsert" SpName="DCS_DC_Transform_FP_DeviceEvolutionInsert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-    </Function>
+	</Function>
 
-    <Function Name="DCS_Extra">
-        <Setting Key="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_Extra.ctsService"/>
-        <Setting Key="DCS_ET_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_ET_Transform_UserAgent_UpdateOSBrowser" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	<Function Name="DCSDataTrace">
+		<Setting Key="DCS_DT_Summary_BetTransaction_Insert" SpName="DCS_DT_Summary_BetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_BetTransaction_Delete" SpName="DCS_DT_Summary_BetTransaction_Delete" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MissingBetTransaction_GetPackage" SpName="DCS_DT_Summary_MissingBetTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Summary_MissingBetTransaction_Insert" SpName="DCS_DT_Summary_MissingBetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
 
-        <Setting Key="DCS_ET_Transform_RawTrans_GetPackage" SpName="DCS_ET_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Transform_UnhandleSubscriberAction" SpName="DCS_ET_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
-        <Setting Key="DCS_ET_Transform_UserAgent_Insert" SpName="DCS_ET_Transform_UserAgent_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
-        <Setting Key="DCS_ET_Transform_Transaction_Insert" SpName="DCS_ET_Transform_Transaction_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
+		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
+	</Function>
 
-        <Setting Key="DCS_ET_ArchiveData_ModifiedDate_Update" SpName="DCS_ET_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_ArchiveData_BotComponent_Delete" SpName="DCS_ET_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	<Function Name="DCS_Extra">
+		<Setting Key="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_Extra.ctsService"/>
+		<Setting Key="DCS_ET_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_ET_Transform_UserAgent_UpdateOSBrowser" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 
-        <Setting Key="DCS_ET_Transform_Device_GetPackage" SpName="DCS_ET_Transform_Device_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Transform_Device_Insert" SpName="DCS_ET_Transform_Device_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Identity_Device_Recover" SpName="DCS_ET_Identity_Device_Recover" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Identity_Evolution_GetAttributes" SpName="DCS_ET_Identity_Evolution_GetAttributes" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Identity_Device_Insert" SpName="DCS_ET_Identity_Device_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Identity_Evolution_Insert" SpName="DCS_ET_Identity_Evolution_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-        <Setting Key="DCS_ET_Transform_Transaction07_Insert" SpName="DCS_ET_Transform_Transaction07_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
-    </Function>
+		<Setting Key="DCS_ET_Transform_RawTrans_GetPackage" SpName="DCS_ET_Transform_RawTrans_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_Transform_UnhandleSubscriberAction" SpName="DCS_ET_Transform_UnhandleSubscriberAction" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_ET_Transform_UserAgent_Insert" SpName="DCS_ET_Transform_UserAgent_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_ET_Transform_Transaction_Insert" SpName="DCS_ET_Transform_Transaction_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 
-    <Function Name="DCSDataTrace">
-        <Setting Key="DCS_DT_Summary_BetTransaction_Insert" SpName="DCS_DT_Summary_BetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Summary_BetTransaction_Delete" SpName="DCS_DT_Summary_BetTransaction_Delete" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Summary_MissingBetTransaction_GetPackage" SpName="DCS_DT_Summary_MissingBetTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_Summary_MissingBetTransaction_Insert" SpName="DCS_DT_Summary_MissingBetTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-        <Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
-		    <Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
-		    <Setting Key="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
-		    <Setting Key="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
-		    <Setting Key="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataTrace.ctsService"/>
-        <Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
-		    <Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="MySQL.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_ArchiveData_ModifiedDate_Update" SpName="DCS_ET_ArchiveData_ModifiedDate_Update" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_ArchiveData_BotComponent_Delete" SpName="DCS_ET_ArchiveData_BotComponent_Delete" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
 
-        <Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
-        <Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
-    </Function>
+		<Setting Key="DCS_ET_Transform_Device_GetPackage" SpName="DCS_ET_Transform_Device_GetPackage" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+		<Setting Key="DCS_ET_Transform_Device_Insert" SpName="DCS_ET_Transform_Device_Insert" DbName="MySQL.DCS_Extra.ctsServiceAdmin"/>
+	</Function>
 
-  <Function Name="ELK">   
-
+  <Function Name="ELK">
     <Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
     <Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
 

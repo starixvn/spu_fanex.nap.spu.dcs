@@ -1,22 +1,23 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using System.Net.Http;
-    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
+    using System.Net.Http;
+    using System.Threading.Tasks;
 
     public interface IDeviceJobService
     {
         Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra);
+
+        Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra);
     }
 
     public class DeviceJobService : IDeviceJobService
     {
         private readonly ILogService logService;
         private readonly IDeviceServices deviceService;
-        private readonly IAppSettings appSettings;
         private readonly HttpClient httpClient;
-        private readonly bool isExtra = false;
+        private readonly IAppSettings appSettings;
 
         private const int delayTime = 100; // milliseconds
 
@@ -39,7 +40,14 @@
             {
                 if (size > 0 && numberOfBatch > 0)
                 {
+                    await deviceService.InsertFPDeviceMappingAsync(size * numberOfBatch, isReadyDbExtra);
                     await TransformDevice(size, numberOfBatch, isReadyDbExtra);
+                }
+                else
+                {
+                    await logService.ErrorAsync(new Exception("TransformDevice BatchSize = 0!"));
+
+                    return await Task.FromResult(false);
                 }
             }
             catch (Exception ex)
@@ -52,6 +60,90 @@
             return await Task.FromResult(true);
         }
 
+        public async Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra)
+        {
+            try
+            {
+                if (batchSize > 0)
+                {
+                    var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
+
+                    var dataEvolution = resultDeviceEvolution.Item1;
+                    var dataEvolutionAttribute = resultDeviceEvolution.Item2;
+
+                    if (dataEvolution != null && dataEvolution.Any())
+                    {
+                        var listInsert = new List<InsertDeviceEvolutionEntity>();
+                        var listCandidate = new List<DeviceEvolutionEntity>();
+                        foreach (var itemEvolution in dataEvolution)
+                        {
+                            var itemEntity = new InsertDeviceEvolutionEntity
+                            {
+                                FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID,
+                                EvolveByID = FindMatchingCandidate(itemEvolution, listCandidate)
+                            };
+
+                            if (itemEntity.EvolveByID == 0 && !string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
+                            {
+                                itemEntity.EvolveByID = FindMatchingReference(itemEvolution, dataEvolutionAttribute);
+                            }
+
+                            listInsert.Add(itemEntity);
+                            listCandidate.Add(itemEvolution);
+                        }
+
+                        if (listInsert.Any())
+                        {
+                            var deviceEvolutionJson = JsonSerializer.Serialize(listInsert);
+                            await deviceService.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isReadyDbExtra);
+                        }
+                    }
+                }
+                else
+                {
+                    await logService.ErrorAsync(new Exception("DeviceEvolution BatchSize = 0!"));
+
+                    return await Task.FromResult(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+                return await Task.FromResult(false);
+            }
+
+            return await Task.FromResult(true);
+        }
+
+        private ulong FindMatchingCandidate(DeviceEvolutionEntity itemEvolution, List<DeviceEvolutionEntity> listCandidate)
+        {
+            var filteredByAccount = listCandidate
+                                    .Where(candidate => candidate.AccountID == itemEvolution.AccountID)
+                                    .OrderByDescending(candidate => candidate.FPDeviceFingerprintAccountID)
+                                    .ToList();
+
+            var resultCandidate = filteredByAccount.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+
+            return resultCandidate?.FPDeviceFingerprintAccountID ?? 0;
+        }
+
+        private ulong FindMatchingReference(DeviceEvolutionEntity itemEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
+        {
+            var refIds = itemEvolution.FPDeviceFingerprintAccountIDRef
+                                    .Split(',')
+                                    .Select(ulong.Parse)
+                                    .ToList();
+
+            var matchingRecords = dataEvolutionAttribute
+                                .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
+                                .ToList();
+
+            var result = matchingRecords.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+
+            return result?.FPDeviceFingerprintAccountID ?? 0;
+        }
+
         private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
         {
             var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
@@ -60,184 +152,39 @@
             {
                 var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
 
-                var taskDevices = TaskDeviceIdentity(groupTrans, isReadyDbExtra);
-                var taskRecovers = TaskRecoveringDeviceByFPAndCookie(groupTrans, isReadyDbExtra);
+                var tasks = new List<Task>();
 
-                await Task.WhenAll(taskDevices, taskRecovers);
-
-                var identityDevices = (await taskDevices).Where(result => result != null);
-                var evolutionDevices = (await taskRecovers).Where(result => result != null);
-
-                if (identityDevices.Any())
+                foreach (var trans in groupTrans)
                 {
-                    await InsertTransfromTransaction(identityDevices, evolutionDevices, isReadyDbExtra);
-                }
-            }
-        }
-
-        private async Task<IEnumerable<IdentityDevice>> TaskDeviceIdentity(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
-        {
-            var taskDevices = new List<Task<IEnumerable<IdentityDevice>>>();
-
-            foreach (var trans in groupTrans)
-            {
-                var taskDevice = Task.Run(() =>
-                {
-                    try
+                    var task = Task.Run(async () =>
                     {
-                        return deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
-                    }
-                    catch (Exception ex)
-                    {
-                        logService.ErrorAsync(ex);
-                        throw;
-                    }
-                });
+                        try
+                        {
+                            await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                        }
+                        catch (Exception ex)
+                        {
+                            await logService.ErrorAsync(ex);
+                            throw;
+                        }
+                    });
 
-                await Task.Delay(delayTime);
+                    await Task.Delay(delayTime);
 
-                taskDevices.Add(taskDevice);
-            }
-
-            return (await Task.WhenAll(taskDevices)).Where(result => result != null).SelectMany(result => result);
-        }
-
-        private async Task<IEnumerable<TransactionRecover>> TaskRecoveringDeviceByFPAndCookie(IEnumerable<IGrouping<int, StagingTransId>> groupTrans, bool isReadyDbExtra)
-        {
-            var taskRecovers = new List<Task<IEnumerable<TransactionRecover>>>();
-
-            foreach (var trans in groupTrans)
-            {
-                var taskRecover = Task.Run(() =>
-                {
-                    try
-                    {
-                        return ProcessEvolution(string.Join(",", trans.Select(x => x.TransId)), isReadyDbExtra);
-                    }
-                    catch (Exception ex)
-                    {
-                        logService.ErrorAsync(ex);
-                        throw;
-                    }
-                });
-
-                await Task.Delay(delayTime);
-
-                taskRecovers.Add(taskRecover);
-            }
-
-
-            var result = (await Task.WhenAll(taskRecovers)).Where(result => result != null).SelectMany(result => result);
-            return result;
-        }
-
-        private async Task<IEnumerable<TransactionRecover>> ProcessEvolution(string transIds, bool isReadyDbExtra)
-        {
-            var (transactionRecovers, transactionEvolutions) = await deviceService.GetIdentityDeviceRecoverAsync(transIds, isReadyDbExtra);
-
-            var evolutionDevices = await EvolutionDeviceAsync(transactionEvolutions, isReadyDbExtra);
-
-            return evolutionDevices.Concat(transactionRecovers);
-        }
-
-
-        private async Task<int> InsertTransfromTransaction(IEnumerable<IdentityDevice> identityDevices, IEnumerable<TransactionRecover> evolutionDevices, bool isReadyDbExtra)
-        {
-            var transformTransactions = identityDevices.Select(identityDevice => new TransformTransactionModel
-            {
-                TransID = identityDevice.TransID,
-                DeviceID = identityDevice.DeviceID,
-                FPDeviceID = evolutionDevices.FirstOrDefault(e => e.TransID == identityDevice.TransID)?.FPDeviceID,
-                RecoverType = evolutionDevices.FirstOrDefault(e => e.TransID == identityDevice.TransID)?.RecoverType,
-                DeviceCodeID = identityDevice.DeviceCodeID,
-                FirstDeviceCode = identityDevice.FirstDeviceCode,
-                DeviceStatus = identityDevice.DeviceStatus,
-                DeviceFingerprintID = identityDevice.DeviceFingerprintID
-            });
-
-            return await deviceService.TransformTransaction07InsertAsync(transformTransactions, isReadyDbExtra);
-        }
-
-        private async Task<IEnumerable<TransactionRecover>> EvolutionDeviceAsync(IEnumerable<TransactionEvolution> transactionEvolutions, bool isReadyDbExtra)
-        {
-            var taskResult = new List<Task<IEnumerable<TransactionRecover>>>();
-
-            if (transactionEvolutions.Any())
-            {
-                var (newDeviceTransIds, evolutionModel) = await ClassifyRecoverTransAsync(transactionEvolutions, isReadyDbExtra);
-
-                // NewDevice
-                if (newDeviceTransIds != null && newDeviceTransIds.Any())
-                {
-                    var transIds = string.Join(",", newDeviceTransIds);
-                    taskResult.Add(deviceService.IdentityDeviceInsertAsync(transIds, isReadyDbExtra));
+                    tasks.Add(task);
                 }
 
-                // FPS Evolution
-                if (evolutionModel != null && evolutionModel.Any())
-                {
-                    var identityEvolutions = evolutionModel.Select(x =>
-                                            new IdentifyEvolutionModel
-                                            {
-                                                TransID = x.ID,
-                                                RecoverRawFingerPrintID = x.RecoverFingerPrintID
-                                            });
-
-                    taskResult.Add(deviceService.IdentityEvolutionInsertAsync(identityEvolutions, isReadyDbExtra));
-                }
+                await Task.WhenAll(tasks.ToArray());
             }
-
-            return (await Task.WhenAll(taskResult)).Where(result => result != null).SelectMany(result => result);
         }
 
-        private async Task<(IEnumerable<ulong>, IEnumerable<TransactionEvolutionModel>)> ClassifyRecoverTransAsync(IEnumerable<TransactionEvolution> trans, bool isReadyDbExtra)
-        {
-            var newDeviceTransIds = new List<ulong>();
-            var transRecover = new List<TransactionEvolutionModel>();
 
-            foreach (var tran in trans)
-            {
-                var recoverFingerPrintId = await GetRecoverFingerPrintIdByEvolutionAsync(tran, isReadyDbExtra);
 
-                if (recoverFingerPrintId > 0)
-                {
-                    var model = new TransactionEvolutionModel
-                    {
-                        ID = tran.TransID,
-                        RecoverFingerPrintID = recoverFingerPrintId
-                    };
-
-                    transRecover.Add(model);
-                }
-                else
-                {
-                    newDeviceTransIds.Add(tran.TransID);
-                }
-            }
-
-            return (newDeviceTransIds, transRecover);
-        }
-
-        private async Task<ulong> GetRecoverFingerPrintIdByEvolutionAsync(TransactionEvolution source, bool isReadyDbExtra)
-        {
-            if (source != null && !string.IsNullOrEmpty(source.RawFingerPrintIDs) && !string.IsNullOrEmpty(source.BrowserFamilyCode))
-            {
-                var evolutionAttributes = await deviceService.GetIdentityEvolutionAttributesAsync(source.RawFingerPrintIDs, source.BrowserFamilyCode, isReadyDbExtra);
-
-                TransactionEvolutionAttributes result = evolutionAttributes.FirstOrDefault(destination => CompareRules(source, destination));
-
-                if (result != null)
-                {
-                    return result.RawFingerPrintID;
-                }
-            }
-
-            return 0;
-        }
+        #region "Evolution"
 
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
 #pragma warning disable S122 // Reformat the code to have only one statement per line.
-        private bool CompareRules(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
+        private bool CompareRules(DeviceEvolutionEntity source, DeviceEvolutionEntity destination)
         {
             // Rule 2
             if (!CheckVersion(source.BrowserVersion, destination.BrowserVersion)) return false;
@@ -264,9 +211,6 @@
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
 #pragma warning disable S122 // Reformat the code to have only one statement per line.
 
-
-        #region "Evolution"
-
         private static bool CheckVersion(string browserVersionSrc, string browserVersionDestination)
         {
             var versionSrc = GetVersion(browserVersionSrc);
@@ -279,6 +223,8 @@
 
         private static Version GetVersion(string version)
         {
+            if(string.IsNullOrEmpty(version)) return null;
+
             if (ValidateVersion(version))
             {
                 return Version.Parse(version);
@@ -310,14 +256,14 @@
 
         static bool ValidateVersion(string version) => Version.TryParse(version, out _);
 
-        private static bool CheckForbiddenChanges(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination)
+        private static bool CheckForbiddenChanges(DeviceEvolutionEntity source, DeviceEvolutionEntity destination)
         {
             var values = new List<ValuePair>
             {
-                new ValuePair { Source = source.LocalStorage, Destination = destination.LocalStorage },
-                new ValuePair { Source = source.DoNotTrack, Destination = destination.DoNotTrack },
-                new ValuePair { Source = source.Cookies, Destination = destination.Cookies },
-                new ValuePair { Source = source.Canvas, Destination = destination.Canvas }
+                new() { Source = source.LocalStorage, Destination = destination.LocalStorage },
+                new() { Source = source.DoNotTrack, Destination = destination.DoNotTrack },
+                new() { Source = source.Cookies, Destination = destination.Cookies },
+                new() { Source = source.Canvas, Destination = destination.Canvas }
             };
 
             return values.TrueForAll(value => Object.Equals(value.Source, value.Destination));
@@ -335,26 +281,26 @@
                 return false;
             }
 
-                var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
+            var arrSrc = JsonSerializer.Deserialize<string[]>(fontsSource);
             var arrDestination = JsonSerializer.Deserialize<string[]>(fontsDestination);
 
             return Array.TrueForAll(arrSrc, element => arrDestination.Contains(element))
                  || Array.TrueForAll(arrDestination, element => arrSrc.Contains(element));
         }
 
-        private bool CheckAllowChangesWithSimilar(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination, ref int counter)
+        private bool CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, ref int counter)
         {
             var values = new List<ValuePair>
             {
-                new ValuePair { Source = source.UserAgent, Destination = destination.UserAgent },
-                new ValuePair { Source = source.Vendor, Destination = destination.Vendor },
-                new ValuePair { Source = source.GLRenderer, Destination = destination.GLRenderer },
-                new ValuePair { Source = source.Plugins, Destination = destination.Plugins },
-                new ValuePair { Source = source.Languages, Destination = destination.Languages },
-                new ValuePair { Source = source.Accept, Destination = destination.Accept },
-                new ValuePair { Source = source.Headers, Destination = destination.Headers }
+                new() { Source = source.UserAgent, Destination = destination.UserAgent },
+                new() { Source = source.Vendor, Destination = destination.Vendor },
+                new() { Source = source.GLRenderer, Destination = destination.GLRenderer },
+                new() { Source = source.Plugins, Destination = destination.Plugins },
+                new() { Source = source.Languages, Destination = destination.Languages },
+                new() { Source = source.Accept, Destination = destination.Accept },
+                new() { Source = source.Headers, Destination = destination.Headers }
             };
-             
+
             try
             {
                 counter = 0;
@@ -387,7 +333,6 @@
             if ((string.IsNullOrEmpty(source) || string.IsNullOrEmpty(destination)) && source != destination) return false;
 
             using StringContent content = new StringContent(JsonSerializer.Serialize(new { source, destination }), System.Text.Encoding.UTF8, "application/json");
-
             using HttpResponseMessage response = await httpClient.PostAsync(new Uri(appSettings.RatioUrl), content);
 
             if (response.Content != null)
@@ -403,13 +348,13 @@
             return true;
         }
 
-        private bool CheckAllowChanges(TransactionEvolutionAttributes source, TransactionEvolutionAttributes destination, ref int counter)
+        private bool CheckAllowChanges(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, ref int counter)
         {
             var values = new List<ValuePair>
             {
-                new ValuePair { Source = source.Resolution, Destination = destination.Resolution },
-                new ValuePair { Source = source.Timezone, Destination = destination.Timezone },
-                new ValuePair { Source = source.Encoding, Destination = destination.Encoding }
+                new() { Source = source.Resolution, Destination = destination.Resolution },
+                new() { Source = source.Timezone, Destination = destination.Timezone },
+                new() { Source = source.Encoding, Destination = destination.Encoding }
             };
 
             counter = 0;

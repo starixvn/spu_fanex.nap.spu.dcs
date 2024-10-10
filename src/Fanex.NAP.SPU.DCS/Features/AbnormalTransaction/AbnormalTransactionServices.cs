@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
@@ -14,7 +15,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
     public interface IAbnormalTransactionServices
     {
 
-        Task<bool> PushAbnormalTransaction(int size, string abnormalTransactionUrl);
+        Task<bool> PushAbnormalTransaction(int size, string abnormalTransactionUrl, bool ignorePushData);
     }
 
     public class AbnormalTransactionServices : IAbnormalTransactionServices
@@ -28,7 +29,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             _dataAccess = dataAccess;
         }
 
-        public async Task<bool> PushAbnormalTransaction(int size, string abnormalTransactionUrl)
+        public async Task<bool> PushAbnormalTransaction(int size, string abnormalTransactionUrl, bool ignorePushData)
         {
             var (abnormalTransactions, rangeID) = _dataAccess.GetAbnormalTransactionsAsync(size);
 
@@ -36,7 +37,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             {
                 var dataTransformed = TransformData(abnormalTransactions);
 
-                var isResult = await PushData(dataTransformed, abnormalTransactionUrl);
+                var isResult = await PushData(dataTransformed, abnormalTransactionUrl, ignorePushData);
                 if (isResult)
                 {
                     var updateStatus = abnormalTransactions.Select(t => new AbnormalTransactionUpdateModel { ID = t.ID, Status = 1 });
@@ -82,8 +83,13 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             return new List<AbnormalTransactionModel>();
         }
 
-        private async Task<bool> PushData(IEnumerable<AbnormalTransactionModel> modelsToPush, string abnormalTransactionUrl)
+        private async Task<bool> PushData(IEnumerable<AbnormalTransactionModel> modelsToPush, string abnormalTransactionUrl, bool ignorePushData)
         {
+            if(ignorePushData)
+            {
+                return true;
+            }
+
             using var httpClient = new HttpClient();
             var jsonContent = JsonSerializer.Serialize(modelsToPush);
             var response = await httpClient.PostAsJsonAsync(abnormalTransactionUrl, jsonContent);

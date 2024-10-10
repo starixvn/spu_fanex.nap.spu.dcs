@@ -69,18 +69,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         }
 
         [Fact]
-        public void UnhandleSubscriberAccountProcessing_WhenCall_ReturnExactData()
-        {
-            var fromId = 1;
-            var toId = 2;
-            var isReadyDbExtra = true;
-
-            var expectedResult = transactionServices.UnhandleSubscriberAccountProcessing(fromId, toId, isReadyDbExtra);
-
-            Assert.Same(expectedResult, transactionServices);
-        }
-
-        [Fact]
         public void UserAgentProcessing_WhenCall_ReturnExactData()
         {
             var fromId = 1;

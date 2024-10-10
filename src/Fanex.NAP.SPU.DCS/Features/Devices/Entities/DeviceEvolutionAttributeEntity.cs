@@ -1,12 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Features.Devices.Entities
 {
-    public class TransactionEvolutionAttributes
+    public class DeviceEvolutionAttributeEntity
     {
-        public ulong RawFingerPrintID { get; set; }
-
         public string UserAgent { get; set; }
-
-        public string BrowserFamilyCode { get; set; }
 
         public string OSName { get; set; }
 

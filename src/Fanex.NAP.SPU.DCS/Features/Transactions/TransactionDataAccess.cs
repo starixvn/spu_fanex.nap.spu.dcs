@@ -13,8 +13,6 @@
         void InserUserAgent(long fromId, long toId, bool isReadyDbExtra);
 
         void InsertTransaction(long fromId, long toId, bool isReadyDbExtra);
-
-        void UnhandleSubscriberActionProcess(long fromId, long toId, bool isReadyDbExtra);
     }
     public class TransactionDataAccess : ITransactionDataAccess
     {
@@ -59,18 +57,6 @@
             {
                 FromStagingTransId = fromId,
                 ToStagingTransId = toId,
-                IsReadyDbExtra = isReadyDbExtra
-            };
-
-            repository.Execute(criteria);
-        }
-
-        public void UnhandleSubscriberActionProcess(long fromId, long toId, bool isReadyDbExtra)
-        {
-            var criteria = new UnhandleSubscriberActionCriteria
-            {
-                FromTransId = fromId,
-                ToTransId = toId,
                 IsReadyDbExtra = isReadyDbExtra
             };
 

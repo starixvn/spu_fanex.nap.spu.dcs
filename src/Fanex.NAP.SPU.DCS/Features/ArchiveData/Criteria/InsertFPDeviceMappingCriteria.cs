@@ -3,17 +3,17 @@ using Fanex.Data.Repository;
 
 namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 {
-    public class ArchiveAccountCriteria : NonQueryCommand
+    public class InsertFPDeviceMappingCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_BatchSize")]
         public int BatchSize { get; set; }
 
-        [SpParam(SqlParamName = "op_ShouldContinue")]
-        public int ShouldContinue { get; set; }
+        [SpParam(Ignored = true)]
+        public bool IsReadyDbExtra { get; set; }
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_ArchiveData_Account_Archive";
+            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceMappingInsert";
         }
 
         public override bool IsValid()

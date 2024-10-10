@@ -23,8 +23,7 @@
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
-            ISystemSettingServices systemSettingServices,
-            ILogService logService)
+            ISystemSettingServices systemSettingServices)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -38,31 +37,37 @@
         [HttpPost("useragent")]
         public async Task<bool> UserAgent([FromForm] int size)
         {
-            return await this.userAgentJobService.Execute(size, false);
+            return await userAgentJobService.Execute(size, false);
         }
 
         [HttpGet("ConvertUserAgent")]
         public ClientInfo ConvertUserAgent(string userAgent)
         {
-            return this.userAgentJobService.ConvertUserAgent(userAgent);
-        }
-
-        [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
-        {
-            return await this.deviceJobService.Execute(size, numberOfBatch, false);
+            return userAgentJobService.ConvertUserAgent(userAgent);
         }
 
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await this.transactionJobService.Execute(size, numberOfBatch, false);
+            return await transactionJobService.Execute(size, numberOfBatch, false);
+        }
+
+        [HttpPost("transformdevice")]
+        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await deviceJobService.Execute(size, numberOfBatch, false);
+        }
+
+        [HttpPost("deviceevolution")]
+        public async Task<bool> DeviceEvolution([FromForm] int batchSize)
+        {
+            return await deviceJobService.DeviceEvolution(batchSize, false);
         }
 
         [HttpPost("sumtransaction")]
         public async Task<bool> SumTransaction()
         {
-            return await this.sumTransactionJobService.Execute();
+            return await sumTransactionJobService.Execute();
         }
 
         [HttpPost("pushabnormaltransaction")]
@@ -87,30 +92,6 @@
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
             return await archiveJobServices.DeleteBotComponent(retentionDays, false);
-        }
-
-        [HttpPost("cookarchiveaccount")]
-        public async Task<bool> CookArchiveAccount([FromForm] int batchSize = 100, [FromForm] int numberOfBatch = 4)
-        {
-            return await archiveJobServices.CookArchiveAccountAsync(batchSize, numberOfBatch);
-        }
-
-        [HttpPost("archiveaccount")]
-        public async Task<bool> ArchiveAccount([FromForm] int batchSize = 100)
-        {
-            return await archiveJobServices.ArchiveAccountAsync(batchSize);
-        }
-
-        [HttpPost("cookarchivedevice")]
-        public async Task<bool> CookArchiveDevice([FromForm] int batchSize = 100, [FromForm] int numberOfBatch = 4)
-        {
-            return await archiveJobServices.CookArchiveDeviceAsync(batchSize, numberOfBatch);
-        }
-
-        [HttpPost("archivedevice")]
-        public async Task<bool> ArchiveDevice([FromForm] int batchSize = 100)
-        {
-            return await archiveJobServices.ArchiveDeviceAsync(batchSize);
         }
     }
 }

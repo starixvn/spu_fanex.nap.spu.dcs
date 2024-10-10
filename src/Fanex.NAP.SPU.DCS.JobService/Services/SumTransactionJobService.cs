@@ -24,9 +24,9 @@
         {
             try
             {
-                var sumTransaction = this.monitoringServices.GetSumTransaction();
+                var sumTransaction = monitoringServices.GetSumTransaction();
 
-                this.monitoringServices.UpdateSumRawTransaction(sumTransaction);
+                monitoringServices.UpdateSumRawTransaction(sumTransaction);
             }
             catch (Exception ex)
             {
