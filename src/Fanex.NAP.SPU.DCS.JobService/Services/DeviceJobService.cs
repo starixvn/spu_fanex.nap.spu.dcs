@@ -223,7 +223,7 @@
 
         private static Version GetVersion(string version)
         {
-            if(string.IsNullOrEmpty(version)) return null;
+            if (string.IsNullOrEmpty(version)) return null;
 
             if (ValidateVersion(version))
             {
@@ -276,7 +276,8 @@
                 return fontsSource == fontsDestination;
             }
 
-            if (fontsSource == "error" || fontsDestination == "error")
+            if (fontsSource == "error" || fontsSource == "\"error\""
+                || fontsDestination == "error" || fontsDestination == "\"error\"")
             {
                 return false;
             }
@@ -287,6 +288,7 @@
             return Array.TrueForAll(arrSrc, element => arrDestination.Contains(element))
                  || Array.TrueForAll(arrDestination, element => arrSrc.Contains(element));
         }
+
 
         private bool CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, ref int counter)
         {
