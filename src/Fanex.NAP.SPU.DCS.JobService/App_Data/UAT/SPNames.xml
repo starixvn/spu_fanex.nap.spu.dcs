@@ -39,7 +39,10 @@
 
 		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="MySQL.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
-    </Function>
+		
+		<Setting Key="DCS_DC_Transform_MBRawTransaction_GetPackage" SpName="DCS_DC_Transform_MBRawTransaction_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBTransaction_Insert" SpName="DCS_DC_Transform_MBTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+	</Function>
 
     <Function Name="DCS_Extra">
         <Setting Key="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_ET_Transform_UserAgent_GetNullBrowserOSList" DbName="MySQL.DCS_Extra.ctsService"/>

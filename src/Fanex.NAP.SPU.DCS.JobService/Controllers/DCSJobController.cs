@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.Features.MBTransactions;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
@@ -15,6 +16,7 @@
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
         private readonly ISystemSettingServices systemSettingServices;
+        private readonly IMobileTransactionJobService mobileTransactionJobService;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -23,7 +25,8 @@
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
-            ISystemSettingServices systemSettingServices)
+            ISystemSettingServices systemSettingServices,
+            IMobileTransactionJobService mobileTransactionJobService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -32,6 +35,7 @@
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
             this.systemSettingServices = systemSettingServices;
+            this.mobileTransactionJobService = mobileTransactionJobService;
         }
 
         [HttpPost("useragent")]
@@ -93,5 +97,13 @@
         {
             return await archiveJobServices.DeleteBotComponent(retentionDays, false);
         }
+
+        #region Mobile app
+        [HttpPost("Mobile/TransformTransaction")]
+        public async Task<bool> TransformMBTransaction([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await mobileTransactionJobService.Execute(size, numberOfBatch);
+        }
+        #endregion
     }
 }

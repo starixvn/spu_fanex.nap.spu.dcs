@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.ELK;
+    using Fanex.NAP.SPU.DCS.Features.MBTransactions;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.Features.Transactions;
@@ -27,6 +28,7 @@
             RegisterTelegramService(services);
             RegisterOtherServices(services);
             RegisterELKService(services);
+            RegisterTransformMBTransaction(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -56,6 +58,13 @@
             services.AddSingleton<ITransactionDataAccess, TransactionDataAccess>();
             services.AddSingleton<ITransactionServices, TransactionServices>();
             services.AddSingleton<ITransactionJobService, TransactionJobService>();
+        }
+
+        private static void RegisterTransformMBTransaction(this IServiceCollection services)
+        {
+            services.AddSingleton<IMBTransactionDataAccess, MBTransactionDataAccess>();
+            services.AddSingleton<IMBTransactionServices, MBTransactionServices>();
+            services.AddSingleton<IMobileTransactionJobService, MobileTransactionJobService>();
         }
 
         private static void RegisterAbnormalTransaction(this IServiceCollection services)
