@@ -16,7 +16,8 @@
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
         private readonly ISystemSettingServices systemSettingServices;
-        private readonly IMobileTransactionJobService mobileTransactionJobService;
+        private readonly IMBTransactionJobService mbTransactionJobService;
+        private readonly IMBDeviceJobService mbDeviceJobService;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -26,7 +27,8 @@
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
             ISystemSettingServices systemSettingServices,
-            IMobileTransactionJobService mobileTransactionJobService)
+            IMBTransactionJobService mbTransactionJobService,
+            IMBDeviceJobService mbDeviceJobService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -35,7 +37,8 @@
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
             this.systemSettingServices = systemSettingServices;
-            this.mobileTransactionJobService = mobileTransactionJobService;
+            this.mbTransactionJobService = mbTransactionJobService;
+            this.mbDeviceJobService = mbDeviceJobService;
         }
 
         [HttpPost("useragent")]
@@ -99,10 +102,16 @@
         }
 
         #region Mobile app
-        [HttpPost("Mobile/TransformTransaction")]
+        [HttpPost("MB/TransformTransaction")]
         public async Task<bool> TransformMBTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await mobileTransactionJobService.Execute(size, numberOfBatch);
+            return await mbTransactionJobService.Execute(size, numberOfBatch);
+        }
+
+        [HttpPost("MB/TransformDevice")]
+        public async Task<bool> TransformMBDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        {
+            return await mbDeviceJobService.Execute(size, numberOfBatch);
         }
         #endregion
     }

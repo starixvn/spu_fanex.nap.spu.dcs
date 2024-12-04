@@ -42,6 +42,9 @@
 		
 		<Setting Key="DCS_DC_Transform_MBRawTransaction_GetPackage" SpName="DCS_DC_Transform_MBRawTransaction_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_MBTransaction_Insert" SpName="DCS_DC_Transform_MBTransaction_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+
+		<Setting Key="DCS_DC_Transform_MBTransaction_GetPackage" SpName="DCS_DC_Transform_MBTransaction_GetPackage" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBDevice_Insert" SpName="DCS_DC_Transform_MBDevice_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 	</Function>
 
     <Function Name="DCS_Extra">

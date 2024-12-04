@@ -1,27 +1,24 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.MBTransactions;
-    using Fanex.NAP.SPU.DCS.Features.Transactions;
 
-    public interface IMobileTransactionJobService
+    public interface IMBTransactionJobService
     {
         Task<bool> Execute(int numberOfTrans, int numberOfBatch);
     }
 
-    public class MobileTransactionJobService : IMobileTransactionJobService
+    public class MBTransactionJobService : IMBTransactionJobService
     {
         private readonly ILogService logService;
         private readonly IMBTransactionServices transactionService;
-        private readonly IAppSettings appSettings;
 
         private readonly IList<string> IgnoreMessages;
         private const int delayTime = 500; // milliseconds
 
-        public MobileTransactionJobService(ILogService logService, IMBTransactionServices transactionService, IAppSettings appSettings)
+        public MBTransactionJobService(ILogService logService, IMBTransactionServices transactionService)
         {
             this.logService = logService;
             this.transactionService = transactionService;
-            this.appSettings = appSettings;
 
             IgnoreMessages = new List<string> {
                 "Deadlock found when trying to get lock; try restarting transaction"
@@ -33,9 +30,7 @@
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
-                {
-                    JobRun(numberOfTrans, numberOfBatch);
-                }
+                    await TransformTransaction(numberOfTrans, numberOfBatch);
 
                 return await Task.FromResult(true);
             }
@@ -52,11 +47,6 @@
                     return await Task.FromResult(true);
                 }
             }
-        }
-
-        private void JobRun(int numberOfTrans, int numberOfBatch)
-        {
-            TransformTransaction(numberOfTrans, numberOfBatch).Wait();
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch)

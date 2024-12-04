@@ -6,6 +6,7 @@
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.ELK;
+    using Fanex.NAP.SPU.DCS.Features.MBDevice;
     using Fanex.NAP.SPU.DCS.Features.MBTransactions;
     using Fanex.NAP.SPU.DCS.Features.Monitoring;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
@@ -29,6 +30,7 @@
             RegisterOtherServices(services);
             RegisterELKService(services);
             RegisterTransformMBTransaction(services);
+            RegisterTransformMBDevice(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -64,7 +66,13 @@
         {
             services.AddSingleton<IMBTransactionDataAccess, MBTransactionDataAccess>();
             services.AddSingleton<IMBTransactionServices, MBTransactionServices>();
-            services.AddSingleton<IMobileTransactionJobService, MobileTransactionJobService>();
+            services.AddSingleton<IMBTransactionJobService, MBTransactionJobService>();
+        }
+        private static void RegisterTransformMBDevice(this IServiceCollection services)
+        {
+            services.AddSingleton<IMBDeviceDataAccess, MBDeviceDataAccess>();
+            services.AddSingleton<IMBDeviceServices, MBDeviceServices>();
+            services.AddSingleton<IMBDeviceJobService, MBDeviceJobService>();
         }
 
         private static void RegisterAbnormalTransaction(this IServiceCollection services)
