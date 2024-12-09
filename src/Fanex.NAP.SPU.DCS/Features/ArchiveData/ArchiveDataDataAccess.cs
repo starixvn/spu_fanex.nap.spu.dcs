@@ -7,6 +7,8 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
     {
         void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
+        void UpdateMBLastAccessedDate(int batchSize);
+
         void DeleteBotComponent(int retentionDays, bool isTransformExtra);
     }
 
@@ -25,6 +27,16 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
             {
                 BatchSize = batchSize,
                 IsReadyDbExtra = isTransformExtra
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void UpdateMBLastAccessedDate(int batchSize)
+        {
+            var criteria = new UpdateMBLastAccessedDateCriteria
+            {
+                BatchSize = batchSize
             };
 
             repository.Execute(criteria);

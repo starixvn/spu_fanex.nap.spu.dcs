@@ -6,6 +6,8 @@
     {
         Task<bool> Execute(int batchSize, bool isTransformExtra);
 
+        Task<bool> UpdateMBLastAccessedDate(int batchSize);
+
         Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra);
 
     }
@@ -28,6 +30,29 @@
                 if (batchSize > 0)
                 {
                     archiveDataService.UpdateModifiedDate(batchSize, isTransformExtra);
+                }
+                else
+                {
+                    logService.ErrorAsync(new Exception("ArchiveData invalid Batch size"));
+                    return Task.FromResult(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorAsync(ex);
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+        
+        public Task<bool> UpdateMBLastAccessedDate(int batchSize)
+        {
+            try
+            {
+                if (batchSize > 0)
+                {
+                    archiveDataService.UpdateMBLastAccessedDate(batchSize);
                 }
                 else
                 {

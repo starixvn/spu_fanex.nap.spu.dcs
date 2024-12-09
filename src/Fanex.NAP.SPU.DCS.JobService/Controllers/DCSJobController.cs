@@ -113,6 +113,12 @@
         {
             return await mbDeviceJobService.Execute(size, numberOfBatch);
         }
+
+        [HttpPost("MB/UpdateLastAccessedDate")]
+        public async Task<bool> UpdateLastAccessedDate([FromForm] int batchSize)
+        {
+            return await archiveJobServices.UpdateMBLastAccessedDate(batchSize);
+        }
         #endregion
     }
 }

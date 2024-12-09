@@ -4,6 +4,8 @@
     {
         void UpdateModifiedDate(int batchSize, bool isTransformExtra);
 
+        void UpdateMBLastAccessedDate(int batchSize);
+
         void DeleteBotComponent(int retentionDays, bool isTransformExtra);
     }
 
@@ -19,6 +21,11 @@
         public void UpdateModifiedDate(int batchSize, bool isTransformExtra)
         {
             archiveDataAccess.UpdateModifiedDate(batchSize, isTransformExtra);
+        }
+
+        public void UpdateMBLastAccessedDate(int batchSize)
+        {
+            archiveDataAccess.UpdateMBLastAccessedDate(batchSize);
         }
 
         public void DeleteBotComponent(int retentionDays, bool isTransformExtra)
