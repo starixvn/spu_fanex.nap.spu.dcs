@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using Fanex.NAP.SPU.DCS.Features.MBTransactions;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
@@ -102,20 +101,20 @@
         }
 
         #region Mobile app
-        [HttpPost("MB/TransformTransaction")]
-        public async Task<bool> TransformMBTransaction([FromForm] int size, [FromForm] int numberOfBatch)
+        [HttpPost("mbtransformtransaction")]
+        public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
-            return await mbTransactionJobService.Execute(size, numberOfBatch);
+            return await mbTransactionJobService.Execute(batchSize, numberOfBatch);
         }
 
-        [HttpPost("MB/TransformDevice")]
-        public async Task<bool> TransformMBDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        [HttpPost("mbtransformdevice")]
+        public async Task<bool> MBTransformDevice([FromForm] int limitTotalRecord, [FromForm] int numberOfBatch)
         {
-            return await mbDeviceJobService.Execute(size, numberOfBatch);
+            return await mbDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
         }
 
-        [HttpPost("MB/UpdateLastAccessedDate")]
-        public async Task<bool> UpdateLastAccessedDate([FromForm] int batchSize)
+        [HttpPost("mbupdatelastaccesseddate")]
+        public async Task<bool> UpdateMBLastAccessedDate([FromForm] int batchSize)
         {
             return await archiveJobServices.UpdateMBLastAccessedDate(batchSize);
         }

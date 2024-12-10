@@ -1,14 +1,14 @@
 ﻿using Fanex.Data;
 using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.MBDevice.Criteria;
-using Fanex.NAP.SPU.DCS.Features.MBDevices.Entities;
+using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
 using System.Collections.Generic;
 
 namespace Fanex.NAP.SPU.DCS.Features.MBDevice
 {
     public interface IMBDeviceDataAccess
     {
-        IEnumerable<MBTransactionEntity> GetTransaction(int numberOfTrans, int numberOfBatch);
+        IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
         void InsertDevice(string transIDs);
     }
@@ -22,11 +22,11 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<MBTransactionEntity> GetTransaction(int numberOfTrans, int numberOfBatch)
+        public IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch)
         {
             var criteria = new GetMBTransactionCriteria
             {
-                NumberOfTickets = numberOfTrans,
+                LimitTotalRecord = limitTotalRecord,
                 NumberOfBatch = numberOfBatch
             };
 
@@ -36,11 +36,11 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
             }
         }
 
-        public void InsertDevice(string transIDs)
+        public void InsertDevice(string transactionInfoJson)
         {
             var criteria = new InsertMBDeviceCriteria
             {
-                TransIDs = transIDs,
+                MBTransactionInfoJson = transactionInfoJson
             };
 
             repository.Execute(criteria);

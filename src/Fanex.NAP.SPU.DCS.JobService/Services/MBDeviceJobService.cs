@@ -4,7 +4,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IMBDeviceJobService
     {
-        Task<bool> Execute(int size, int numberOfBatch);
+        Task<bool> Execute(int limitTotalRecord, int numberOfBatch);
     }
 
     public class MBDeviceJobService : IMBDeviceJobService
@@ -19,17 +19,17 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.deviceService = deviceService;
         }
 
-        public async Task<bool> Execute(int size, int numberOfBatch)
+        public async Task<bool> Execute(int limitTotalRecord, int numberOfBatch)
         {
             try
             {
-                if (size > 0 && numberOfBatch > 0)
+                if (limitTotalRecord > 0 && numberOfBatch > 0)
                 {
-                    await TransformDevice(size, numberOfBatch);
+                    await MBTransformDevice(limitTotalRecord, numberOfBatch);
                 }
                 else
                 {
-                    await logService.ErrorAsync(new Exception("TransformDevice BatchSize = 0!"));
+                    await logService.ErrorAsync(new Exception("MBTransformDevice BatchSize = 0!"));
 
                     return await Task.FromResult(false);
                 }
@@ -44,24 +44,28 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
-        private async Task TransformDevice(int size, int numberOfBatch)
+        private async Task MBTransformDevice(int limitTotalRecord, int numberOfBatch)
         {
-            var transIds = deviceService.GetTransaction(size, numberOfBatch);
+            var transList = deviceService.GetMBTransaction(limitTotalRecord, numberOfBatch);
 
-            if (transIds != null && transIds.Any())
+            if (transList != null && transList.Any())
             {
-                var groupTrans = transIds.GroupBy(x => x.BatchId);
+                var groupByBatchTrans = transList.GroupBy(x => x.BatchID);
 
                 var tasks = new List<Task>();
 
-                foreach (var trans in groupTrans)
+                foreach (var transInfo in groupByBatchTrans)
                 {
                     var task = Task.Run(async () =>
                     {
                         try
                         {
-                            deviceService.TransformDeviceInsert(trans);
-                        }
+                            if (transInfo != null && transInfo.Any())
+                            {
+                                var transactionInfoJson = JsonSerializer.Serialize(transInfo);
+                                deviceService.TransformDeviceInsert(transactionInfoJson);
+                            }    
+                        }   
                         catch (Exception ex)
                         {
                             await logService.ErrorAsync(ex);

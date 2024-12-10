@@ -12,17 +12,12 @@
         private readonly ILogService logService;
         private readonly IMBTransactionServices transactionService;
 
-        private readonly IList<string> IgnoreMessages;
-        private const int delayTime = 500; // milliseconds
+        private const int delayTime = 100; // milliseconds
 
         public MBTransactionJobService(ILogService logService, IMBTransactionServices transactionService)
         {
             this.logService = logService;
             this.transactionService = transactionService;
-
-            IgnoreMessages = new List<string> {
-                "Deadlock found when trying to get lock; try restarting transaction"
-            };
         }
 
         public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
@@ -30,50 +25,33 @@
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
-                    await TransformTransaction(numberOfTrans, numberOfBatch);
+                    await MBTransformTransaction(numberOfTrans, numberOfBatch);
 
-                return await Task.FromResult(true);
+                return true;
             }
             catch (Exception ex)
             {
-                if (!this.IgnoreMessages.Contains(ex.Message))
-                {
-                    await logService.ErrorAsync(ex);
+                await logService.ErrorAsync(ex);
 
-                    return await Task.FromResult(false);
-                }
-                else
-                {
-                    return await Task.FromResult(true);
-                }
+                return false;
             }
         }
 
-        private async Task TransformTransaction(int numberOfTrans, int numberOfBatch)
+        private async Task MBTransformTransaction(int numberOfTrans, int numberOfBatch)
         {
-            var rawTrans = this.transactionService.GetRawTransaction(numberOfTrans, numberOfBatch);
+            var rawTrans = transactionService.GetMBRawTransaction(numberOfTrans, numberOfBatch);
 
             var tasks = new List<Task>();
             foreach (var trans in rawTrans)
             {
-                try
+                var task = Task.Run(() =>
                 {
-                    var task = Task.Run(() =>
-                    {
-                        this.transactionService
-                               .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
-                    });
+                    transactionService.InsertMBTransaction(trans.MinTransID, trans.MaxTransID);
+                });
 
-                    await Task.Delay(delayTime);
+                await Task.Delay(delayTime);
 
-                    tasks.Add(task);
-                }
-                catch (Exception ex)
-                {
-                    await logService.ErrorAsync(ex);
-
-                    throw;
-                }
+                tasks.Add(task);
             }
 
             await Task.WhenAll(tasks.ToArray());

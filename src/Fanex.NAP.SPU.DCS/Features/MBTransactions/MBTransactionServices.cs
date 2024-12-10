@@ -6,9 +6,9 @@ namespace Fanex.NAP.SPU.DCS.Features.MBTransactions
     public interface IMBTransactionServices
     {
 
-        IEnumerable<MBRawTransactionEntity> GetRawTransaction(int numberOfTrans, int numberOfBatch);
+        IEnumerable<MBRawTransactionEntity> GetMBRawTransaction(int numberOfTrans, int numberOfBatch);
 
-        IMBTransactionServices TransactionProcessing(long fromId, long toId);
+        void InsertMBTransaction(ulong fromID, ulong toID);
     }
 
     public class MBTransactionServices : IMBTransactionServices
@@ -20,15 +20,14 @@ namespace Fanex.NAP.SPU.DCS.Features.MBTransactions
             this.transactionDataAccess = transactionDataAccess;
         }
 
-        public IEnumerable<MBRawTransactionEntity> GetRawTransaction(int numberOfTrans, int numberOfBatch)
+        public IEnumerable<MBRawTransactionEntity> GetMBRawTransaction(int numberOfTrans, int numberOfBatch)
         {
-            return this.transactionDataAccess.GetRawTransaction(numberOfTrans, numberOfBatch);
+            return transactionDataAccess.GetMBRawTransaction(numberOfTrans, numberOfBatch);
         }
 
-        public IMBTransactionServices TransactionProcessing(long fromId, long toId)
+        public void InsertMBTransaction(ulong fromID, ulong toID)
         {
-            this.transactionDataAccess.InsertTransaction(fromId, toId);
-            return this;
+            transactionDataAccess.InsertMBTransaction(fromID, toID);
         }
     }
 }

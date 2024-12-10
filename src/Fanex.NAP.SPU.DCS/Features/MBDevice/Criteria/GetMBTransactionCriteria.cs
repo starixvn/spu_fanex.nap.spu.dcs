@@ -5,8 +5,8 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice.Criteria
 {
     public class GetMBTransactionCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_NoOfTickets")]
-        public int NumberOfTickets { get; set; }
+        [SpParam(SqlParamName = "ip_LimitTotalRecord")]
+        public int LimitTotalRecord { get; set; }
 
         [SpParam(SqlParamName = "ip_NoOfBatch")]
         public int NumberOfBatch { get; set; }

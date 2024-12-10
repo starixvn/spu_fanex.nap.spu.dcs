@@ -1,9 +1,13 @@
-﻿namespace Fanex.NAP.SPU.DCS.Features.MBDevices.Entities
+﻿namespace Fanex.NAP.SPU.DCS.Features.MBDevice.Entities
 {
     public class MBTransactionEntity
     {
-        public ulong TransId { get; set; }
+        public ulong TransID { get; set; }
 
-        public int BatchId { get; set; }
+        public ulong SameDeviceID { get; set; }
+
+        public int RecoverType { get; set; }
+
+        public int BatchID { get; set; }
     }
 }

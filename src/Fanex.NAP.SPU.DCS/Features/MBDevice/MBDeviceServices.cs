@@ -1,15 +1,14 @@
-﻿using Fanex.NAP.SPU.DCS.Features.MBDevices.Entities;
+﻿using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fanex.NAP.SPU.DCS.Features.MBDevice
 {
     public interface IMBDeviceServices
     {
 
-        IEnumerable<MBTransactionEntity> GetTransaction(int numberOfTrans, int numberOfBatch);
+        IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
-        IMBDeviceServices TransformDeviceInsert(IEnumerable<MBTransactionEntity> transId);
+        void TransformDeviceInsert(string transactionInfoJson);
     }
 
     public class MBDeviceServices : IMBDeviceServices
@@ -21,17 +20,14 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
             this.deviceDataAccess = deviceDataAccess;
         }
 
-        public IEnumerable<MBTransactionEntity> GetTransaction(int numberOfTrans, int numberOfBatch)
+        public IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch)
         {
-            return this.deviceDataAccess.GetTransaction(numberOfTrans, numberOfBatch);
+            return deviceDataAccess.GetMBTransaction(limitTotalRecord, numberOfBatch);
         }
 
-        public IMBDeviceServices TransformDeviceInsert(IEnumerable<MBTransactionEntity> transId)
+        public void TransformDeviceInsert(string transactionInfoJson)
         {
-            string transIDs = string.Join(",", transId.Select(t => t.TransId.ToString()));
-
-            this.deviceDataAccess.InsertDevice(transIDs);
-            return this;
+            deviceDataAccess.InsertDevice(transactionInfoJson);
         }
     }
 }

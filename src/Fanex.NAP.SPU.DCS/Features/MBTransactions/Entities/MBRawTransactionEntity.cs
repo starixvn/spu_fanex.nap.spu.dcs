@@ -2,8 +2,8 @@
 {
     public class MBRawTransactionEntity
     {
-        public long MinTransId { get; set; }
+        public ulong MinTransID { get; set; }
 
-        public long MaxTransId { get; set; }
+        public ulong MaxTransID { get; set; }
     }
 }
