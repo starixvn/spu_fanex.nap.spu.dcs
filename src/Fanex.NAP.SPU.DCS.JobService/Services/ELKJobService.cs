@@ -4,7 +4,6 @@ using Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.Responses;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Numeric;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -14,6 +13,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public interface IELKJobService
     {
         Task<bool> Execute(DateTime startTime, DateTime endTime);
+
+        Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate);
     }
 
     public enum SportType
@@ -95,6 +96,45 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        private async Task ProccessForSoccerBasketballWithLeagueGroup(DateTime startTime, DateTime endTime, DateTime betDate)
+        {
+            try
+            {
+                var leagueGroupIds = elkService.GetLeagueGroupId(betDate);
+
+                if (leagueGroupIds != null && leagueGroupIds.Any())
+                {
+
+                    foreach (var leagueGroupId in leagueGroupIds)
+                    {
+                        foreach (SportType sport in Enum.GetValues(typeof(SportType)))
+                        {
+                            foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                            {
+                                var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroupId);
+
+                                if (elkRateReport != null && elkRateReport.Any())
+                                {
+                                    var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+
+                                    if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                                    {
+                                        elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroupId, elkRateReportJson, 1);
+
+                                        elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroupId, elkRateReportJson, 2);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+            }
+        }
+
         private async Task ProccessForMixParlay(DateTime startTime, DateTime endTime)
         {
             try
@@ -125,7 +165,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private string BuildConfigForSoccerBasketball(SportType sportType, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
+        private string BuildConfigForSoccerBasketball(SportType sportType, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime, int? leagueGroupId)
         {
             var reportConfig = new SoccerBasketballElasticConfigModel.RequestBody()
             {
@@ -219,7 +259,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
             {
                 Terms = new SoccerBasketballElasticConfigModel.Terms
-                {                   
+                {
                     CustomerClass = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 },
                     Field = null,
                     LeagueGroupId = null,
@@ -243,6 +283,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     SportType = (int)sportType
                 }
             });
+
+            if (leagueGroupId != null)
+            {
+                reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
+                {
+                    Term = new SoccerBasketballElasticConfigModel.Term
+                    {
+                        IsLive = null,
+                        IsLicensee = null,
+                        SportType = null,
+                        LeagueGroupId = leagueGroupId
+                    }
+                });
+            }
 
             var settings = new JsonSerializerSettings
             {
@@ -475,9 +529,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return successRate;
 
         }
-        private async Task<IEnumerable<SuccessRateModel>> GetELKDataForSoccerBasketball(DateTime startTime, DateTime endTime, SportType sportType, SiteTypeSetting siteType)
+        private async Task<IEnumerable<SuccessRateModel>> GetELKDataForSoccerBasketball(DateTime startTime, DateTime endTime, SportType sportType, SiteTypeSetting siteType, int? leagueGroupId = null)
         {
-            var config = BuildConfigForSoccerBasketball(sportType, siteType, startTime, endTime);
+            var config = BuildConfigForSoccerBasketball(sportType, siteType, startTime, endTime, leagueGroupId);
 
             HttpClientHandler handler = new HttpClientHandler
             {
@@ -493,7 +547,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                      Authorization = new AuthenticationHeaderValue("Basic", "bG9nc3Rhc2gud3JpdGVyOmxvZ3N0YXNoLndyaXRlcg==")
                 }
-            };                        
+            };
 
             var httpResponseMessage = await httpClient.PostAsync("infinity-bettingresult-prod/_search", new StringContent(config, null, "application/json"));
 
@@ -509,6 +563,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             return successRate;
 
+        }       
+
+        public async Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate)
+        {
+            try
+            {
+                await ProccessForSoccerBasketballWithLeagueGroup(startTime, endTime, betDate);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+                return await Task.FromResult(false);
+            }
+
+            return await Task.FromResult(true);
         }
     }
 }
