@@ -96,35 +96,45 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        private IEnumerable<LeagueGroupModel> GetLeagueGroup(DateTime betDate)
+        {
+            var leagueGroupIds = elkService.GetLeagueGroupId(betDate);
+
+            return leagueGroupIds.Select(x => new LeagueGroupModel { LeagueGroupId = x.LeagueGroupId, SportType = (SportType)x.SportType });
+
+        }
+
         private async Task ProccessForSoccerBasketballWithLeagueGroup(DateTime startTime, DateTime endTime, DateTime betDate)
         {
             try
             {
-                var leagueGroupIds = elkService.GetLeagueGroupId(betDate);
+                var leagueGroups = GetLeagueGroup(betDate);
 
-                if (leagueGroupIds != null && leagueGroupIds.Any())
+                if (leagueGroups != null && leagueGroups.Any())
                 {
-
-                    foreach (var leagueGroupId in leagueGroupIds)
+                    foreach (var leagueGroup in leagueGroups)
                     {
                         foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-                        {
-                            foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                        {                            
+                            if(leagueGroup.SportType.Equals(sport))
                             {
-                                var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroupId);
-
-                                if (elkRateReport != null && elkRateReport.Any())
+                                foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
                                 {
-                                    var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+                                    var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroup.LeagueGroupId);
 
-                                    if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                                    if (elkRateReport != null && elkRateReport.Any())
                                     {
-                                        elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroupId, elkRateReportJson, 1);
+                                        var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
 
-                                        elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroupId, elkRateReportJson, 2);
+                                        if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                                        {
+                                            elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 1);
+
+                                            elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 2);
+                                        }
                                     }
                                 }
-                            }
+                            }                           
                         }
                     }
                 }
@@ -563,7 +573,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             return successRate;
 
-        }       
+        }
 
         public async Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate)
         {

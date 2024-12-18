@@ -1,8 +1,7 @@
 ﻿using Fanex.Data;
 using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.ELK.Criteria;
-using Fanex.NAP.SPU.DCS.Features.Transactions.Criteria;
-using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
+using Fanex.NAP.SPU.DCS.Features.ELK.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +13,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 
         void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
 
-        IEnumerable<int> GetLeagueGroupId(DateTime betDate);
+        IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate);
 
         void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter);
     }
@@ -84,7 +83,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
             }
         }
 
-        public IEnumerable<int> GetLeagueGroupId(DateTime betDate)
+        public IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate)
         {
             var criteria = new GetLeagueGroupCriteria
             {
@@ -93,7 +92,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
             {
-                return db.Query<int>(criteria);
+                return db.Query<LeagueGroupEntity>(criteria);
             }
         }
 
