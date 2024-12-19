@@ -294,7 +294,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 }
             });
 
-            if (leagueGroupId != null)
+            if (leagueGroupId != null && leagueGroupId != 0)
             {
                 reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
                 {
