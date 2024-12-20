@@ -83,5 +83,9 @@
 
     <Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
     <Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+
+    <Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
   </Function>
 </Functions>

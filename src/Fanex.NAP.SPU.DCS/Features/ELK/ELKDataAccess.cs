@@ -1,6 +1,9 @@
-﻿using Fanex.Data.Repository;
+﻿using Fanex.Data;
+using Fanex.Data.Repository;
 using Fanex.NAP.SPU.DCS.Features.ELK.Criteria;
+using Fanex.NAP.SPU.DCS.Features.ELK.Entities;
 using System;
+using System.Collections.Generic;
 
 namespace Fanex.NAP.SPU.DCS.Features.ELK
 {
@@ -9,6 +12,10 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
         void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
 
         void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
+
+        IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate);
+
+        void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter);
     }
 
     public class ELKDataAccess : IELKDataAccess
@@ -22,14 +29,14 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 
         public void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
         {
-            if(runningCounter == 1)
+            if (runningCounter == 1)
             {
                 var criteria = new PrepareStaging_ParlayValidationStatsCriteria1
                 {
                     Month = month,
                     Sport = sport,
                     SiteType = siteType,
-                    BettingMessageCount = bettingMessageCount                    
+                    BettingMessageCount = bettingMessageCount
                 };
 
                 repository.Execute(criteria);
@@ -45,7 +52,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
                 };
 
                 repository.Execute(criteria);
-            }            
+            }
         }
 
         public void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
@@ -74,6 +81,50 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 
                 repository.Execute(criteria);
             }
+        }
+
+        public IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate)
+        {
+            var criteria = new GetLeagueGroupCriteria
+            {
+                BetDate = betDate,
+            };
+
+            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            {
+                return db.Query<LeagueGroupEntity>(criteria);
+            }
+        }
+
+        public void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter)
+        {
+            if (runningCounter == 1)
+            {
+                var criteria = new PrepareStaging_BetMessageELKDailyCriteria1
+                {
+                    BetDate = betDate,
+                    Sport = sport,
+                    SiteType = siteType,
+                    LeagueGroupID = leagueGroupId,
+                    BettingMessageCount = bettingMessageCount
+                };
+
+                repository.Execute(criteria);
+            }
+            else
+            {
+                var criteria = new PrepareStaging_BetMessageELKDailyCriteria2
+                {
+                    BetDate = betDate,
+                    Sport = sport,
+                    SiteType = siteType,
+                    LeagueGroupID = leagueGroupId,
+                    BettingMessageCount = bettingMessageCount
+                };
+
+                repository.Execute(criteria);
+            }
+            
         }
     }
 }

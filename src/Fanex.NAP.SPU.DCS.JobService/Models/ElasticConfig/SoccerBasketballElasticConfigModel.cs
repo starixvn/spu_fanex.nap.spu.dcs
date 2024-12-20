@@ -89,7 +89,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig
             public bool? IsLicensee { get; set; }
 
             [JsonProperty("SportType", NullValueHandling = NullValueHandling.Ignore)]
-            public int? SportType { get; set; }            
+            public int? SportType { get; set; }
+
+            [JsonProperty("LeagueGroupId", NullValueHandling = NullValueHandling.Ignore)]
+            public int? LeagueGroupId { get; set; }
         }
 
         public class Terms

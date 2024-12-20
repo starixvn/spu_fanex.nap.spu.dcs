@@ -77,9 +77,14 @@
         <Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="SQLServer.bodb_dwrs.bodbSPUNet"/>
     </Function>
   <Function Name="ELK">
+    <Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet.61"/>
+    <Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet.62"/>
 
-    <Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
-    <Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet.61"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="SQLServer.bodb_Account.bodbSPUNet.62"/>
 
+    <Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
+    <Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="SQLServer.bodb_Account.bodbSPUNet"/>
   </Function>
 </Functions>

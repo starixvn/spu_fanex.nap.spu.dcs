@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.Devices;
+using Fanex.NAP.SPU.DCS.Features.ELK.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
 
         void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter);
 
+        IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate);
+
+        void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter);
     }
 
     public class ELKServices : IELKServices
@@ -23,9 +27,19 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
             this.elkDataAccess = elkDataAccess;
         }
 
+        public IEnumerable<LeagueGroupEntity> GetLeagueGroupId(DateTime betDate)
+        {
+            return elkDataAccess.GetLeagueGroupId(betDate);
+        }
+
         public void PrepareStagingForBetMessage(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
         {
             elkDataAccess.PrepareStagingForBetMessage(month, sport, siteType, bettingMessageCount, runningCounter);
+        }
+
+        public void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter)
+        {
+            elkDataAccess.PrepareStagingForBetMessageDaily(betDate, sport, siteType, leagueGroupId, bettingMessageCount, runningCounter);
         }
 
         public void PrepareStagingForParlayValidationStats(DateTime month, string sport, string siteType, string bettingMessageCount, int runningCounter)
