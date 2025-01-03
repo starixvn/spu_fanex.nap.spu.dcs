@@ -18,7 +18,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         {
             var utcNow = DateTime.UtcNow;
 
-            return await elkJobService.Execute(new DateTime(utcNow.Year, utcNow.Month - 1, 1), new DateTime(utcNow.Year, utcNow.Month, 1));
+            var lastmonth = utcNow.AddMonths(-1);
+
+            return await elkJobService.Execute(new DateTime(lastmonth.Year, lastmonth.Month, 1), new DateTime(utcNow.Year, utcNow.Month, 1));
             
         }
 
