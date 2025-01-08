@@ -15,6 +15,8 @@
         private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
         private readonly IArchiveJobServices archiveJobServices;
         private readonly ISystemSettingServices systemSettingServices;
+        private readonly IMBTransactionJobService mbTransactionJobService;
+        private readonly IMBDeviceJobService mbDeviceJobService;
 
         public DCSJobController(
             IUserAgentJobService userAgentJobService,
@@ -23,7 +25,9 @@
             ISumTransactionJobService sumTransactionJobService,
             IAbnormalTransactionJobService abnormalTransactionJobService,
             IArchiveJobServices archiveJobServices,
-            ISystemSettingServices systemSettingServices)
+            ISystemSettingServices systemSettingServices,
+            IMBTransactionJobService mbTransactionJobService,
+            IMBDeviceJobService mbDeviceJobService)
         {
             this.userAgentJobService = userAgentJobService;
             this.deviceJobService = deviceJobService;
@@ -32,6 +36,8 @@
             this.abnormalTransactionJobService = abnormalTransactionJobService;
             this.archiveJobServices = archiveJobServices;
             this.systemSettingServices = systemSettingServices;
+            this.mbTransactionJobService = mbTransactionJobService;
+            this.mbDeviceJobService = mbDeviceJobService;
         }
 
         [HttpPost("useragent")]
@@ -93,5 +99,25 @@
         {
             return await archiveJobServices.DeleteBotComponent(retentionDays, false);
         }
+
+        #region Mobile app
+        [HttpPost("mbtransformtransaction")]
+        public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
+        {
+            return await mbTransactionJobService.Execute(batchSize, numberOfBatch);
+        }
+
+        [HttpPost("mbtransformdevice")]
+        public async Task<bool> MBTransformDevice([FromForm] int limitTotalRecord, [FromForm] int numberOfBatch)
+        {
+            return await mbDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
+        }
+
+        [HttpPost("mbupdatelastaccesseddate")]
+        public async Task<bool> UpdateMBLastAccessedDate([FromForm] int batchSize)
+        {
+            return await archiveJobServices.UpdateMBLastAccessedDate(batchSize);
+        }
+        #endregion
     }
 }
