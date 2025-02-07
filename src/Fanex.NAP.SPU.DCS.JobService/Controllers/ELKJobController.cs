@@ -33,6 +33,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 
         }
 
+        [HttpPost("bettingmessagecountdailymanual")]
+        public async Task<bool> GetBettingMessageCountDaily(DateTime startTime, DateTime endTime)
+        {            
+            return await elkJobService.Execute(startTime, endTime);
+        }
+
         [HttpPost("bettingmessagecountdailyleaguegroup")]
         public async Task<bool> GetBettingMessageCountDailyByLeagueGroup()
         {
@@ -52,7 +58,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         public async Task<bool> GetBettingMessageCountByLeagueGroup(DateTime startTime, DateTime endTime)
         {            
             return await elkJobService.Execute(startTime, endTime, startTime);
-        }
+      }
 
         [HttpPost("bettingmessagecountmanual")]
         public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)

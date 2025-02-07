@@ -66,6 +66,22 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
+        public async Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate)
+        {
+            try
+            {
+                await ProccessForSoccerBasketballWithLeagueGroup(startTime, endTime, betDate);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+                return await Task.FromResult(false);
+            }
+
+            return await Task.FromResult(true);
+        }
+
         private async Task ProccessForSoccerBasketball(DateTime startTime, DateTime endTime)
         {
             try
@@ -115,11 +131,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     foreach (var leagueGroup in leagueGroups)
                     {
                         foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-                        {                            
-                            if(leagueGroup.SportType.Equals(sport))
+                        {
+                            if (leagueGroup.SportType.Equals(sport))
                             {
                                 foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
                                 {
+                                    
                                     var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroup.LeagueGroupId);
 
                                     if (elkRateReport != null && elkRateReport.Any())
@@ -131,13 +148,42 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                                             elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 1);
 
                                             elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 2);
+
+                                            if (leagueGroup.LeagueGroupId == -1)
+                                            {
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
-                            }                           
+                            }
                         }
+                        //else
+                        //{
+                        //    foreach (SportType sport in Enum.GetValues(typeof(SportType)))
+                        //    {
+                        //        foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                        //        {
+                        //            var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType);
+
+                        //            if (elkRateReport != null && elkRateReport.Any())
+                        //            {
+                        //                var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+
+                        //                if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                        //                {
+                        //                    elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), -1, elkRateReportJson, 1);
+
+                        //                    elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), -1, elkRateReportJson, 2);
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
+
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -294,7 +340,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 }
             });
 
-            if (leagueGroupId != null && leagueGroupId != 0)
+            if (leagueGroupId != null && leagueGroupId != -1)
             {
                 reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
                 {
@@ -310,12 +356,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             var settings = new JsonSerializerSettings
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
             };
 
             return JsonConvert.SerializeObject(reportConfig, settings);
         }
-
 
         private string BuildConfigForMixParlay(SportSetting sportSetting, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
         {
@@ -539,6 +585,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return successRate;
 
         }
+
         private async Task<IEnumerable<SuccessRateModel>> GetELKDataForSoccerBasketball(DateTime startTime, DateTime endTime, SportType sportType, SiteTypeSetting siteType, int? leagueGroupId = null)
         {
             var config = BuildConfigForSoccerBasketball(sportType, siteType, startTime, endTime, leagueGroupId);
@@ -575,20 +622,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         }
 
-        public async Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate)
-        {
-            try
-            {
-                await ProccessForSoccerBasketballWithLeagueGroup(startTime, endTime, betDate);
-            }
-            catch (Exception ex)
-            {
-                await logService.ErrorAsync(ex);
 
-                return await Task.FromResult(false);
-            }
-
-            return await Task.FromResult(true);
-        }
     }
 }
