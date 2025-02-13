@@ -20,6 +20,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
+        Task<bool> SendTransactionToLogstash(string subscriberName, string accountName, DateTime fromDate, DateTime toDate, int batchSize);
+
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -36,11 +38,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly IDataTraceServices dataTraceServices;
         private readonly ILogService logService;
+        private readonly IAppSettings appSettings;
+        private readonly ILogstashService logstashService;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService)
+        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, IAppSettings appSettings, ILogstashService logstashService)
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
+            this.appSettings = appSettings;
+            this.logstashService = logstashService;
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -133,6 +139,37 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
 
                 return false;
+            }
+        }
+
+        public async Task<bool> SendTransactionToLogstash(string subscriberName, string accountName, DateTime fromDate, DateTime toDate, int batchSize)
+        {
+            try
+            {
+                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(subscriberName, accountName, fromDate, toDate, batchSize);
+                await InsertLogstash(transactionLogsTash);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
+
+                return false;
+            }
+        }
+
+        private async Task InsertLogstash(IEnumerable<ReportTransactionLogstashModel> transactions)
+        {
+            if (appSettings.IsEnableLogstash)
+            {
+                try
+                {
+                    await logstashService.PushLogAsync(transactions);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, "DCS - DataTrace InsertLogstash execute exeption message: ");
+                }
             }
         }
 

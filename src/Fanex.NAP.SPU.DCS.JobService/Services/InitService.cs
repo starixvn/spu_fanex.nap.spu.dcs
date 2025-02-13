@@ -31,6 +31,7 @@
             RegisterELKService(services);
             RegisterTransformMBTransaction(services);
             RegisterTransformMBDevice(services);
+            RegisterLogstashService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -119,6 +120,11 @@
             services.AddSingleton<IELKDataAccess, ELKDataAccess>();
             services.AddSingleton<IELKServices, ELKServices>();
             services.AddSingleton<IELKJobService, ELKJobService>();
+        }
+
+        private static void RegisterLogstashService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILogstashService, LogstashService>();
         }
     }
 }

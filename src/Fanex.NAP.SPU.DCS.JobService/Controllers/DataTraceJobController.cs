@@ -51,6 +51,12 @@
             return await dataTraceJobService.CookDataLoginTransaction(batchSize);
         }
 
+        [HttpPost("sendtransactiontologstash")]
+        public async Task<bool> SendTransactionToLogstash([FromForm] string subscriberName, [FromForm] string accountName, [FromForm] DateTime fromDate, [FromForm] DateTime toDate, [FromForm] int batchSize = 25000)
+        {
+            return await dataTraceJobService.SendTransactionToLogstash(subscriberName, accountName, fromDate, toDate, batchSize);
+        }
+
         #region Report
 
         [HttpGet("report-missing-transaction")]

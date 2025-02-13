@@ -6,6 +6,7 @@
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.JobService;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
@@ -15,6 +16,9 @@
     {
         private IDataTraceServices dataTraceServices;
         private ILogService logService;
+        private readonly IAppSettings appSettings;
+        private readonly ILogstashService logstashService;
+
 
         [Fact]
         public async Task SummaryLoginTransactionsAsync_SuccessfulExecution_ReturnsTrue()
@@ -282,7 +286,7 @@
         {
             dataTraceServices = Substitute.For<IDataTraceServices>();
             logService = Substitute.For<ILogService>();
-            return new DataTraceJobService(dataTraceServices, logService);
+            return new DataTraceJobService(dataTraceServices, logService, appSettings, logstashService);
         }
     }
 }
