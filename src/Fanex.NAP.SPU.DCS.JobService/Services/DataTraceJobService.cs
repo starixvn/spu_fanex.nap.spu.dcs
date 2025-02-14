@@ -5,6 +5,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.JobService.Models;
 
     public interface IDataTraceJobService
     {
@@ -20,7 +21,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
-        Task<bool> SendTransactionToLogstash(string subscriberName, string accountName, DateTime fromDate, DateTime toDate, int batchSize);
+        Task<bool> SendTransactionToLogstash(SendTransactionToLogstashRequest request);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -142,11 +143,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<bool> SendTransactionToLogstash(string subscriberName, string accountName, DateTime fromDate, DateTime toDate, int batchSize)
+        public async Task<bool> SendTransactionToLogstash(SendTransactionToLogstashRequest request)
         {
             try
             {
-                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(subscriberName, accountName, fromDate, toDate, batchSize);
+                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(request);
                 await InsertLogstash(transactionLogsTash);
                 return true;
             }

@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using System.Text;
 
@@ -52,9 +53,9 @@
         }
 
         [HttpPost("sendtransactiontologstash")]
-        public async Task<bool> SendTransactionToLogstash([FromForm] string subscriberName, [FromForm] string accountName, [FromForm] DateTime fromDate, [FromForm] DateTime toDate, [FromForm] int batchSize = 25000)
+        public async Task<bool> SendTransactionToLogstash([FromForm] SendTransactionToLogstashRequest request)
         {
-            return await dataTraceJobService.SendTransactionToLogstash(subscriberName, accountName, fromDate, toDate, batchSize);
+            return await dataTraceJobService.SendTransactionToLogstash(request);
         }
 
         #region Report
