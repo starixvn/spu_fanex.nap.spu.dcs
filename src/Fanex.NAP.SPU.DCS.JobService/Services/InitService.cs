@@ -3,7 +3,7 @@
     using Fanex.Logging;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace;
+    //using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.ELK;
     using Fanex.NAP.SPU.DCS.Features.MBDevice;
@@ -93,8 +93,8 @@
         private static void RegisterDWTransactionService(this IServiceCollection services)
         {
             services.AddSingleton<IDataTraceJobService, DataTraceJobService>();
-            services.AddSingleton<IDataTraceServices, DataTraceServices>();
-            services.AddSingleton<IDataTraceDataAccess, DataTraceDataAccess>();
+            //services.AddSingleton<IDataTraceServices, DataTraceServices>();
+            //services.AddSingleton<IDataTraceDataAccess, DataTraceDataAccess>();
         }
 
         private static void RegisterLogService(this IServiceCollection services)

@@ -24,6 +24,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
                     config.SetBasePath(env.ContentRootPath);
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddJsonFile("apiEndpoints.json", optional: false, reloadOnChange: true);
 
                     config.AddEnvironmentVariables();
                 })

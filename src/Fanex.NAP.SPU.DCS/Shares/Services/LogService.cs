@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.ServiceAPI.Services
 {
     using System;
     using System.Threading.Tasks;

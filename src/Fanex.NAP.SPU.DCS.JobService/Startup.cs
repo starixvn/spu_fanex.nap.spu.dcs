@@ -14,6 +14,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
     using System.Net.Http;
     using System.Threading;
@@ -34,6 +35,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddSingleton<IDynamicRepository>(new DynamicRepository());
+            services.Configure<ApiEndpoints>(Configuration.GetSection("ApiEndpoints"));
+            services.AddSingleton<IApiEndpoints>(sp => sp.GetRequiredService<IOptions<ApiEndpoints>>().Value);
 
             services.AddControllers();
             services.AddHealthChecks();

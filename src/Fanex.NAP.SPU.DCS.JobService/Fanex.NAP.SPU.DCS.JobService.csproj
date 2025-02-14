@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fanex.NAP.SPU.DCS.Model\Fanex.NAP.SPU.DCS.Model.csproj" />
     <ProjectReference Include="..\Fanex.NAP.SPU.DCS\Fanex.NAP.SPU.DCS.csproj" />
   </ItemGroup>
 

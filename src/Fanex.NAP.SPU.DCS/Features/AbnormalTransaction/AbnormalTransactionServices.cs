@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
 using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
-using Fanex.NAP.SPU.DCS.JobService.Services;
+using Fanex.NAP.SPU.DCS.ServiceAPI.Services;
 
 namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 {
@@ -20,12 +20,12 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
 
     public class AbnormalTransactionServices : IAbnormalTransactionServices
     {
-        private readonly ILogService _logService;
+        //private readonly ILogService _logService;
         private readonly IAbnormalTransactionDataAccess _dataAccess;
 
-        public AbnormalTransactionServices(ILogService logService, IAbnormalTransactionDataAccess dataAccess)
+        public AbnormalTransactionServices(IAbnormalTransactionDataAccess dataAccess)
         {
-            _logService = logService;
+            //_logService = logService;
             _dataAccess = dataAccess;
         }
 
@@ -98,7 +98,7 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
             if (!response.IsSuccessStatusCode || responseBody != "true")
             {
                 var exception = new Exception("PushData return false,\nURL: " + abnormalTransactionUrl + ".\n ResponseBody: " + responseBody + "\n" + JsonSerializer.Serialize(modelsToPush));
-                await _logService.ErrorAsync(exception);
+                //await _logService.ErrorAsync(exception);
                 return false;
             }
 

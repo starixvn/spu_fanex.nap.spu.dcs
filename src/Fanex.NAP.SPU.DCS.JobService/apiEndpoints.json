@@ -1,0 +1,19 @@
+{
+    "ApiEndpoints": {
+        "DataTrace": {
+            "ProcessSummaryBetTransaction": "/api/datatrace/summarybettransaction",
+            "ProcessSummaryMissingBetTransaction": "/api/datatrace/summarymissingbettransaction",
+            "ProcessSummaryMissingLoginTransaction": "/api/datatrace/summarymissinglogintransaction",
+            "UpdateSystemSetting": "/api/datatrace/updatesystemsetting",
+            "CountDWBetTransactionByDate": "/api/datatrace/count-dw-bet-transaction-by-date",
+            "CookDataLoginTransaction": "/api/datatrace/cookdatalogintransaction",
+            "SendTransactionToLogstash": "/api/datatrace/sendtransactiontologstash",
+            "GetReportMissingTransaction": "/api/datatrace/report-missing-transaction",
+            "GetReportLoginTransactionBySubscriber": "/api/datatrace/report-login-transaction-by-subscriber",
+            "GetReportLoginTransactionBySite": "/api/datatrace/report-login-transaction-by-site",
+            "GetReportLoginTransactionByAccount": "/api/datatrace/report-login-transaction-by-account",
+            "GetReportLoginTransactionByBrowser": "/api/datatrace/report-login-transaction-by-browser",
+            "GetReportLoginTransactionByFlagged": "/api/datatrace/report-login-transaction-by-flagged"
+        }
+    }
+}

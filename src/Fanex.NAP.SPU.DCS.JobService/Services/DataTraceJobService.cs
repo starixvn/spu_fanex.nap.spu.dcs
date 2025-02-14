@@ -1,10 +1,15 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System.Net.Http;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.JobService;
+    using Microsoft.AspNetCore.Http.Extensions;
+    using Microsoft.AspNetCore.Mvc.Routing;
+    using Microsoft.Extensions.Options;
 
     public interface IDataTraceJobService
     {
@@ -36,126 +41,88 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     }
     public class DataTraceJobService : IDataTraceJobService
     {
-        private readonly IDataTraceServices dataTraceServices;
+        private readonly HttpClient httpClient;
         private readonly ILogService logService;
         private readonly IAppSettings appSettings;
         private readonly ILogstashService logstashService;
+        private readonly ApiEndpoints apiEndpoints;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, IAppSettings appSettings, ILogstashService logstashService)
+        public DataTraceJobService(HttpClient httpClient, ILogService logService, IAppSettings appSettings, ILogstashService logstashService, IOptions<ApiEndpoints> apiEndpointsOptions)
         {
-            this.dataTraceServices = dataTraceServices;
+            this.httpClient = httpClient;
             this.logService = logService;
             this.appSettings = appSettings;
             this.logstashService = logstashService;
+            this.apiEndpoints = apiEndpointsOptions.Value;
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                return await dataTraceServices.ProcessSummaryBetTransactionAsync(fromDate, toDate, batchSize);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace SummaryBetTransactionAsync execute exeption message: ");
-
-                return false;
-            }
+                { "fromDate", fromDate?.ToString("o") },
+                { "toDate", toDate?.ToString("o") },
+                { "batchSize", batchSize.ToString() }
+            };
+            return await CallApiAsync<bool>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.ProcessSummaryBetTransaction), queryParams);
         }
 
         public async Task<bool> SummaryMissingBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                return await dataTraceServices.ProcessSummaryMissingBetTransactionAsync(fromDate, toDate, batchSize);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace SummaryMissingBetTransactionAsync execute exeption message: ");
-
-                return false;
-            }
+                { "fromDate", fromDate?.ToString("o") },
+                { "toDate", toDate?.ToString("o") },
+                { "batchSize", batchSize.ToString() }
+            };
+            return await CallApiAsync<bool>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.ProcessSummaryMissingBetTransaction), queryParams);
         }
 
         public async Task<bool> SummaryMissingLoginTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
         {
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                return await dataTraceServices.ProcessSummaryMissingLoginTransactionAsync(fromDate, toDate, batchSize);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace ProcessSummaryMissingLoginTransactionAsync execute exeption message: ");
-
-                return false;
-            }
+                { "fromDate", fromDate?.ToString("o") },
+                { "toDate", toDate?.ToString("o") },
+                { "batchSize", batchSize.ToString() }
+            };
+            return await CallApiAsync<bool>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.ProcessSummaryMissingLoginTransaction), queryParams);
         }
 
         public async Task<bool> UpdateSystemSetting(int SystemSettingID, string SystemSettingValue)
         {
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                return await dataTraceServices.UpdateSystemSetting(SystemSettingID, SystemSettingValue);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace UpdateSystemSetting job execute exeption message: ");
-            }
-
-            return false;
+                { "SystemSettingID", SystemSettingID.ToString() },
+                { "SystemSettingValue", SystemSettingValue }
+            };
+            return await CallApiAsync<bool>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.UpdateSystemSetting), queryParams);
         }
 
         public async Task<int> CountDWBetTransactionByDate(DateTime transDate)
         {
-            try
-            {
-                return await dataTraceServices.CountDWBetTransactionByDate(transDate);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace CountDWBetTransactionByDate execute exeption message: ");
-
-                return 0;
-            }
+            return await CallApiAsync<int>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.CountDWBetTransactionByDate}?transDate={transDate:o}"));
         }
 
         public async Task<bool> CookDataLoginTransaction(int batchSize)
         {
-            try
-            {
-                if (batchSize > 0)
-                {
-                    await dataTraceServices.CookDataLoginTransaction(batchSize);
-
-                    return true;
-                }
-
-                await logService.ErrorMessageAsync("DCS - DataTrace CookDataLoginTransaction has batchSize = 0!");
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
-
-                return false;
-            }
+            var queryParams = new Dictionary<string, string> { { "batchSize", batchSize.ToString() } };
+            return await CallApiAsync<bool>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.CookDataLoginTransaction), queryParams);
         }
 
         public async Task<bool> SendTransactionToLogstash(string subscriberName, string accountName, DateTime fromDate, DateTime toDate, int batchSize)
         {
-            try
+            var queryParams = new Dictionary<string, string>
             {
-                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(subscriberName, accountName, fromDate, toDate, batchSize);
-                await InsertLogstash(transactionLogsTash);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
-
-                return false;
-            }
+                { "subscriberName", subscriberName },
+                { "accountName", accountName },
+                { "fromDate", fromDate.ToString("o") },
+                { "toDate", toDate.ToString("o") },
+                { "batchSize", batchSize.ToString() }
+            };
+            var transactionLogsTash = await CallApiAsync<IEnumerable<ReportTransactionLogstashModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, apiEndpoints.DataTrace.GetTransactionLogstash), queryParams);
+            await InsertLogstash(transactionLogsTash);
+            return true;
         }
 
         private async Task InsertLogstash(IEnumerable<ReportTransactionLogstashModel> transactions)
@@ -168,87 +135,70 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 }
                 catch (Exception ex)
                 {
-                    HandleException(ex, "DCS - DataTrace InsertLogstash execute exeption message: ");
+                    HandleException(ex, "DCS - DataTrace InsertLogstash execute exception message: ");
                 }
             }
         }
-
 
         #region Report
 
         public async Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportMissingTransaction(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportMissingTransactionModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportMissingTransaction}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
 
         public async Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportLoginTransactionBySubscriber(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportLoginTransactionBySubscriberModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportLoginTransactionBySubscriber}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
 
         public async Task<IEnumerable<ReportLoginTransactionBySiteModel>> GetReportLoginTransactionBySite(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportLoginTransactionBySite(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportLoginTransactionBySiteModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportLoginTransactionBySite}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
 
         public async Task<IEnumerable<ReportLoginTransactionByAccountModel>> GetReportLoginTransactionByAccount(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportLoginTransactionByAccount(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportLoginTransactionByAccountModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportLoginTransactionByAccount}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
 
         public async Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportLoginTransactionByBrowser(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportLoginTransactionByBrowserModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportLoginTransactionByBrowser}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
 
         public async Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate)
         {
-            try
-            {
-                return await dataTraceServices.GetReportLoginTransactionByFlagged(fromDate, toDate);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await CallApiAsync<IEnumerable<ReportLoginTransactionByFlaggedModel>>(ApiHelper.GetFullUrl(appSettings.DataAccessUrl, $"{apiEndpoints.DataTrace.GetReportLoginTransactionByFlagged}?fromDate={fromDate:o}&toDate={toDate:o}"));
         }
+
         #endregion
 
+        private async Task<TResponse> CallApiAsync<TResponse>(string url)
+        {
+            try
+            {
+                return await ApiHelper.GetAsync<TResponse>(httpClient, url);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, $"DCS - DataTrace API call to {url} failed: ");
+                return default;
+            }
+        }
+
+        private async Task<TResponse> CallApiAsync<TResponse>(string url, Dictionary<string, string> queryParams)
+        {
+            try
+            {
+                return await ApiHelper.PostAsync<TResponse>(httpClient, url, queryParams);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, $"DCS - DataTrace API call to {url} failed: ");
+                return default;
+            }
+        }
         private void HandleException(Exception ex, string extraLogMessage)
         {
             string logMessage = new LogMessage(ex.Message)
