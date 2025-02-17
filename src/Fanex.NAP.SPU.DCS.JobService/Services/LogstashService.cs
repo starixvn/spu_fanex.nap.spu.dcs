@@ -9,7 +9,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ILogstashService
     {
-        Task PushLogAsync(IEnumerable<ReportTransactionLogstashModel> transactions);
+        Task PushLogAsync(IEnumerable<TransactionLogsTashModel> transactions);
     }
     public class LogstashService: ILogstashService
     {
@@ -19,7 +19,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             this.appSettings = appSettings;
         }
-        public async Task PushLogAsync(IEnumerable<ReportTransactionLogstashModel> transactions)
+        public async Task PushLogAsync(IEnumerable<TransactionLogsTashModel> transactions)
         {
             using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
             using var stream = client.GetStream();
@@ -37,14 +37,14 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private TransactionLogstashModel TransformLogMessage(ReportTransactionLogstashModel transaction)
+        private TransactionLogstashModel TransformLogMessage(TransactionLogsTashModel transaction)
         {
             transaction.SubscriberName = transaction.SubscriberName.ToLower();
 
             var logMessage = new TransactionLogstashModel
             {
                 Message = transaction,
-                Tags = "LoginTransaction",
+                Tags = "Transaction07",
             };
 
             return logMessage;

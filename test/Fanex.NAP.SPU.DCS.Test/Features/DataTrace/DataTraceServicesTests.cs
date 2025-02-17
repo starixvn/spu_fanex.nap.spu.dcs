@@ -213,5 +213,21 @@
             // Assert
             Assert.Equal(3, actual);
         }
+
+        [Fact]
+        public async Task GetTransactionLogstash_WhenCalled_ShouldCallExactFunction()
+        {
+            // Arrange
+            var expectedTransactions = fixture.CreateMany<TransactionLogsTashModel>();
+
+            dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
+
+            // Act
+
+            var actual = await dataTraceServices.GetTransactionLogstash(1);
+
+            // Assert
+            Assert.Equal(expectedTransactions, actual);
+        }
     }
 }

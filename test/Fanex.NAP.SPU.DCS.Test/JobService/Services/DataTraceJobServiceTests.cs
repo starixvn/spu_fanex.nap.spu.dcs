@@ -16,8 +16,8 @@
     {
         private IDataTraceServices dataTraceServices;
         private ILogService logService;
-        private readonly IAppSettings appSettings;
-        private readonly ILogstashService logstashService;
+        private IAppSettings appSettings;
+        private ILogstashService logstashService;
 
 
         [Fact]
@@ -282,9 +282,61 @@
             */
         }
 
+        [Fact]
+        public async Task SendTransactionToLogstash_SuccessfulExecution_ShouldCallExactFunctionAndReturnTrue()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var service = GetService();
+            var transactionLogs = fixture.Create<IEnumerable<TransactionLogsTashModel>>();
+            dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
+            appSettings.IsEnableLogstash.Returns(true);
+            logstashService.PushLogAsync(transactionLogs).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await service.SendTransactionToLogstash(1);
+
+            // Assert
+            Assert.True(result);
+            await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
+        }
+
+        [Fact]
+        public async Task SendTransactionToLogstash_WhenExceptionThrown_ShouldReturnFalse()
+        {
+            // Arrange
+            var service = GetService();
+            dataTraceServices.GetTransactionLogstash(1).Throws(new Exception("Test exception"));
+
+            // Act
+            var result = await service.SendTransactionToLogstash(1);
+
+            // Assert
+            Assert.False(result);
+            await logService.Received(1).ErrorMessageAsync(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task InsertLogstash_WhenLogstashDisabled_ShouldNotCallPushLogAsync()
+        {
+            // Arrange
+            var service = GetService();
+            var fixture = new Fixture();
+            var transactionLogs = fixture.CreateMany<TransactionLogsTashModel>();
+            appSettings.IsEnableLogstash.Returns(false);
+
+            // Act
+            await service.InsertLogstash(transactionLogs);
+
+            // Assert
+            await logstashService.DidNotReceive().PushLogAsync(transactionLogs);
+        }
+
         public DataTraceJobService GetService()
         {
             dataTraceServices = Substitute.For<IDataTraceServices>();
+            appSettings = Substitute.For<IAppSettings>();
+            logstashService = Substitute.For<ILogstashService>();
             logService = Substitute.For<ILogService>();
             return new DataTraceJobService(dataTraceServices, logService, appSettings, logstashService);
         }

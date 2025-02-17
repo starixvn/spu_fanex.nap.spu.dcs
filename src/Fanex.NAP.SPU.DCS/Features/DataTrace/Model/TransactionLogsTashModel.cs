@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 {
-    public class ReportTransactionLogstashModel
+    public class TransactionLogsTashModel
     {
         public ulong TransID { get; set; }
         public DateTime TransTime { get; set; }
@@ -29,16 +29,16 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
         public int ActionResultID { get; set; }
         public string Action { get; set; }
         public string ActionResult { get; set; }
-        public int Flagged { get; set; }
-        public string RobotTracking { get; set; }
+        public string FlaggedCode { get; set; }
         public int PluginID { get; set; }
         public int TransStatus { get; set; }
+        public string UserAgent { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime InsertTime { get; set; }
         public ulong RawTransID { get; set; }
-        public decimal BotDetectionValue { get; set; }
+        public string BotDetectionValue { get; set; }
         public int BotComponentID { get; set; }
-        public bool FakeIP { get; set; }
+        public string FakeIP { get; set; }
         public bool IsIncognitoMode { get; set; }
         public int JSChallengeInfoID { get; set; }
         public int FP_UserAgentID { get; set; }

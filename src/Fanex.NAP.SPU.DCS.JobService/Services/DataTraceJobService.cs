@@ -159,7 +159,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        private async Task InsertLogstash(IEnumerable<ReportTransactionLogstashModel> transactions)
+        public async Task InsertLogstash(IEnumerable<TransactionLogsTashModel> transactions)
         {
             if (appSettings.IsEnableLogstash)
             {

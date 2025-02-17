@@ -225,5 +225,26 @@
             Assert.Equal(reportMissingTransactions, actual);
             Assert.Equal(expectedSettingKey, settingKey);
         }
+
+        [Fact]
+        public async Task GetTranPackageAsync_WhenCalled_ReturnsExpectedData()
+        {
+            // Arrange
+            var expectedTransactions = fixture.CreateMany<TransactionLogsTashModel>();
+            var criteria = fixture.Create<GetTranPackageCriteria>();
+            var expectedSettingKey = "DCS_DT_OpenSearch_Transaction_Get";
+
+            repository
+                .FetchAsync<TransactionLogsTashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))
+                .Returns(expectedTransactions);
+
+            // Act
+            var actual = await dataTraceDataAccess.GetTranPackageAsync(1);
+            var settingKey = criteria.GetSettingKey();
+
+            // Assert
+            Assert.Equal(expectedTransactions, actual);
+            Assert.Equal(expectedSettingKey, settingKey);
+        }
     }
 }
