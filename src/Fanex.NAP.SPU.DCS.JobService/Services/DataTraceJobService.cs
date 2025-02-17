@@ -21,7 +21,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
-        Task<bool> SendTransactionToLogstash(SendTransactionToLogstashRequest request);
+        Task<bool> SendTransactionToLogstash(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -143,11 +143,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<bool> SendTransactionToLogstash(SendTransactionToLogstashRequest request)
+        public async Task<bool> SendTransactionToLogstash(int batchSize)
         {
             try
             {
-                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(request);
+                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
                 await InsertLogstash(transactionLogsTash);
                 return true;
             }

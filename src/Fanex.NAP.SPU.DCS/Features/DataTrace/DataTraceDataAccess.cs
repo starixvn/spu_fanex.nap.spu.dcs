@@ -35,7 +35,7 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<IEnumerable<ReportTransactionLogstashModel>> GetTranPackageAsync(SendTransactionToLogstashRequest request);
+        Task<IEnumerable<ReportTransactionLogstashModel>> GetTranPackageAsync(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -256,15 +256,10 @@
             return await repository.FetchAsync<ReportLoginTransactionByFlaggedModel>(criteria);
         }
 
-        public async Task<IEnumerable<ReportTransactionLogstashModel>> GetTranPackageAsync(SendTransactionToLogstashRequest request)
+        public async Task<IEnumerable<ReportTransactionLogstashModel>> GetTranPackageAsync(int batchSize)
         {
-            var criteria = new GetTranPackageCriteria
-            {
-                FromDate = request.FromDate,
-                ToDate = request.ToDate,
-                BatchSize = request.BatchSize,
-                SubscriberName = request.SubscriberName,
-                AccountName = request.AccountName
+            var criteria = new GetTranPackageCriteria {
+                BatchSize = batchSize
             };
 
             return await repository.FetchAsync<ReportTransactionLogstashModel>(criteria);

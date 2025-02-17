@@ -53,9 +53,9 @@
         }
 
         [HttpPost("sendtransactiontologstash")]
-        public async Task<bool> SendTransactionToLogstash([FromForm] SendTransactionToLogstashRequest request)
+        public async Task<bool> SendTransactionToLogstash([FromForm] int batchSize = 5000)
         {
-            return await dataTraceJobService.SendTransactionToLogstash(request);
+            return await dataTraceJobService.SendTransactionToLogstash(batchSize);
         }
 
         #region Report
