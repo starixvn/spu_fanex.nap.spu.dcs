@@ -18,9 +18,9 @@ namespace Fanex.NAP.SPU.DCS.Features.AbnormalTransaction
     {
         private readonly IDynamicRepository repository;
 
-        public AbnormalTransactionDataAccess()
+        public AbnormalTransactionDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public (IEnumerable<AbnormalTransactionEntity>, RangeIDModel) GetAbnormalTransactionsAsync(int size)

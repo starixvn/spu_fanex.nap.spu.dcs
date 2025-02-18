@@ -226,5 +226,80 @@
             // Assert
             Assert.Equal(expectedTransactions, actual);
         }
+
+        [Fact]
+        public async Task GetReportLoginTransactionBySubscriber_WhenCalled_ShouldReturnExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionBySubscriberModel>();
+            dataAccess.GetReportLoginTransactionBySubscriber(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+                      .Returns(expectedData);
+
+            // Act
+            var actual = await dataTraceServices.GetReportLoginTransactionBySubscriber(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actual);
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionBySite_WhenCalled_ShouldReturnExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionBySiteModel>();
+            dataAccess.GetReportLoginTransactionBySite(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+                      .Returns(expectedData);
+
+            // Act
+            var actual = await dataTraceServices.GetReportLoginTransactionBySite(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actual);
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByAccount_WhenCalled_ShouldReturnExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByAccountModel>();
+            dataAccess.GetReportLoginTransactionByAccount(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+                      .Returns(expectedData);
+
+            // Act
+            var actual = await dataTraceServices.GetReportLoginTransactionByAccount(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actual);
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByBrowser_WhenCalled_ShouldReturnExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByBrowserModel>();
+            dataAccess.GetReportLoginTransactionByBrowser(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+                      .Returns(expectedData);
+
+            // Act
+            var actual = await dataTraceServices.GetReportLoginTransactionByBrowser(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actual);
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByFlagged_WhenCalled_ShouldReturnExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByFlaggedModel>();
+            dataAccess.GetReportLoginTransactionByFlagged(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+                      .Returns(expectedData);
+
+            // Act
+            var actual = await dataTraceServices.GetReportLoginTransactionByFlagged(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actual);
+        }
     }
 }

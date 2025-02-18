@@ -246,5 +246,161 @@
             Assert.Equal(expectedTransactions, actual);
             Assert.Equal(expectedSettingKey, settingKey);
         }
+
+        [Fact]
+        public async Task InsertMissingBetTransactionAsync_WhenCall_ReturnExactData()
+        {
+            // Arrange
+            var criteria = fixture.Create<InsertMissingBetTransactionCriteria>();
+            var expectedSettingKey = "DCS_DT_Summary_MissingBetTransaction_Insert";
+
+            repository.ExecuteAsync(Arg.Do<InsertMissingBetTransactionCriteria>(x => criteria = x)).Returns(1);
+
+            // Act
+            var actual = await dataTraceDataAccess.InsertMissingBetTransactionAsync(DateTime.Now, "value");
+
+            // Assert
+            var settingKey = criteria.GetSettingKey();
+            var isValid = criteria.IsInvalid();
+
+            Assert.Equal(1, actual);
+            Assert.Equal(expectedSettingKey, settingKey);
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionBySubscriber_WhenCalled_ReturnsExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionBySubscriberModel>();
+            var criteria = fixture.Create<GetReportLoginTransactionBySubscriberCriteria>();
+            var expectedKey = "DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange";
+
+            repository.FetchAsync<ReportLoginTransactionBySubscriberModel>(Arg.Do<GetReportLoginTransactionBySubscriberCriteria>(x => criteria = x))
+                      .Returns(expectedData);
+
+            // Act
+            var actualData = await dataTraceDataAccess.GetReportLoginTransactionBySubscriber(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actualData);
+            Assert.Equal(expectedKey, criteria.GetSettingKey());
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionBySite_WhenCalled_ReturnsExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionBySiteModel>();
+            var criteria = fixture.Create<GetReportLoginTransactionBySiteCriteria>();
+            var expectedKey = "DCS_DT_Report_LoginTransactionBySite_GetByDateRange";
+
+            repository.FetchAsync<ReportLoginTransactionBySiteModel>(Arg.Do<GetReportLoginTransactionBySiteCriteria>(x => criteria = x))
+                      .Returns(expectedData);
+
+            // Act
+            var actualData = await dataTraceDataAccess.GetReportLoginTransactionBySite(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actualData);
+            Assert.Equal(expectedKey, criteria.GetSettingKey());
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByAccount_WhenCalled_ReturnsExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByAccountModel>();
+            var criteria = fixture.Create<GetReportLoginTransactionByAccountCriteria>();
+            var expectedKey = "DCS_DT_Report_LoginTransactionByAccount_GetByDateRange";
+
+            repository.FetchAsync<ReportLoginTransactionByAccountModel>(Arg.Do<GetReportLoginTransactionByAccountCriteria>(x => criteria = x))
+                      .Returns(expectedData);
+
+            // Act
+            var actualData = await dataTraceDataAccess.GetReportLoginTransactionByAccount(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actualData);
+            Assert.Equal(expectedKey, criteria.GetSettingKey());
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByBrowser_WhenCalled_ReturnsExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByBrowserModel>();
+            var criteria = fixture.Create<GetReportLoginTransactionByBrowserCriteria>();
+            var expectedKey = "DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange";
+
+            repository.FetchAsync<ReportLoginTransactionByBrowserModel>(Arg.Do<GetReportLoginTransactionByBrowserCriteria>(x => criteria = x))
+                      .Returns(expectedData);
+
+            // Act
+            var actualData = await dataTraceDataAccess.GetReportLoginTransactionByBrowser(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actualData);
+            Assert.Equal(expectedKey, criteria.GetSettingKey());
+        }
+
+        [Fact]
+        public async Task GetReportLoginTransactionByFlagged_WhenCalled_ReturnsExactData()
+        {
+            // Arrange
+            var expectedData = fixture.CreateMany<ReportLoginTransactionByFlaggedModel>();
+            var criteria = fixture.Create<GetReportLoginTransactionByFlaggedCriteria>();
+            var expectedKey = "DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange";
+
+            repository.FetchAsync<ReportLoginTransactionByFlaggedModel>(Arg.Do<GetReportLoginTransactionByFlaggedCriteria>(x => criteria = x))
+                      .Returns(expectedData);
+
+            // Act
+            var actualData = await dataTraceDataAccess.GetReportLoginTransactionByFlagged(DateTime.Now, DateTime.Now);
+
+            // Assert
+            Assert.Equal(expectedData, actualData);
+            Assert.Equal(expectedKey, criteria.GetSettingKey());
+        }
+
+        [Fact]
+        public async Task GetSystemSettingParameterByID_WhenCalled_ReturnsExactData()
+        {
+            /*//// Arrange
+            //var parameterID = fixture.Create<int>();
+            //var expectedValue = fixture.Create<string>();
+            //var criteria = new GetSystemSettingParameterByIDCriteria { ParameterID = parameterID };
+            //var db = Substitute.For<IDatabase>();
+            //db.QueryEntityAsync<string>(criteria).Returns(expectedValue);
+            //ObjectDbFactory.CreateInstance(criteria.GetSettingKey()).Returns(db);
+
+            //// Act
+            //var actual = await dataTraceDataAccess.GetSystemSettingParameterByID(parameterID);
+
+            //// Assert
+            //Assert.Equal(expectedValue, actual);
+            //await db.Received(1).QueryEntityAsync<string>(criteria);*/
+        }
+
+        [Fact]
+        public async Task CookDataLoginTransaction_WhenCall_ReturnExactData()
+        {
+            // Arrange
+            var criteria = fixture.Create<CookDataLoginTransactionCriteria>();
+            var expectedSettingKey = "DCS_DT_Summary_LoginTransaction_CookData";
+
+            repository.ExecuteAsync(Arg.Do<CookDataLoginTransactionCriteria>(x => criteria = x)).Returns(1);
+
+            // Act
+            var actual = await dataTraceDataAccess.CookDataLoginTransaction(1);
+
+            // Assert
+            var settingKey = criteria.GetSettingKey();
+            var isValid = criteria.IsInvalid();
+
+            Assert.Equal(1, actual);
+            Assert.Equal(expectedSettingKey, settingKey);
+        }
+
+
     }
 }
