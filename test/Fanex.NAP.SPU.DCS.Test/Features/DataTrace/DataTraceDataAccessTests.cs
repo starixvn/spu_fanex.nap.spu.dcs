@@ -230,12 +230,12 @@
         public async Task GetTranPackageAsync_WhenCalled_ReturnsExpectedData()
         {
             // Arrange
-            var expectedTransactions = fixture.CreateMany<TransactionLogsTashModel>();
+            var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
             var criteria = fixture.Create<GetTranPackageCriteria>();
             var expectedSettingKey = "DCS_DT_OpenSearch_Transaction_Get";
 
             repository
-                .FetchAsync<TransactionLogsTashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))
+                .FetchAsync<TransactionLogstashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))
                 .Returns(expectedTransactions);
 
             // Act

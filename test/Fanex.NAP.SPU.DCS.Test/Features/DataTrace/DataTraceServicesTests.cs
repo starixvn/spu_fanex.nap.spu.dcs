@@ -2,16 +2,13 @@
 {
     using AutoFixture;
     using System.Threading.Tasks;
-    using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using NSubstitute;
     using Xunit;
     using System;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using NSubstitute.ExceptionExtensions;
     using System.Collections.Generic;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Model.Dto;
 
     public class DataTraceServicesTests
     {
@@ -218,7 +215,7 @@
         public async Task GetTransactionLogstash_WhenCalled_ShouldCallExactFunction()
         {
             // Arrange
-            var expectedTransactions = fixture.CreateMany<TransactionLogsTashModel>();
+            var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
 
             dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
 

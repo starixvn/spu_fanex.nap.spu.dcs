@@ -288,7 +288,7 @@
             // Arrange
             var fixture = new Fixture();
             var service = GetService();
-            var transactionLogs = fixture.Create<IEnumerable<TransactionLogsTashModel>>();
+            var transactionLogs = fixture.Create<IEnumerable<TransactionLogstashModel>>();
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
             appSettings.IsEnableLogstash.Returns(true);
             logstashService.PushLogAsync(transactionLogs).Returns(Task.CompletedTask);

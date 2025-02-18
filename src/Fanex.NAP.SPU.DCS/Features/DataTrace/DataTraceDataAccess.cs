@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Threading.Tasks;
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -35,7 +34,7 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<IEnumerable<TransactionLogsTashModel>> GetTranPackageAsync(int batchSize);
+        Task<IEnumerable<TransactionLogstashModel>> GetTranPackageAsync(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -256,13 +255,13 @@
             return await repository.FetchAsync<ReportLoginTransactionByFlaggedModel>(criteria);
         }
 
-        public async Task<IEnumerable<TransactionLogsTashModel>> GetTranPackageAsync(int batchSize)
+        public async Task<IEnumerable<TransactionLogstashModel>> GetTranPackageAsync(int batchSize)
         {
             var criteria = new GetTranPackageCriteria {
                 BatchSize = batchSize
             };
 
-            return await repository.FetchAsync<TransactionLogsTashModel>(criteria);
+            return await repository.FetchAsync<TransactionLogstashModel>(criteria);
         }
         #endregion
     }

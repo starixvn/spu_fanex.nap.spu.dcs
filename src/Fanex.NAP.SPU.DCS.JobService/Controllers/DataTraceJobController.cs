@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-    using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using System.Text;
 

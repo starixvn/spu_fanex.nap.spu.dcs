@@ -24,7 +24,7 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
-        Task<IEnumerable<TransactionLogsTashModel>> GetTransactionLogstash(int batchSize);
+        Task<IEnumerable<TransactionLogstashModel>> GetTransactionLogstash(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -379,7 +379,7 @@
             return await dataAccess.GetReportLoginTransactionByFlagged(fromDate, toDate);
         }
 
-        public async Task<IEnumerable<TransactionLogsTashModel>> GetTransactionLogstash(int batchSize)
+        public async Task<IEnumerable<TransactionLogstashModel>> GetTransactionLogstash(int batchSize)
         {
             return await dataAccess.GetTranPackageAsync(batchSize);
         }
