@@ -21,6 +21,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         }
         public async Task PushLogAsync(IEnumerable<TransactionLogsTashModel> transactions)
         {
+            if (!appSettings.IsEnableLogstash)
+                return;
+
             using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
             using var stream = client.GetStream();
             foreach (var transaction in transactions)

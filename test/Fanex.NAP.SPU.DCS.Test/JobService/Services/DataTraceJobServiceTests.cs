@@ -316,22 +316,6 @@
             await logService.Received(1).ErrorMessageAsync(Arg.Any<string>());
         }
 
-        [Fact]
-        public async Task InsertLogstash_WhenLogstashDisabled_ShouldNotCallPushLogAsync()
-        {
-            // Arrange
-            var service = GetService();
-            var fixture = new Fixture();
-            var transactionLogs = fixture.CreateMany<TransactionLogsTashModel>();
-            appSettings.IsEnableLogstash.Returns(false);
-
-            // Act
-            await service.InsertLogstash(transactionLogs);
-
-            // Assert
-            await logstashService.DidNotReceive().PushLogAsync(transactionLogs);
-        }
-
         public DataTraceJobService GetService()
         {
             dataTraceServices = Substitute.For<IDataTraceServices>();

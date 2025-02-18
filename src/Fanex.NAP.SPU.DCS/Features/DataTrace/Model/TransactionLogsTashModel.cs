@@ -36,7 +36,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
         public DateTime CreatedDate { get; set; }
         public DateTime InsertTime { get; set; }
         public ulong RawTransID { get; set; }
-        public string BotDetectionValue { get; set; }
+        public string BotDetection { get; set; }
         public int BotComponentID { get; set; }
         public string FakeIP { get; set; }
         public bool IsIncognitoMode { get; set; }

@@ -1,6 +1,7 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System.Transactions;
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
@@ -148,32 +149,18 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
-                await InsertLogstash(transactionLogsTash);
+                if (transactionLogsTash != null && transactionLogsTash.Any())
+                {
+                    await logstashService.PushLogAsync(transactionLogsTash);
+                }
                 return true;
             }
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
-
                 return false;
             }
         }
-
-        public async Task InsertLogstash(IEnumerable<TransactionLogsTashModel> transactions)
-        {
-            if (appSettings.IsEnableLogstash)
-            {
-                try
-                {
-                    await logstashService.PushLogAsync(transactions);
-                }
-                catch (Exception ex)
-                {
-                    HandleException(ex, "DCS - DataTrace InsertLogstash execute exeption message: ");
-                }
-            }
-        }
-
 
         #region Report
 
