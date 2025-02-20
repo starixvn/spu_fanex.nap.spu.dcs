@@ -21,35 +21,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         }
 
         [Fact]
-        public void GetAbnormalTransactionsAsync_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var size = fixture.Create<int>();
-            //var expectedTransactions = fixture.CreateMany<AbnormalTransactionEntity>().ToList();
-            //var expectedRangeID = new RangeIDModel { MinID = 0, MaxID = 0 };
-
-            //var criteria = new AbnormalTransactionGetCriteria
-            //{
-            //    Size = size,
-            //    MinID = 0,
-            //    MaxID = 0
-            //};
-
-            //var mockDb = Substitute.For<IObjectDb>();
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(mockDb);
-
-            //mockDb.Query<AbnormalTransactionEntity>(criteria).Returns(expectedTransactions);
-
-            //// Act
-            //var (actualTransactions, actualRangeID) = abnormalTransactionDataAccess.GetAbnormalTransactionsAsync(size);
-
-            //// Assert
-            //Assert.Equal(expectedTransactions, actualTransactions);
-            //Assert.Equal(expectedRangeID.MinID, actualRangeID.MinID);
-            //Assert.Equal(expectedRangeID.MaxID, actualRangeID.MaxID);
-        }
-
-        [Fact]
         public void UpdateAbnormalTransactions_WhenCalled_ExecutesCorrectly()
         {
             // Arrange

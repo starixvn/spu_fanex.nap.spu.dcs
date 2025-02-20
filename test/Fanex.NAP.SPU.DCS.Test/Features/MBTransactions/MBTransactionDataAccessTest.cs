@@ -21,28 +21,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBTransactions
         }
 
         [Fact]
-        public void GetMBRawTransaction_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //int numberOfTrans = 10;
-            //int numberOfBatch = 2;
-            //var expectedTransactions = fixture.CreateMany<MBRawTransactionEntity>();
-            //var criteria = fixture.Create<GetMBRawTransactionCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.Query<MBRawTransactionEntity>(Arg.Any<GetMBRawTransactionCriteria>()).Returns(expectedTransactions);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = mbTransactionDataAccess.GetMBRawTransaction(numberOfTrans, numberOfBatch);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedTransactions, actual);
-            //Assert.Equal("DCS_DC_Transform_MBRawTransaction_GetPackage", settingKey);
-        }
-
-        [Fact]
         public void InsertMBTransaction_WhenCalled_ExecutesWithCorrectCriteria()
         {
             // Arrange

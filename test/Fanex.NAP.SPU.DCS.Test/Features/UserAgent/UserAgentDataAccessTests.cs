@@ -21,30 +21,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.UserAgent
         }
 
         [Fact]
-        public void GetUserAgent_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //int size = 10;
-            //bool isReadyDbExtra = true;
-            //var expectedUserAgents = fixture.CreateMany<UserAgentEntity>();
-            //var criteria = fixture.Create<GetUserAgentCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.Query<UserAgentEntity>(Arg.Any<GetUserAgentCriteria>()).Returns(expectedUserAgents);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //var userAgentDataAccess = new UserAgentDataAccess();
-
-            //// Act
-            //var actual = userAgentDataAccess.GetUserAgent(size, isReadyDbExtra);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedUserAgents, actual);
-            //Assert.Equal("DCS_ET_Transform_UserAgent_GetNullBrowserOSList", settingKey);
-        }
-
-        [Fact]
         public void UpdateUserAgent_WhenCalled_ExecutesWithCorrectCriteria()
         {
             // Arrange

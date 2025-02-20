@@ -92,28 +92,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
         }
 
         [Theory]
-        [InlineData("2023-01-01", "NAP_DW_ELK_LeagueGroup_Select")]
-        public void GetLeagueGroupId_WhenCalled_ReturnsExpectedData(string betDateString, string expectedSettingKey)
-        {
-            //// Arrange
-            //var betDate = DateTime.Parse(betDateString);
-            //var expectedLeagueGroups = fixture.CreateMany<LeagueGroupEntity>();
-            //var criteria = fixture.Create<GetLeagueGroupCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.Query<LeagueGroupEntity>(Arg.Do<GetLeagueGroupCriteria>(x => criteria = x)).Returns(expectedLeagueGroups);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = elkDataAccess.GetLeagueGroupId(betDate);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedLeagueGroups, actual);
-            //Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Theory]
         [InlineData(1, "Task_PrepareStaging_BetMessageELKDaily1")]
         [InlineData(2, "Task_PrepareStaging_BetMessageELKDaily2")]
         public void PrepareStagingForBetMessageDaily_WhenCalled_ExecutesWithCorrectCriteria(int runningCounter, string expectedSettingKey)

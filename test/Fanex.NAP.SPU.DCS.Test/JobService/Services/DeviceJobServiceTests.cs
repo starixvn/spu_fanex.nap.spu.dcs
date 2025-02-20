@@ -162,22 +162,23 @@
         [Fact]
         public async Task DeviceEvolution_WhenBatchSizeIsGreaterThanZero_ShouldCallGetFPDeviceEvolutionAsyncAndInsertFPDeviceEvolutionAsync()
         {
-            //// Arrange
-            //var deviceJobService = GetService();
-            //int batchSize = 1;
-            //var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
-            //var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
-            //var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
+            // Arrange
+            var deviceJobService = GetService();
+            int batchSize = 1;
+            string deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
+            var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+            var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+            var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
 
-            //deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
 
-            //// Act
-            //var result = await deviceJobService.DeviceEvolution(batchSize, isExtra);
+            // Act
+            var result = await deviceJobService.DeviceEvolution(batchSize, isExtra);
 
-            //// Assert
-            //await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize, isExtra);
-            //await deviceService.Received(1).InsertFPDeviceEvolutionAsync("value", isExtra);
-            //Assert.True(result);
+            // Assert
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize, isExtra);
+            await deviceService.Received(1).InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isExtra);
+            Assert.True(result);
         }
 
         [Fact]
@@ -201,6 +202,25 @@
             var deviceJobService = GetService();
             deviceService.When(x => x.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()))
                          .Do(x => { throw new Exception("Test exception"); });
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+
+            // Assert
+            await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "Test exception"));
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task DeviceEvolution_WhenFindMatchingCandidateExceptionIsThrown_ShouldLogErrorAndReturnFalse()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+            var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>();
+            var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>();
+            var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
+
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
 
             // Act
             var result = await deviceJobService.DeviceEvolution(1, isExtra);

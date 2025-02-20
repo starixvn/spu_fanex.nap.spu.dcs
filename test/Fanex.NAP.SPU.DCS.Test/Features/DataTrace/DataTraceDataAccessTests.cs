@@ -363,25 +363,6 @@
         }
 
         [Fact]
-        public async Task GetSystemSettingParameterByID_WhenCalled_ReturnsExactData()
-        {
-            /*//// Arrange
-            //var parameterID = fixture.Create<int>();
-            //var expectedValue = fixture.Create<string>();
-            //var criteria = new GetSystemSettingParameterByIDCriteria { ParameterID = parameterID };
-            //var db = Substitute.For<IDatabase>();
-            //db.QueryEntityAsync<string>(criteria).Returns(expectedValue);
-            //ObjectDbFactory.CreateInstance(criteria.GetSettingKey()).Returns(db);
-
-            //// Act
-            //var actual = await dataTraceDataAccess.GetSystemSettingParameterByID(parameterID);
-
-            //// Assert
-            //Assert.Equal(expectedValue, actual);
-            //await db.Received(1).QueryEntityAsync<string>(criteria);*/
-        }
-
-        [Fact]
         public async Task CookDataLoginTransaction_WhenCall_ReturnExactData()
         {
             // Arrange

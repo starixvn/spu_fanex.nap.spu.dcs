@@ -22,28 +22,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBDevice
         }
 
         [Fact]
-        public void GetMBTransaction_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //int limitTotalRecord = 10;
-            //int numberOfBatch = 2;
-            //var expectedTransactions = fixture.CreateMany<MBTransactionEntity>();
-            //var criteria = fixture.Create<GetMBTransactionCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.Query<MBTransactionEntity>(Arg.Any<GetMBTransactionCriteria>()).Returns(expectedTransactions);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = mbDeviceDataAccess.GetMBTransaction(limitTotalRecord, numberOfBatch);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedTransactions, actual);
-            //Assert.Equal("DCS_DC_Transform_MBTransaction_GetPackage", settingKey);
-        }
-
-        [Fact]
         public void InsertDevice_WhenCalled_ExecutesWithCorrectCriteria()
         {
             // Arrange

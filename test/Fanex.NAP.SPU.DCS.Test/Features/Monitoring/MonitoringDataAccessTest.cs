@@ -23,31 +23,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
         }
 
         [Fact]
-        public void GetSumTransaction_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var expectedSumTransaction = fixture.Create<SumTransactionModel>();
-            //var criteria = new GetSumTransactionCriteria();
-
-            //var db = Substitute.For<IObjectDb>();
-            //db.QueryMultiple(Arg.Any<GetSumTransactionCriteria>()).Returns(expectedSumTransaction);
-
-            //ObjectDbFactory.CreateInstance(criteria.GetSettingKey()).Returns(db);
-
-            //// Act
-            //var actual = monitoringDataAccess.GetSumTransaction();
-
-            //// Assert
-            //Assert.Equal(expectedSumTransaction.SumSubscriberList, actual.SumSubscriberList);
-            //Assert.Equal(expectedSumTransaction.SumDeviceTypeList, actual.SumDeviceTypeList);
-            //Assert.Equal(expectedSumTransaction.AccountIPList, actual.AccountIPList);
-            //Assert.Equal(expectedSumTransaction.AccountDeviceList, actual.AccountDeviceList);
-            //Assert.Equal(expectedSumTransaction.MaxTransID, actual.MaxTransID);
-            //Assert.Equal(expectedSumTransaction.DateScan, actual.DateScan);
-            //Assert.Equal(expectedSumTransaction.AccountID, actual.AccountID);
-        }
-
-        [Fact]
         public void UpdateSumRawTransaction_WhenCalled_ExecutesWithCorrectCriteria()
         {
             // Arrange
@@ -71,53 +46,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
                 c.AccountIPJson == accountIPJson &&
                 c.AccountDeviceJson == accountDeviceJson &&
                 c.GetSettingKey() == "DCS_DC_SumTransaction_Update"));
-        }
-
-        [Fact]
-        public void GetNotificationTransaction_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var expectedNotifyTransaction = fixture.Create<NotifyTransactionModel>();
-            //var criteria = fixture.Create<GetNotificationTransactionCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.QueryMultiple(Arg.Any<GetNotificationTransactionCriteria>()).Returns(new QueryMultipleResultMock(expectedNotifyTransaction));
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = monitoringDataAccess.GetNotificationTransaction();
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedNotifyTransaction, actual);
-            //Assert.Equal("DCS_DC_Notification_Transaction", settingKey);
-        }
-
-        [Fact]
-        public void GetMainCustByDate_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var rptDate = fixture.Create<DateTime>();
-            //var minCustID = fixture.Create<int>();
-            //var batchSize = fixture.Create<int>();
-            //var expectedCustModels = fixture.CreateMany<CustModel>();
-            //var criteria = new GetMainCustByDateCriteria
-            //{
-            //    RptDate = rptDate,
-            //    MinCustID = minCustID,
-            //    BatchSize = batchSize
-            //};
-
-            //var db = Substitute.For<IObjectDb>();
-            //db.Query<CustModel>(criteria).Returns(expectedCustModels);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = monitoringDataAccess.GetMainCustByDate(rptDate, minCustID, batchSize);
-
-            //// Assert
-            //Assert.Equal(expectedCustModels, actual);
-            //db.Received(1).Query<CustModel>(criteria);
         }
 
         [Fact]
@@ -158,49 +86,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
             var settingKey = criteria.GetSettingKey();
             Assert.Equal<uint>(0, result);
             Assert.Equal(expectedSettingKey, settingKey);
-        }
-
-        [Fact]
-        public void GetNotifyMessageById_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var notifyMessageID = fixture.Create<uint>();
-            //var expectedNotifyMessage = fixture.Create<NotifyMessageModel>();
-            //var criteria = fixture.Create<GetNotifyMessageByIDCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.QueryEntity<NotifyMessageModel>(Arg.Any<GetNotifyMessageByIDCriteria>()).Returns(expectedNotifyMessage);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = monitoringDataAccess.GetNotifyMessageById(notifyMessageID);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedNotifyMessage, actual);
-            //Assert.Equal("DCS_DC_NotifyMessage_GetByID", settingKey);
-        }
-
-        [Fact]
-        public void GetNotifyMessage_WhenCalled_ReturnsExpectedData()
-        {
-            //// Arrange
-            //var notifyType = fixture.Create<string>();
-            //var batchSize = fixture.Create<int>();
-            //var expectedNotifyMessages = fixture.CreateMany<NotifyMessageModel>();
-            //var criteria = fixture.Create<GetNotifyMessageByNotifyTypeCriteria>();
-
-            //var db = Substitute.For<IDatabase>();
-            //db.Query<NotifyMessageModel>(Arg.Any<GetNotifyMessageByNotifyTypeCriteria>()).Returns(expectedNotifyMessages);
-            //ObjectDbFactory.CreateInstance(Arg.Any<string>()).Returns(db);
-
-            //// Act
-            //var actual = monitoringDataAccess.GetNotifyMessage(notifyType, batchSize);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //Assert.Equal(expectedNotifyMessages, actual);
-            //Assert.Equal("DCS_DC_NotifyMessage_GetByNotifyType", settingKey);
         }
 
         [Fact]
