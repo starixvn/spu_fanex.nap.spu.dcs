@@ -16,6 +16,13 @@
 
     public class UserAgentDataAccess : IUserAgentDataAccess
     {
+        private readonly IDynamicRepository repository;
+
+        public UserAgentDataAccess(IDynamicRepository repository)
+        {
+            this.repository = repository ?? new DynamicRepository();
+        }
+
         public IEnumerable<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
         {
             var criteria = new GetUserAgentCriteria
@@ -32,8 +39,6 @@
 
         public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
         {
-            var repository = new DynamicRepository();
-
             var criteria = new UpdateUserAgentCriteria
             {
                 UserAgentJson = userAgentJson,

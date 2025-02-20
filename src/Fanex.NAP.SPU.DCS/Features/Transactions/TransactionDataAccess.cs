@@ -18,9 +18,9 @@
     {
         private readonly IDynamicRepository repository;
 
-        public TransactionDataAccess()
+        public TransactionDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)

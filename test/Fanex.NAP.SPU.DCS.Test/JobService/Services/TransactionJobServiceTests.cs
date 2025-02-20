@@ -44,7 +44,7 @@
         }
 
         [Fact]
-        public async Task Execute_WhenThrowException_ShouldReturnTrueAndCallExactFunction()
+        public async Task Execute_WhenThrowException_ShouldReturnFalseAndLogError()
         {
             // Arrange
             var rawTrans = fixture.CreateMany<RawTransactionEntity>();
@@ -52,7 +52,7 @@
 
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
-            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(rawTrans);
+            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Throws(new Exception("Test exception"));
 
             // Act
             var result = await service.Execute(1, 1, true);
@@ -62,7 +62,7 @@
             transactionService.DidNotReceiveWithAnyArgs().UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
             transactionService.DidNotReceiveWithAnyArgs().TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
 
-            await logService.Received().ErrorAsync(Arg.Any<Exception>());
+            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
         }
 
         public TransactionJobService GetService()

@@ -5,6 +5,7 @@
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
     using NSubstitute;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -51,18 +52,77 @@
         }
 
         [Fact]
-        public async Task TransformDeviceInsertAsync_WhenCall_ReturnExactData()
+        public async Task GetFPDeviceEvolutionAsync_WhenBatchSizeIsGreaterThanZero_ReturnsExactData()
         {
-            //// Arrange
-            //var stagingTransIds = fixture.CreateMany<StagingTransId>();
-            //var expected = fixture.CreateMany<IdentityDevice>();
-            //deviceDataAcess.TransformDeviceInsertAsync(Arg.Any<string>(), isExtra).Returns(expected);
+            // Arrange
+            var expectedDeviceEvolutions = (fixture.CreateMany<DeviceEvolutionEntity>(), fixture.CreateMany<DeviceEvolutionEntity>());
+            deviceDataAcess.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(expectedDeviceEvolutions);
 
-            //// Act
-            //var actual = await deviceServices.TransformDeviceInsertAsync(stagingTransIds, isExtra);
+            // Act
+            var actual = await deviceServices.GetFPDeviceEvolutionAsync(1, isExtra);
 
-            //// Assert
-            //Assert.Equal(expected, actual);
+            // Assert
+            Assert.Equal(expectedDeviceEvolutions, actual);
+            await deviceDataAcess.Received(1).GetFPDeviceEvolutionAsync(1, isExtra);
+        }
+
+        [Fact]
+        public async Task GetFPDeviceEvolutionAsync_WhenBatchSizeIsZero_ReturnsEmptyData()
+        {
+            // Arrange
+            var expectedEmptyDeviceEvolutionList = new List<DeviceEvolutionEntity>();
+            var expectedEmptyAdditionalDeviceEvolutionList = new List<DeviceEvolutionEntity>();
+
+            // Act
+            var (actualDeviceEvolutionList, actualAdditionalDeviceEvolutionList) = await deviceServices.GetFPDeviceEvolutionAsync(0, isExtra);
+
+            // Assert
+            Assert.Equal(expectedEmptyDeviceEvolutionList, actualDeviceEvolutionList);
+            Assert.Equal(expectedEmptyAdditionalDeviceEvolutionList, actualAdditionalDeviceEvolutionList);
+            await deviceDataAcess.DidNotReceive().GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async Task InsertFPDeviceEvolutionAsync_WhenCalled_ShouldCallExactFunction()
+        {
+            // Arrange
+            string deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
+            bool isTransformExtra = true;
+
+            // Act
+            await deviceServices.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isTransformExtra);
+
+            // Assert
+            await deviceDataAcess.Received(1).InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isTransformExtra);
+        }
+
+        [Fact]
+        public async Task TransformDeviceInsertAsync_WhenCalled_ShouldCallExactFunction()
+        {
+            // Arrange
+            var stagingTransIds = fixture.CreateMany<StagingTransId>();
+            bool isReadyDbExtra = true;
+            string transIDs = string.Join(",", stagingTransIds.Select(t => t.TransId.ToString()));
+
+            // Act
+            await deviceServices.TransformDeviceInsertAsync(stagingTransIds, isReadyDbExtra);
+
+            // Assert
+            await deviceDataAcess.Received(1).TransformDeviceInsertAsync(transIDs, isReadyDbExtra);
+        }
+
+        [Fact]
+        public async Task InsertFPDeviceMappingAsync_WhenCalled_ShouldCallExactFunction()
+        {
+            // Arrange
+            int batchSize = 10;
+            bool isTransformExtra = true;
+
+            // Act
+            await deviceServices.InsertFPDeviceMappingAsync(batchSize, isTransformExtra);
+
+            // Assert
+            await deviceDataAcess.Received(1).InsertFPDeviceMappingAsync(batchSize, isTransformExtra);
         }
 
     }

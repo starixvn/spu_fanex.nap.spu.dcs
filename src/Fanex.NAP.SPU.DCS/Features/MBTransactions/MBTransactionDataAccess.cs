@@ -17,9 +17,9 @@ namespace Fanex.NAP.SPU.DCS.Features.MBTransactions
     {
         private readonly IDynamicRepository repository;
 
-        public MBTransactionDataAccess()
+        public MBTransactionDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public IEnumerable<MBRawTransactionEntity> GetMBRawTransaction(int numberOfTrans, int numberOfBatch)

@@ -16,9 +16,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData
     {
         private readonly IDynamicRepository repository;
 
-        public ArchiveDataDataAccess()
+        public ArchiveDataDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public void UpdateModifiedDate(int batchSize, bool isTransformExtra)

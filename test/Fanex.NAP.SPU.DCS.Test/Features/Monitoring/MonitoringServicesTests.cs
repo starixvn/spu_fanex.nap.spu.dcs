@@ -138,5 +138,20 @@
             // Assert
             Assert.Equal(1, actual);
         }
+
+        [Fact]
+        public void GetSumTransaction_WhenCalled_ReturnsExpectedData()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var expectedSumTransaction = fixture.Create<SumTransactionModel>();
+            monitoringDataAccess.GetSumTransaction().Returns(expectedSumTransaction);
+
+            // Act
+            var actual = monitoringServices.GetSumTransaction();
+
+            // Assert
+            Assert.Equal(expectedSumTransaction, actual);
+        }
     }
 }

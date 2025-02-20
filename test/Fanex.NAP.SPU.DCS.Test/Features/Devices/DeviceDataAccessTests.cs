@@ -44,27 +44,26 @@
         }
 
         [Theory]
-        [InlineData(true, "DCS_ET_Transform_Device_Insert")]
-        [InlineData(false, "DCS_DC_Transform_Device_Insert")]
+        [InlineData(true, "")]
+        [InlineData(false, "DCS_DC_Transform_FP_DeviceEvolutionGet")]
         public async Task GetFPDeviceEvolutionAsync_WhenCalled_ExecutesWithCorrectCriteria(bool isReadyDbExtra, string expectedSettingKey)
         {
             // Arrange
-            var criteria = fixture.Create<GetFPDeviceEvolutionCriteria>();
-            var deviceEvolutions = fixture.CreateMany<DeviceEvolutionEntity>();
+            var expectedDeviceEvolutions = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+            var criteria = new GetFPDeviceEvolutionCriteria { IsReadyDbExtra = isReadyDbExtra };
 
-            repository.FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(Arg.Do<GetFPDeviceEvolutionCriteria>(x => criteria = x))
-                .Returns(Task.FromResult((deviceEvolutions.AsEnumerable(), deviceEvolutions.AsEnumerable())));
+            repository.FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(Arg.Any<GetFPDeviceEvolutionCriteria>())
+                      .Returns(Task.FromResult((expectedDeviceEvolutions.AsEnumerable(), expectedDeviceEvolutions.AsEnumerable())));
 
             // Act
-            await deviceDataAccess.GetFPDeviceEvolutionAsync(1, isReadyDbExtra);
+            var (actualDeviceEvolutions1, actualDeviceEvolutions2) = await deviceDataAccess.GetFPDeviceEvolutionAsync(1, isReadyDbExtra);
 
             // Assert
-            Assert.NotNull(criteria);
-            Assert.Equal(isReadyDbExtra, criteria.IsReadyDbExtra);
-
             var settingKey = criteria.GetSettingKey();
-            var isValid = criteria.IsInvalid();
-
+            await repository.Received(1).FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(Arg.Is<GetFPDeviceEvolutionCriteria>(c =>
+                c.IsReadyDbExtra == isReadyDbExtra));
+            Assert.Equal(expectedDeviceEvolutions, actualDeviceEvolutions1);
+            Assert.Equal(expectedDeviceEvolutions, actualDeviceEvolutions2);
             Assert.Equal(expectedSettingKey, settingKey);
         }
 

@@ -15,23 +15,21 @@
         private IAbnormalTransactionServices abnormalTransactionServices;
         private IAppSettings appSettings;
 
-        //[Fact]
-        //public async Task PushAbnormalTransaction_SizeGreaterThanZero_ReturnsResultFromServices()
-        //{
-        //    // Arrange
-        //    var service = GetService();
+        [Fact]
+        public async Task PushAbnormalTransaction_SizeGreaterThanZero_ReturnsResultFromServices()
+        {
+            // Arrange
+            var service = GetService();
+            int size = 5;
+            abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>(), Arg.Any<bool>()).Returns(true);
 
-        //    int size = 5;
+            // Act
+            var result = await service.PushAbnormalTransaction(size);
 
-        //    abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>()).Returns(true);
-
-        //    // Act
-        //    var result = await service.PushAbnormalTransaction(size);
-
-        //    // Assert
-        //    Assert.True(result);
-        //    await abnormalTransactionServices.Received(1).PushAbnormalTransaction(size, Arg.Any<string>());
-        //}
+            // Assert
+            Assert.True(result);
+            await abnormalTransactionServices.Received(1).PushAbnormalTransaction(size, Arg.Any<string>(), Arg.Any<bool>());
+        }
 
         [Fact]
         public async Task PushAbnormalTransaction_SizeZero_CapturesMessageAndReturnsFalse()
@@ -47,23 +45,22 @@
             await logService.Received().InfoMessageAsync(Arg.Any<string>());
         }
 
-        //[Fact]
-        //public async Task PushAbnormalTransaction_ExceptionThrown_CapturesExceptionAndReturnsFalse()
-        //{
-        //    // Arrange
-        //    var service = GetService();
+        [Fact]
+        public async Task PushAbnormalTransaction_ExceptionThrown_CapturesExceptionAndReturnsFalse()
+        {
+            // Arrange
+            var service = GetService();
+            int size = 5;
+            var exception = new Exception("Simulated exception");
+            abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>(), Arg.Any<bool>()).Throws(exception);
 
-        //    int size = 5;
+            // Act
+            var result = await service.PushAbnormalTransaction(size);
 
-        //    abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>()).Throws(new Exception("Simulated exception"));
-
-        //    // Act
-        //    var result = await service.PushAbnormalTransaction(size);
-
-        //    // Assert
-        //    Assert.False(result);
-        //    await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
-        //}
+            // Assert
+            Assert.False(result);
+            await logService.Received(1).ErrorAsync(exception);
+        }
 
         private AbnormalTransactionJobService GetService()
         {

@@ -187,6 +187,21 @@
             await logService.Received().ErrorMessageAsync(Arg.Any<string>());
         }
 
+        [Fact]
+        public async Task TestSentryCaptureMessage_WhenCalled_LogsInfoMessage()
+        {
+            // Arrange
+            var message = fixture.Create<string>();
+            var service = GetService();
+
+            // Act
+            var result = await service.TestSentryCaptureMessage(message);
+
+            // Assert
+            await logService.Received(1).InfoMessageAsync(message);
+            Assert.True(result);
+        }
+
         public NotifyTransactionJobService GetService()
         {
 

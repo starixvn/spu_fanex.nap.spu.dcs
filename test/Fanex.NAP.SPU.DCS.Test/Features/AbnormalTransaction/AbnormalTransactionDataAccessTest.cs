@@ -1,16 +1,10 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
 {
-    using System.Threading.Tasks;
     using AutoFixture;
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Criteria;
-    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Entities;
-    using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction.Model;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace;
-    using Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria;
     using NSubstitute;
     using Xunit;
 
@@ -31,7 +25,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         {
             //// Arrange
             //var size = fixture.Create<int>();
-            //var expectedTransactions = fixture.CreateMany<AbnormalTransactionEntity>();
+            //var expectedTransactions = fixture.CreateMany<AbnormalTransactionEntity>().ToList();
             //var expectedRangeID = new RangeIDModel { MinID = 0, MaxID = 0 };
 
             //var criteria = new AbnormalTransactionGetCriteria
@@ -58,31 +52,23 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         [Fact]
         public void UpdateAbnormalTransactions_WhenCalled_ExecutesCorrectly()
         {
-            //// Arrange
-            //var transJson = fixture.Create<string>();
-            //var minId = fixture.Create<ulong>();
-            //var maxId = fixture.Create<ulong>();
-            //var criteria = new AbnormalTransactionUpdateCriteria
-            //{
-            //    TransJson = transJson,
-            //    MinID = minId,
-            //    MaxID = maxId
-            //};
-            //var expectedSettingKey = "DCS_DT_AbnormalTransaction_Update";
+            // Arrange
+            var transJson = fixture.Create<string>();
+            var minId = fixture.Create<ulong>();
+            var maxId = fixture.Create<ulong>();
+            var criteria = new AbnormalTransactionUpdateCriteria
+            {
+                TransJson = transJson,
+                MinID = minId,
+                MaxID = maxId
+            };
 
-            //repository.Execute(Arg.Is<AbnormalTransactionUpdateCriteria>(x =>
-            //    x.TransJson == transJson && x.MinID == minId && x.MaxID == maxId));
+            // Act
+            abnormalTransactionDataAccess.UpdateAbnormalTransactions(transJson, minId, maxId);
 
-            //// Act
-            //abnormalTransactionDataAccess.UpdateAbnormalTransactions(transJson, minId, maxId);
-
-            //// Assert
-            //var settingKey = criteria.GetSettingKey();
-            //var isValid = criteria.IsInvalid();  // Optional: check if the criteria is valid, if necessary.
-
-            //Assert.Equal(expectedSettingKey, settingKey);
-            //repository.Received(1).Execute(Arg.Is<AbnormalTransactionUpdateCriteria>(x =>
-            //    x.TransJson == transJson && x.MinID == minId && x.MaxID == maxId)); // Ensure Execute is called once with the expected criteria
+            // Assert
+            repository.Received(1).Execute(Arg.Is<AbnormalTransactionUpdateCriteria>(x =>
+                x.TransJson == transJson && x.MinID == minId && x.MaxID == maxId));
         }
     }
 }

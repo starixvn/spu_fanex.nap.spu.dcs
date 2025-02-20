@@ -12,6 +12,7 @@
     using System.Collections.Generic;
     using Fanex.NAP.SPU.DCS.Shares.Models;
     using NSubstitute.ExceptionExtensions;
+    using UAParser.FormFactor.Models;
 
     public class UserAgentJobServiceTests
     {
@@ -61,6 +62,23 @@
             await logService.Received().ErrorAsync(Arg.Any<Exception>());
             userAgentService.DidNotReceiveWithAnyArgs().TransformUserAgent(Arg.Any<List<UserAgentEntity>>());
             userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>(), Arg.Any<bool>());
+        }
+
+        [Fact]
+        public void ConvertUserAgent_WhenCalled_ReturnsExpectedData()
+        {
+            // Arrange
+            var userAgent = fixture.Create<string>();
+            var expectedClientInfo = fixture.Create<ClientInfo>();
+            var service = GetService();
+
+            userAgentService.ConvertUserAgent(userAgent).Returns(expectedClientInfo);
+
+            // Act
+            var actual = service.ConvertUserAgent(userAgent);
+
+            // Assert
+            Assert.Equal(expectedClientInfo, actual);
         }
 
 
