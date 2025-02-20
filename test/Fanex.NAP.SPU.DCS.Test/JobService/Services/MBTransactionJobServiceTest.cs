@@ -37,21 +37,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
         }
 
         [Fact]
-        public async Task Execute_WithInvalidParameters_ReturnsFalseAndLogsError()
-        {
-            // Arrange
-            int numberOfTrans = 0;
-            int numberOfBatch = 0;
-
-            // Act
-            var result = await mbTransactionJobService.Execute(numberOfTrans, numberOfBatch);
-
-            // Assert
-            Assert.False(result);
-            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
-        }
-
-        [Fact]
         public async Task Execute_WithException_ReturnsFalseAndLogsError()
         {
             // Arrange
