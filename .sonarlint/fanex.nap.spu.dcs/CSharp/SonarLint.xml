@@ -19,7 +19,7 @@
     </Setting>
 	<Setting>
 	  <Key>sonar.exclusions</Key>
-	  <Value>**/Program.cs,**/Startup.cs,**/Controllers/**</Value>
+	  <Value>**/Program.cs;**/Startup.cs;**/Controllers/**</Value>
 	</Setting>
   </Settings>
   <Rules>

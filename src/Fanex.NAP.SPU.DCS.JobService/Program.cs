@@ -5,7 +5,6 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using Microsoft.Extensions.Hosting;
     using System.Diagnostics.CodeAnalysis;
 
-    [ExcludeFromCodeCoverage]
     public static class Program
     {
         public static void Main(string[] args)
