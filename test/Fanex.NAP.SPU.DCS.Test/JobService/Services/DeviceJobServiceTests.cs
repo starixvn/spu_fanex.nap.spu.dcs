@@ -165,6 +165,7 @@
             // Arrange
             var deviceJobService = GetService();
             int batchSize = 1;
+            string deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
             var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
             var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
             var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
@@ -176,6 +177,7 @@
 
             // Assert
             await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize, isExtra);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isExtra);
             Assert.False(result);
         }
 

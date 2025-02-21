@@ -39,5 +39,19 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             Assert.True(result);
             await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
+
+        [Fact]
+        public async Task Execute_WithValidDates_ReturnsTrue()
+        {
+            // Arrange
+            var startTime = DateTime.Now.AddDays(-1);
+            var endTime = DateTime.Now;
+
+            // Act
+            var result = await elkJobService.Execute(startTime, endTime);
+
+            // Assert
+            Assert.True(result);
+        }
     }
 }
