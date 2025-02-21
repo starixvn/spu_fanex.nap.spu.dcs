@@ -19,6 +19,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using System.Net.Http;
     using System.Threading;
 
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)

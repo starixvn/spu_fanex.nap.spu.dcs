@@ -13,8 +13,8 @@
     using Fanex.NAP.SPU.DCS.Features.Transactions;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Microsoft.Extensions.DependencyInjection;
-    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public static class InitService
     {
         public static void RegisterService(this IServiceCollection services)
