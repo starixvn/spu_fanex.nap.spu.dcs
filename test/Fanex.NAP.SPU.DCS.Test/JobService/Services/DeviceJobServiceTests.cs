@@ -160,7 +160,7 @@
         }
 
         [Fact]
-        public async Task DeviceEvolution_WhenBatchSizeIsGreaterThanZero_ShouldCallGetFPDeviceEvolutionAsyncAndInsertFPDeviceEvolutionAsync()
+        public async Task DeviceEvolution_WhenBatchSizeIsGreaterThanZero_ShouldCallGetFPDeviceEvolutionAsyncOnly()
         {
             // Arrange
             var deviceJobService = GetService();

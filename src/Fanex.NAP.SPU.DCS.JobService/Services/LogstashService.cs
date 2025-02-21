@@ -2,7 +2,6 @@
 using System.Text;
 using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
-using Fanex.NAP.SPU.Notification.Services;
 using Newtonsoft.Json;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
