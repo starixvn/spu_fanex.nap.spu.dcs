@@ -39,11 +39,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly IDataTraceServices dataTraceServices;
         private readonly ILogService logService;
         private readonly ILogstashService logstashService;
+        private readonly IAppSettings appSettings;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, ILogstashService logstashService)
+        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, IAppSettings appSettings, ILogstashService logstashService)
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
+            this.appSettings = appSettings;
             this.logstashService = logstashService;
         }
 
