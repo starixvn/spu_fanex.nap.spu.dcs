@@ -1,8 +1,11 @@
 ﻿using Fanex.Data.Repository;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Fanex.NAP.SPU.DCS.Features.ELK.Criteria
 {
+
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public class GetLeagueGroupCriteria : NonQueryCommand
     {
         public DateTime BetDate { get; set; }

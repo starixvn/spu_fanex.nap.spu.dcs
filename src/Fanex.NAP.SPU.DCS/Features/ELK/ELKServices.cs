@@ -1,6 +1,7 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.ELK.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Fanex.NAP.SPU.DCS.Features.ELK
 {
@@ -15,6 +16,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ELK
         void PrepareStagingForBetMessageDaily(DateTime betDate, string sport, string siteType, int leagueGroupId, string bettingMessageCount, int runningCounter);
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public class ELKServices : IELKServices
     {
         private readonly IELKDataAccess elkDataAccess;
