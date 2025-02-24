@@ -308,20 +308,15 @@
             try
             {
                 counter = 0;
-                foreach (var value in values)
+                foreach (var value in values.Where(v => !v.Source.Equals(v.Destination)))
                 {
-                    if (!value.Source.Equals(value.Destination))
-                    {
-                        if (!ProcessValuePair(value, ref counter))
-                        {
-                            return false;
-                        }
+                    var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
 
-                        if (counter > maxChangesRule5)
-                        {
-                            return false;
-                        }
-                    }
+                    if (!ratioResult) return false;
+
+                    counter++;
+
+                    if (counter > maxChangesRule5) return false;
                 }
             }
             catch (Exception ex)
@@ -330,19 +325,6 @@
                 return false;
             }
 
-            return true;
-        }
-
-        private bool ProcessValuePair(ValuePair value, ref int counter)
-        {
-            var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
-
-            if (!ratioResult)
-            {
-                return false;
-            }
-
-            counter++;
             return true;
         }
 
@@ -390,10 +372,31 @@
             return true;
         }
 
-        struct ValuePair
+        public struct ValuePair : IEquatable<ValuePair>
         {
             public object Source;
             public object Destination;
+
+            public bool Equals(ValuePair other)
+            {
+                return Equals(Source, other.Source) && Equals(Destination, other.Destination);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is ValuePair other)
+                {
+                    return Equals(other);
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                int sourceHash = Source?.GetHashCode() ?? 0;
+                int destHash = Destination?.GetHashCode() ?? 0;
+                return HashCode.Combine(sourceHash, destHash);
+            }
         }
 
         #endregion "Evolution"

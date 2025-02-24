@@ -88,11 +88,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                var tasks = Enum.GetValues(typeof(SportType))
-                       .Cast<SportType>()
-                       .Select(sport => ProcessSiteTypesForSport(startTime, endTime, sport));
-
-                await Task.WhenAll(tasks);
+                foreach (SportType sport in Enum.GetValues(typeof(SportType)))
+                {
+                    await ProcessSiteTypesForSport(startTime, endTime, sport);
+                }
             }
             catch (Exception ex)
             {
@@ -154,13 +153,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private async Task ProcessLeagueGroup(DateTime startTime, DateTime endTime, LeagueGroupModel leagueGroup)
         {
-            foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-            {
-                if (leagueGroup.SportType.Equals(sport))
-                {
-                    await ProcessSiteTypes(startTime, endTime, leagueGroup, sport);
-                }
-            }
+            var tasks = Enum.GetValues(typeof(SportType))
+                            .Cast<SportType>()
+                            .Where(sport => leagueGroup.SportType.Equals(sport))
+                            .Select(sport => ProcessSiteTypes(startTime, endTime, leagueGroup, sport));
+
+            await Task.WhenAll(tasks);
         }
 
         private async Task ProcessSiteTypes(DateTime startTime, DateTime endTime, LeagueGroupModel leagueGroup, SportType sport)

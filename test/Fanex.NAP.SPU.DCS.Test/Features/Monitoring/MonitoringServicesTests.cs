@@ -90,6 +90,7 @@
         {
             // Arrange
             uint expectd = 1;
+
             monitoringDataAccess.InsertNotifyMonitorTransaction(Arg.Any<DateTime>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>()).Returns(expectd);
 
             // Act

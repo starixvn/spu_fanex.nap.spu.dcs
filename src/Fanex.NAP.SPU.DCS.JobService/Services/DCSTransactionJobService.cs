@@ -1,7 +1,6 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
-    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
