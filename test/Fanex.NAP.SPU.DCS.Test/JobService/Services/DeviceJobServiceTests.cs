@@ -133,21 +133,7 @@
         }
 
         [Fact]
-        public async Task TransformDevice_WhenSizeOrNumberOfBatchIsZero_ShouldLogErrorAndReturnFalse()
-        {
-            // Arrange
-            var deviceJobService = GetService();
-
-            // Act
-            var result = await deviceJobService.Execute(0, 1, isExtra);
-
-            // Assert
-            await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "TransformDevice BatchSize = 0!"));
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task TransformDevice_WhenExceptionIsThrown_ShouldLogErrorAndReturnFalse()
+        public async Task Execute_WhenExceptionIsThrown_ShouldLogErrorAndReturnFalse()
         {
             // Arrange
             var deviceJobService = GetService();

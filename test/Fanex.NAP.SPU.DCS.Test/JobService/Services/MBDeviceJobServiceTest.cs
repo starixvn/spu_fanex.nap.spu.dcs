@@ -2,8 +2,10 @@
 namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.MBDevice;
+    using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using NSubstitute;
     using Xunit;
@@ -67,6 +69,19 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             // Assert
             Assert.False(result);
             await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
+        }
+
+        [Fact]
+        public async Task MBTransformDevice_NullTransactionList_ReturnsWithoutProcessing()
+        {
+            // Arrange
+            deviceService.GetMBTransaction(100, 2).Returns((List<MBTransactionEntity>)null);
+
+            // Act
+            await mbDeviceJobService.Execute(100, 2);
+
+            // Assert
+            deviceService.DidNotReceive().TransformDeviceInsert(Arg.Any<string>());
         }
     }
 }
