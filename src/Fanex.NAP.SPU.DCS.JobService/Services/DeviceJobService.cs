@@ -304,7 +304,7 @@
                  || Array.TrueForAll(arrDestination, element => arrSrc.Contains(element));
         }
 
-        private async Task<(bool, int)> CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, int counter)
+        private async Task<(bool, int)> CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, int initialCounter)
         {
             var values = new List<ValuePair>
             {
@@ -317,9 +317,10 @@
                 new() { Source = source.Headers, Destination = destination.Headers }
             };
 
+            int counter = initialCounter;
+
             try
             {
-                counter = 0;
                 foreach (var value in values.Where(v => !v.Source.Equals(v.Destination)))
                 {
                     var ratioResult = await  CheckRatio(value.Source.ToString(), value.Destination.ToString());
