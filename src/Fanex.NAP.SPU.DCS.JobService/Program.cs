@@ -5,9 +5,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using Microsoft.Extensions.Hosting;
     using System.Diagnostics.CodeAnalysis;
 
-    // The Program class is excluded from code coverage because it contains boilerplate code
-    // for setting up and running the ASP.NET Core application, which is not typically unit tested.
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public static class Program
     {
         public static void Main(string[] args)

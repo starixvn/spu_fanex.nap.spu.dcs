@@ -19,7 +19,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             var utcNow = DateTimeOffset.UtcNow;
             var lastMonth = utcNow.AddMonths(-1);
 
-            return await elkJobService.Execute(new DateTimeOffset(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero));
+            var startTime = new DateTimeOffset(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0, TimeSpan.Zero);
+            var endTime = new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero);
+
+            return await elkJobService.Execute(startTime, endTime);
         }
 
         [HttpPost("bettingmessagecountmanual")]

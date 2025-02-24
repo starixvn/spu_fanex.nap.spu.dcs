@@ -312,14 +312,16 @@
                 {
                     if (!value.Source.Equals(value.Destination))
                     {
-                        var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
+                        if (!ProcessValuePair(value, ref counter))
+                        {
+                            return false;
+                        }
 
-                        if (!ratioResult) return false;
-
-                        counter++;
+                        if (counter > maxChangesRule5)
+                        {
+                            return false;
+                        }
                     }
-
-                    if (counter > maxChangesRule5) return false;
                 }
             }
             catch (Exception ex)
@@ -328,6 +330,19 @@
                 return false;
             }
 
+            return true;
+        }
+
+        private bool ProcessValuePair(ValuePair value, ref int counter)
+        {
+            var ratioResult = CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
+
+            if (!ratioResult)
+            {
+                return false;
+            }
+
+            counter++;
             return true;
         }
 
@@ -375,41 +390,10 @@
             return true;
         }
 
-        struct ValuePair : IEquatable<ValuePair>
+        struct ValuePair
         {
             public object Source;
             public object Destination;
-
-            public bool Equals(ValuePair other)
-            {
-                return Equals(Source, other.Source) && Equals(Destination, other.Destination);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is ValuePair other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 23 + (Source?.GetHashCode() ?? 0);
-                    hash = hash * 23 + (Destination?.GetHashCode() ?? 0);
-                    return hash;
-                }
-            }
-
-            public static bool operator ==(ValuePair left, ValuePair right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(ValuePair left, ValuePair right)
-            {
-                return !(left == right);
-            }
         }
 
         #endregion "Evolution"

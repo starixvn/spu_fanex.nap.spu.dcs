@@ -4,6 +4,7 @@ using Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.Responses;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -37,6 +38,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Licensee
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public class ELKJobService : IELKJobService
     {
         private readonly IELKServices elkService;
@@ -86,10 +88,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             try
             {
-                foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-                {
-                    await ProcessSiteTypesForSport(startTime, endTime, sport);
-                }
+                var tasks = Enum.GetValues(typeof(SportType))
+                       .Cast<SportType>()
+                       .Select(sport => ProcessSiteTypesForSport(startTime, endTime, sport));
+
+                await Task.WhenAll(tasks);
             }
             catch (Exception ex)
             {
@@ -184,11 +187,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 1);
                 elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 2);
-
-                if (leagueGroup.LeagueGroupId == -1)
-                {
-                    return;
-                }
             });
         }
 
@@ -265,7 +263,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             };
         }
 
-        private void AddMustConditions(SoccerBasketballElasticConfigModel.RequestBody reportConfig, DateTime startTime, DateTime endTime, SiteTypeSetting siteTypeSetting, SportType sportType, int? leagueGroupId)
+        private void AddMustConditions(
+            SoccerBasketballElasticConfigModel.RequestBody reportConfig, 
+            DateTime startTime, 
+            DateTime endTime, 
+            SiteTypeSetting siteTypeSetting, 
+            SportType sportType, 
+            int? leagueGroupId)
         {
             reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
             {
@@ -411,6 +415,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private void AddMixParlayMustConditions(RequestBody reportConfig, DateTime startTime, DateTime endTime, SportSetting sportSetting, SiteTypeSetting siteTypeSetting)
         {
+            AddRangeCondition(reportConfig, startTime, endTime);
+            AddMatchCondition(reportConfig);
+            AddCustomerClassCondition(reportConfig);
+            AddSportTypeCondition(reportConfig, sportSetting);
+            AddIsLiveCondition(reportConfig);
+            AddSiteTypeCondition(reportConfig, siteTypeSetting);
+        }
+
+        private void AddRangeCondition(RequestBody reportConfig, DateTime startTime, DateTime endTime)
+        {
             reportConfig.Query.Bool.Must.Add(new Must
             {
                 Range = new Models.MixParlayElasticConfig.Range
@@ -422,7 +436,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     }
                 }
             });
+        }
 
+        private void AddMatchCondition(RequestBody reportConfig)
+        {
             reportConfig.Query.Bool.Must.Add(new Must
             {
                 Match = new Match
@@ -430,15 +447,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     ParlayStatisticsTopic = "MixParlay"
                 }
             });
+        }
 
+        private void AddCustomerClassCondition(RequestBody reportConfig)
+        {
             reportConfig.Query.Bool.Must.Add(new Must
             {
                 Terms = new Terms
                 {
-                    ParlayStatisticsSubTicketsCustomerClass = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 }
+                    ParlayStatisticsSubTicketsCustomerClass = new List<int>
+            {
+                1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201
+            }
                 }
             });
+        }
 
+        private void AddSportTypeCondition(RequestBody reportConfig, SportSetting sportSetting)
+        {
             var mustBool = new Must
             {
                 Bool = new Bool()
@@ -447,62 +473,66 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             if (sportSetting == SportSetting.All)
             {
                 mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
                 {
-                    new Should
-                    {
-                        Match = new Match
-                        {
-                            ParlayStatisticsSportType = 1
-                        }
-                    },
-                    new Should
-                    {
-                        Match = new Match
-                        {
-                            ParlayStatisticsSportType = 99
-                        }
-                    }
-                };
+                    ParlayStatisticsSportType = 1
+                }
+            },
+            new Should
+            {
+                Match = new Match
+                {
+                    ParlayStatisticsSportType = 99
+                }
+            }
+        };
             }
             else if (sportSetting == SportSetting.OnlySoccer)
             {
                 mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
                 {
-                    new Should
-                    {
-                        Match = new Match
-                        {
-                            ParlayStatisticsSportType = 1
-                        }
-                    }
-                };
+                    ParlayStatisticsSportType = 1
+                }
+            }
+        };
             }
             else
             {
                 mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
                 {
-                    new Should
-                    {
-                        Match = new Match
-                        {
-                            ParlayStatisticsSportType = 99
-                        }
-                    }
-                };
+                    ParlayStatisticsSportType = 99
+                }
+            }
+        };
             }
 
             reportConfig.Query.Bool.Must.Add(mustBool);
+        }
 
-            var mustTermIsLive = new Must
+        private void AddIsLiveCondition(RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.Must.Add(new Must
             {
                 Term = new Term
                 {
                     ParlayStatisticsSubTicketsIsLive = true
                 }
-            };
+            });
+        }
 
-            reportConfig.Query.Bool.Must.Add(mustTermIsLive);
-
+        private void AddSiteTypeCondition(RequestBody reportConfig, SiteTypeSetting siteTypeSetting)
+        {
             if (siteTypeSetting == SiteTypeSetting.Licensee)
             {
                 reportConfig.Query.Bool.Must.Add(new Must

@@ -8,90 +8,107 @@
     [Route("api/dcsjob")]
     public class DCSJobController : ControllerBase
     {
-        private readonly DCSJobService jobServices;
+        private readonly DCSTransactionJobService transactionJobServices;
+        private readonly IUserAgentJobService userAgentJobService;
+        private readonly IDeviceJobService deviceJobService;
+        private readonly IArchiveJobServices archiveJobService;
+        private readonly ISystemSettingServices systemSettingServices;
+        private readonly IMBDeviceJobService mbDeviceJobService;
 
-        public DCSJobController(DCSJobService jobServices)
+
+        public DCSJobController(
+            DCSTransactionJobService transactionJobServices,
+            IUserAgentJobService userAgentJobService,
+            IDeviceJobService deviceJobService,
+            IArchiveJobServices archiveJobService,
+            ISystemSettingServices systemSettingServices,
+            IMBDeviceJobService mbDeviceJobService)
         {
-            this.jobServices = jobServices;
+            this.transactionJobServices = transactionJobServices;
+            this.userAgentJobService = userAgentJobService;
+            this.deviceJobService = deviceJobService;
+            this.archiveJobService = archiveJobService;
+            this.systemSettingServices = systemSettingServices;
+            this.mbDeviceJobService = mbDeviceJobService;
         }
 
         [HttpPost("useragent")]
         public async Task<bool> UserAgent([FromForm] int size)
         {
-            return await jobServices.UserAgentJobService.Execute(size, false);
+            return await userAgentJobService.Execute(size, false);
         }
 
         [HttpGet("ConvertUserAgent")]
         public ClientInfo ConvertUserAgent(string userAgent)
         {
-            return jobServices.UserAgentJobService.ConvertUserAgent(userAgent);
+            return userAgentJobService.ConvertUserAgent(userAgent);
         }
 
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await jobServices.TransactionJobService.Execute(size, numberOfBatch, false);
+            return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false);
         }
 
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await jobServices.DeviceJobService.Execute(size, numberOfBatch, false);
+            return await deviceJobService.Execute(size, numberOfBatch, false);
         }
 
         [HttpPost("deviceevolution")]
         public async Task<bool> DeviceEvolution([FromForm] int batchSize)
         {
-            return await jobServices.DeviceJobService.DeviceEvolution(batchSize, false);
+            return await deviceJobService.DeviceEvolution(batchSize, false);
         }
 
         [HttpPost("sumtransaction")]
         public async Task<bool> SumTransaction()
         {
-            return await jobServices.SumTransactionJobService.Execute();
+            return await transactionJobServices.SumTransactionJobService.Execute();
         }
 
         [HttpPost("pushabnormaltransaction")]
         public async Task<bool> PushAbnormalTransaction([FromForm] int size)
         {
-            return await jobServices.AbnormalTransactionJobService.PushAbnormalTransaction(size);
+            return await transactionJobServices.AbnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
         [HttpPost("updatemodifieddate")]
         public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
         {
-            return await jobServices.ArchiveJobServices.Execute(batchSize, false);
+            return await archiveJobService.Execute(batchSize, false);
         }
 
         [HttpPost("updatedcsystemsettingbyid")]
         public async Task<bool> UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
         {
-            return await jobServices.SystemSettingServices.UpdateDCSystemSettingByID(id, value);
+            return await systemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
-            return await jobServices.ArchiveJobServices.DeleteBotComponent(retentionDays, false);
+            return await archiveJobService.DeleteBotComponent(retentionDays, false);
         }
 
         #region Mobile app
         [HttpPost("mbtransformtransaction")]
         public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
-            return await jobServices.MBTransactionJobService.Execute(batchSize, numberOfBatch);
+            return await transactionJobServices.MBTransactionJobService.Execute(batchSize, numberOfBatch);
         }
 
         [HttpPost("mbtransformdevice")]
         public async Task<bool> MBTransformDevice([FromForm] int limitTotalRecord, [FromForm] int numberOfBatch)
         {
-            return await jobServices.MBDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
+            return await mbDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
         }
 
         [HttpPost("mbupdatelastaccesseddate")]
         public async Task<bool> UpdateMBLastAccessedDate([FromForm] int batchSize)
         {
-            return await jobServices.ArchiveJobServices.UpdateMBLastAccessedDate(batchSize);
+            return await archiveJobService.UpdateMBLastAccessedDate(batchSize);
         }
         #endregion
     }
