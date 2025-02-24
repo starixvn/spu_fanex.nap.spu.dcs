@@ -76,7 +76,7 @@
 
                 if (dataEvolution != null && dataEvolution.Any())
                 {
-                    var listInsert = CreateDeviceEvolutionList(dataEvolution, dataEvolutionAttribute);
+                    var listInsert = await CreateDeviceEvolutionList(dataEvolution, dataEvolutionAttribute);
                     if (listInsert.Any())
                     {
                         var deviceEvolutionJson = JsonSerializer.Serialize(listInsert);
@@ -93,7 +93,7 @@
             return await Task.FromResult(true);
         }
 
-        private List<InsertDeviceEvolutionEntity> CreateDeviceEvolutionList(IEnumerable<DeviceEvolutionEntity> dataEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
+        private async Task<List<InsertDeviceEvolutionEntity>> CreateDeviceEvolutionList(IEnumerable<DeviceEvolutionEntity> dataEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
         {
             var listInsert = new List<InsertDeviceEvolutionEntity>();
             var listCandidate = new List<DeviceEvolutionEntity>();
@@ -103,12 +103,12 @@
                 var itemEntity = new InsertDeviceEvolutionEntity
                 {
                     FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID,
-                    EvolveByID = FindMatchingCandidate(itemEvolution, listCandidate)
+                    EvolveByID = await FindMatchingCandidate(itemEvolution, listCandidate)
                 };
 
                 if (itemEntity.EvolveByID == 0 && !string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
                 {
-                    itemEntity.EvolveByID = FindMatchingReference(itemEvolution, dataEvolutionAttribute);
+                    itemEntity.EvolveByID = await FindMatchingReference(itemEvolution, dataEvolutionAttribute);
                 }
 
                 listInsert.Add(itemEntity);
@@ -118,19 +118,25 @@
             return listInsert;
         }
 
-        private ulong FindMatchingCandidate(DeviceEvolutionEntity itemEvolution, List<DeviceEvolutionEntity> listCandidate)
+        private async Task<ulong> FindMatchingCandidate(DeviceEvolutionEntity itemEvolution, List<DeviceEvolutionEntity> listCandidate)
         {
             var filteredByAccount = listCandidate
-                                    .Where(candidate => candidate.AccountID == itemEvolution.AccountID)
-                                    .OrderByDescending(candidate => candidate.FPDeviceFingerprintAccountID)
-                                    .ToList();
+                .Where(candidate => candidate.AccountID == itemEvolution.AccountID)
+                .OrderByDescending(candidate => candidate.FPDeviceFingerprintAccountID)
+                .ToList();
 
-            var resultCandidate = filteredByAccount.Find(destination => CompareRules(itemEvolution, destination));
+            foreach (var destination in filteredByAccount)
+            {
+                if (await CompareRules(itemEvolution, destination))
+                {
+                    return destination.FPDeviceFingerprintAccountID;
+                }
+            }
 
-            return resultCandidate?.FPDeviceFingerprintAccountID ?? 0;
+            return 0;
         }
 
-        private ulong FindMatchingReference(DeviceEvolutionEntity itemEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
+        private async Task<ulong> FindMatchingReference(DeviceEvolutionEntity itemEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
         {
             var refIds = itemEvolution.FPDeviceFingerprintAccountIDRef
                                     .Split(',')
@@ -138,12 +144,18 @@
                                     .ToList();
 
             var matchingRecords = dataEvolutionAttribute
-                                .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
-                                .ToList();
+            .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
+            .ToList();
 
-            var result = matchingRecords.Find(destination => CompareRules(itemEvolution, destination));
+            foreach (var destination in matchingRecords)
+            {
+                if (await CompareRules(itemEvolution, destination))
+                {
+                    return destination.FPDeviceFingerprintAccountID;
+                }
+            }
 
-            return result?.FPDeviceFingerprintAccountID ?? 0;
+            return 0;
         }
 
         private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
@@ -186,7 +198,7 @@
 
 #pragma warning disable S121 // Add curly braces around the nested statement(s) in this 'if' block.
 #pragma warning disable S122 // Reformat the code to have only one statement per line.
-        private bool CompareRules(DeviceEvolutionEntity source, DeviceEvolutionEntity destination)
+        private async Task<bool> CompareRules(DeviceEvolutionEntity source, DeviceEvolutionEntity destination)
         {
             // Rule 2
             if (!CheckVersion(source.BrowserVersion, destination.BrowserVersion)) return false;
@@ -199,7 +211,8 @@
 
             // Rule 5
             int allowChangeWithSimCounter = 0;
-            if (!CheckAllowChangesWithSimilar(source, destination, ref allowChangeWithSimCounter)) return false;
+            (var result, allowChangeWithSimCounter) = await CheckAllowChangesWithSimilar(source, destination, allowChangeWithSimCounter);   
+            if (!result) return false;
 
             // Rule 6
             int allowChangeCounter = 0;
@@ -291,7 +304,7 @@
                  || Array.TrueForAll(arrDestination, element => arrSrc.Contains(element));
         }
 
-        private bool CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, ref int counter)
+        private async Task<(bool, int)> CheckAllowChangesWithSimilar(DeviceEvolutionEntity source, DeviceEvolutionEntity destination, int counter)
         {
             var values = new List<ValuePair>
             {
@@ -309,22 +322,22 @@
                 counter = 0;
                 foreach (var value in values.Where(v => !v.Source.Equals(v.Destination)))
                 {
-                    var ratioResult =  CheckRatio(value.Source.ToString(), value.Destination.ToString()).Result;
+                    var ratioResult = await  CheckRatio(value.Source.ToString(), value.Destination.ToString());
 
-                    if (!ratioResult) return false;
+                    if (!ratioResult) return (false, counter);
 
                     counter++;
 
-                    if (counter > maxChangesRule5) return false;
+                    if (counter > maxChangesRule5) return (false, counter);
                 }
             }
             catch (Exception ex)
             {
-                logService.ErrorAsync(ex);
-                return false;
+                await logService.ErrorAsync(ex);
+                return (false, counter);
             }
 
-            return true;
+            return (true, counter);
         }
 
         private async Task<bool> CheckRatio(string source, string destination)
@@ -371,12 +384,14 @@
             return true;
         }
 
-        struct ValuePair 
+        struct ValuePair : IEquatable<ValuePair>
         {
             public object Source;
             public object Destination;
+
+            public bool Equals(ValuePair other) => Equals(Source, other.Source) && Equals(Destination, other.Destination);
         }
 
-        #endregion "Evolution"
-    }
+            #endregion "Evolution"
+        }
 }
