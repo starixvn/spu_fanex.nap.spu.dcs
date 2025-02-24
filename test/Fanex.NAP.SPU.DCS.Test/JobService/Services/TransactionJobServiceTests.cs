@@ -24,7 +24,10 @@
         {
             // Arrange
             var rawTrans = fixture.CreateMany<RawTransactionEntity>();
+
             var service = GetService();
+
+            var appSettings = Substitute.For<IAppSettings>();
 
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
@@ -50,6 +53,8 @@
             var rawTrans = fixture.CreateMany<RawTransactionEntity>();
             var service = GetService();
 
+            var appSettings = Substitute.For<IAppSettings>();
+
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
             transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Throws(new Exception("Test exception"));
@@ -70,9 +75,8 @@
 
             logService = Substitute.For<ILogService>();
             transactionService = Substitute.For<ITransactionServices>();
-            appSettings = Substitute.For<IAppSettings>();
 
-            return new TransactionJobService(logService, transactionService, appSettings);
+            return new TransactionJobService(logService, transactionService);
         }
     }
 }
