@@ -21,14 +21,18 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         public async Task PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
         {
             if (!appSettings.IsEnableLogstash)
+            {
                 return;
+            }
 
             using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
             using var stream = client.GetStream();
             foreach (var transaction in transactions)
             {
-                if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLower()))
+                if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLowerInvariant()))
+                {
                     continue;
+                }
 
                 var logMessage = TransformLogMessage(transaction);
 
@@ -41,7 +45,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         private LogstashModel TransformLogMessage(TransactionLogstashModel transaction)
         {
-            transaction.SubscriberName = transaction.SubscriberName.ToLower();
+            transaction.SubscriberName = transaction.SubscriberName.ToLowerInvariant();
 
             var logMessage = new LogstashModel
             {

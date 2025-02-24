@@ -8,6 +8,7 @@
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
     using Fanex.NAP.SPU.DCS.JobService;
     using Fanex.NAP.SPU.DCS.JobService.Services;
+    using Fanex.NAP.SPU.Notification.Services;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
     using Xunit;
@@ -16,7 +17,6 @@
     {
         private IDataTraceServices dataTraceServices;
         private ILogService logService;
-        private IAppSettings appSettings;
         private ILogstashService logstashService;
         private readonly DataTraceJobService service;
         private readonly IFixture fixture;
@@ -25,11 +25,10 @@
         {
             dataTraceServices = Substitute.For<IDataTraceServices>();
             logService = Substitute.For<ILogService>();
-            appSettings = Substitute.For<IAppSettings>();
             logstashService = Substitute.For<ILogstashService>();
             fixture = new Fixture();
 
-            service = new DataTraceJobService(dataTraceServices, logService, appSettings, logstashService);
+            service = new DataTraceJobService(dataTraceServices, logService, logstashService);
         }
 
         [Fact]
@@ -292,9 +291,14 @@
         public async Task SendTransactionToLogstash_SuccessfulExecution_ShouldCallExactFunctionAndReturnTrue()
         {
             // Arrange
+            var appSettings = Substitute.For<IAppSettings>();
+
             var transactionLogs = fixture.Create<IEnumerable<TransactionLogstashModel>>();
+
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
+
             appSettings.IsEnableLogstash.Returns(true);
+
             logstashService.PushLogAsync(transactionLogs).Returns(Task.CompletedTask);
 
             // Act
@@ -324,7 +328,9 @@
         {
             // Arrange
             var transDate = fixture.Create<DateTime>();
+
             var expectedCount = fixture.Create<int>();
+
             dataTraceServices.CountDWBetTransactionByDate(transDate).Returns(expectedCount);
 
             // Act
@@ -340,6 +346,7 @@
         {
             // Arrange
             var transDate = fixture.Create<DateTime>();
+
             dataTraceServices.CountDWBetTransactionByDate(transDate).Throws(new Exception("Test exception"));
 
             // Act

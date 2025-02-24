@@ -25,7 +25,9 @@
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
+                {
                     await MBTransformTransaction(numberOfTrans, numberOfBatch);
+                }
 
                 return true;
             }

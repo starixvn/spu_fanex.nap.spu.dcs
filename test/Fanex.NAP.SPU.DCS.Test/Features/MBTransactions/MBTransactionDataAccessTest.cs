@@ -25,7 +25,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBTransactions
         {
             // Arrange
             var fromID = fixture.Create<ulong>();
+
             var toID = fixture.Create<ulong>();
+
             var criteria = fixture.Create<InsertMBTransactionCriteria>();
 
             // Act

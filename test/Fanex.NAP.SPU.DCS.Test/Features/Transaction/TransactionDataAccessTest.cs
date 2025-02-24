@@ -25,8 +25,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         {
             // Arrange
             var fromId = fixture.Create<long>();
+
             var toId = fixture.Create<long>();
+
             bool isReadyDbExtra = true;
+
             var criteria = fixture.Create<InsertTransactionCriteria>();
 
             // Act
@@ -47,8 +50,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         {
             // Arrange
             var fromId = fixture.Create<long>();
+
             var toId = fixture.Create<long>();
+
             bool isReadyDbExtra = true;
+
             var criteria = fixture.Create<InsertUserAgentCriteria>();
 
             // Act

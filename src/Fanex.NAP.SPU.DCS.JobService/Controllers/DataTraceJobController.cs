@@ -71,7 +71,7 @@
             var data = await dataTraceJobService.GetReportMissingTransaction(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,CountCustWithoutTrans,CountCustMissingTrans";
+            const string keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,CountCustWithoutTrans,CountCustMissingTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)
@@ -100,7 +100,7 @@
             var data = await dataTraceJobService.GetReportLoginTransactionBySubscriber(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            const string keyName = "TransDate,SubscriberID,SubscriberName,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)
@@ -130,7 +130,7 @@
             var data = await dataTraceJobService.GetReportLoginTransactionBySite(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,SubscriberID,SubscriberName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            const string keyName = "TransDate,SubscriberID,SubscriberName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)
@@ -163,7 +163,7 @@
             var data = await dataTraceJobService.GetReportLoginTransactionByAccount(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,SubscriberID,SubscriberName,AccountID,CustID,LoginName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
+            const string keyName = "TransDate,SubscriberID,SubscriberName,AccountID,CustID,LoginName,Site,PaymentType,LicenseeType,TotalTrans,TotalInvalidBrowers,TotalBotTrans,TotalNoDeviceTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)
@@ -199,7 +199,7 @@
             var data = await dataTraceJobService.GetReportLoginTransactionByBrowser(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,BrowserID,BrowserName,OSID,OSName,DeviceTypeID,DeviceType,TotalTrans,TotalInvalidBrowers,TotalBotTrans";
+            const string keyName = "TransDate,BrowserID,BrowserName,OSID,OSName,DeviceTypeID,DeviceType,TotalTrans,TotalInvalidBrowers,TotalBotTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)
@@ -232,7 +232,7 @@
             var data = await dataTraceJobService.GetReportLoginTransactionByFlagged(fromDate, toDate);
 
             var builder = new StringBuilder();
-            var keyName = "TransDate,Flagged,FlaggedName,TotalTrans";
+            const string keyName = "TransDate,Flagged,FlaggedName,TotalTrans";
             builder.AppendLine(keyName);
 
             foreach (var item in data)

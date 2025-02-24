@@ -27,10 +27,15 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
         {
             // Arrange
             var sumTrans = fixture.Create<SumTransactionModel>();
+
             var sumSubsJson = fixture.Create<string>();
+
             var sumDeviceTypeJson = fixture.Create<string>();
+
             var accountIPJson = fixture.Create<string>();
+
             var accountDeviceJson = fixture.Create<string>();
+
             var criteria = fixture.Create<UpdateSumTransactionCriteria>();
 
             // Act
@@ -53,7 +58,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
         {
             // Arrange
             var rptDate = fixture.Create<DateTime>();
+
             var transJson = fixture.Create<string>();
+
             var criteria = fixture.Create<InsertMonitorTransactionCriteria>();
 
             // Act
@@ -71,10 +78,15 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
         {
             // Arrange
             var rptDate = fixture.Create<DateTime>();
+
             var notifyType = fixture.Create<string>();
+
             var groupId = fixture.Create<string>();
+
             var limitShowCust = fixture.Create<int>();
+
             var criteria = fixture.Create<InsertNotifyMonitorTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DC_NotifyMessage_InsertMonitorTransaction";
 
             repository.Execute(Arg.Any<InsertNotifyMonitorTransactionCriteria>()).Returns(1);
@@ -93,6 +105,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
         {
             // Arrange
             var ids = fixture.Create<string>();
+
             var criteria = fixture.Create<UpdateNotifyMessagesToNotifiedCriteria>();
 
             // Act

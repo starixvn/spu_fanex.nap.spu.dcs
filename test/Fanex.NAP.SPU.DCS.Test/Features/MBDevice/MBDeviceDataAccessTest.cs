@@ -26,6 +26,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBDevice
         {
             // Arrange
             var transactionInfoJson = fixture.Create<string>();
+
             var criteria = fixture.Create<InsertMBDeviceCriteria>();
 
             // Act

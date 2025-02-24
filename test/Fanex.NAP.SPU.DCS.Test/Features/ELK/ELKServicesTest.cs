@@ -25,7 +25,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
         {
             // Arrange
             var betDate = fixture.Create<DateTime>();
+
             var expectedLeagueGroups = fixture.CreateMany<LeagueGroupEntity>();
+
             elkDataAccess.GetLeagueGroupId(betDate).Returns(expectedLeagueGroups);
 
             // Act
@@ -40,9 +42,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
         {
             // Arrange
             var month = fixture.Create<DateTime>();
+
             var sport = fixture.Create<string>();
+
             var siteType = fixture.Create<string>();
+
             var bettingMessageCount = fixture.Create<string>();
+
             var runningCounter = fixture.Create<int>();
 
             // Act
@@ -57,10 +63,15 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
         {
             // Arrange
             var betDate = fixture.Create<DateTime>();
+
             var sport = fixture.Create<string>();
+
             var siteType = fixture.Create<string>();
+
             var leagueGroupId = fixture.Create<int>();
+
             var bettingMessageCount = fixture.Create<string>();
+
             var runningCounter = fixture.Create<int>();
 
             // Act
@@ -75,9 +86,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
         {
             // Arrange
             var month = fixture.Create<DateTime>();
+
             var sport = fixture.Create<string>();
+
             var siteType = fixture.Create<string>();
+
             var bettingMessageCount = fixture.Create<string>();
+
             var runningCounter = fixture.Create<int>();
 
             // Act

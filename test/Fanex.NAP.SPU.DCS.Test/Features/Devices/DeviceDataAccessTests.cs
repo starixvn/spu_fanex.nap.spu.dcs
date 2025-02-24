@@ -30,6 +30,7 @@
         {
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
+
             var criteria = fixture.Create<GetDeviceStagingTransactionPackageCriteria>();
 
             repository.FetchAsync<StagingTransId>(Arg.Do<GetDeviceStagingTransactionPackageCriteria>(x => criteria = x)).Returns(stagingTransIds);
@@ -50,6 +51,7 @@
         {
             // Arrange
             var expectedDeviceEvolutions = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+
             var criteria = new GetFPDeviceEvolutionCriteria { IsReadyDbExtra = isReadyDbExtra };
 
             repository.FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(Arg.Any<GetFPDeviceEvolutionCriteria>())
@@ -60,8 +62,10 @@
 
             // Assert
             var settingKey = criteria.GetSettingKey();
+
             await repository.Received(1).FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(Arg.Is<GetFPDeviceEvolutionCriteria>(c =>
                 c.IsReadyDbExtra == isReadyDbExtra));
+
             Assert.Equal(expectedDeviceEvolutions, actualDeviceEvolutions1);
             Assert.Equal(expectedDeviceEvolutions, actualDeviceEvolutions2);
             Assert.Equal(expectedSettingKey, settingKey);
@@ -124,6 +128,7 @@
         {
             // Arrange
             var deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
+
             var criteria = fixture.Create<InsertFPDeviceEvolutionCriteria>();
 
             repository.ExecuteAsync(Arg.Do<InsertFPDeviceEvolutionCriteria>(x => criteria = x))

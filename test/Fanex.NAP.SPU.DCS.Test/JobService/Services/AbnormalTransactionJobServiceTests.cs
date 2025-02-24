@@ -21,6 +21,7 @@
             // Arrange
             var service = GetService();
             int size = 5;
+
             abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>(), Arg.Any<bool>()).Returns(true);
 
             // Act
@@ -52,6 +53,7 @@
             var service = GetService();
             int size = 5;
             var exception = new Exception("Simulated exception");
+
             abnormalTransactionServices.PushAbnormalTransaction(size, Arg.Any<string>(), Arg.Any<bool>()).Throws(exception);
 
             // Act

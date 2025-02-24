@@ -49,7 +49,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
         {
             // Arrange
             int batchSize = 10;
+
             var criteria = fixture.Create<UpdateMBLastAccessedDateCriteria>();
+
             var expectedSettingKey = "DCS_DC_ArchiveData_MBLastAccessedDate_Update";
 
             repository.Execute(Arg.Do<UpdateMBLastAccessedDateCriteria>(x => criteria = x));
@@ -63,6 +65,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
 
             repository.Received(1).Execute(Arg.Is<UpdateMBLastAccessedDateCriteria>(x =>
                 x.BatchSize == batchSize));
+
             Assert.Equal(expectedSettingKey, settingKey);
         }
 
@@ -86,6 +89,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
 
             repository.Received(1).Execute(Arg.Is<DeleteBotComponentCriteria>(x =>
                 x.RetentionDays == retentionDays && x.IsReadyDbExtra == isTransformExtra));
+
             Assert.Equal(expectedSettingKey, settingKey);
         }
     }

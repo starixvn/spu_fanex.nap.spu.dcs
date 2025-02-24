@@ -25,6 +25,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.UserAgent
         {
             // Arrange
             var userAgentJson = fixture.Create<string>();
+
             bool isReadyDbExtra = true;
 
             repository.Execute(Arg.Any<UpdateUserAgentCriteria>()).Returns(0);

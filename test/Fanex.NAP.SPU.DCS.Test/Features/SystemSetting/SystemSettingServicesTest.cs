@@ -23,6 +23,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
         {
             // Arrange
             var systemSettingID = fixture.Create<int>();
+
             var systemSettingValue = fixture.Create<string>();
 
             // Act

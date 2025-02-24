@@ -1,7 +1,6 @@
 ﻿
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    using System;
     using Fanex.Data.Repository;
     using Fanex.Data;
     public class GetTranPackageCriteria : CriteriaBase

@@ -25,8 +25,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         {
             // Arrange
             var transJson = fixture.Create<string>();
+
             var minId = fixture.Create<ulong>();
+
             var maxId = fixture.Create<ulong>();
+
             var criteria = new AbnormalTransactionUpdateCriteria
             {
                 TransJson = transJson,

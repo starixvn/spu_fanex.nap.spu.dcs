@@ -8,115 +8,90 @@
     [Route("api/dcsjob")]
     public class DCSJobController : ControllerBase
     {
-        private readonly IUserAgentJobService userAgentJobService;
-        private readonly IDeviceJobService deviceJobService;
-        private readonly ITransactionJobService transactionJobService;
-        private readonly ISumTransactionJobService sumTransactionJobService;
-        private readonly IAbnormalTransactionJobService abnormalTransactionJobService;
-        private readonly IArchiveJobServices archiveJobServices;
-        private readonly ISystemSettingServices systemSettingServices;
-        private readonly IMBTransactionJobService mbTransactionJobService;
-        private readonly IMBDeviceJobService mbDeviceJobService;
+        private readonly DCSJobService jobServices;
 
-        public DCSJobController(
-            IUserAgentJobService userAgentJobService,
-            IDeviceJobService deviceJobService,
-            ITransactionJobService transactionJobService,
-            ISumTransactionJobService sumTransactionJobService,
-            IAbnormalTransactionJobService abnormalTransactionJobService,
-            IArchiveJobServices archiveJobServices,
-            ISystemSettingServices systemSettingServices,
-            IMBTransactionJobService mbTransactionJobService,
-            IMBDeviceJobService mbDeviceJobService)
+        public DCSJobController(DCSJobService jobServices)
         {
-            this.userAgentJobService = userAgentJobService;
-            this.deviceJobService = deviceJobService;
-            this.transactionJobService = transactionJobService;
-            this.sumTransactionJobService = sumTransactionJobService;
-            this.abnormalTransactionJobService = abnormalTransactionJobService;
-            this.archiveJobServices = archiveJobServices;
-            this.systemSettingServices = systemSettingServices;
-            this.mbTransactionJobService = mbTransactionJobService;
-            this.mbDeviceJobService = mbDeviceJobService;
+            this.jobServices = jobServices;
         }
 
         [HttpPost("useragent")]
         public async Task<bool> UserAgent([FromForm] int size)
         {
-            return await userAgentJobService.Execute(size, false);
+            return await jobServices.UserAgentJobService.Execute(size, false);
         }
 
         [HttpGet("ConvertUserAgent")]
         public ClientInfo ConvertUserAgent(string userAgent)
         {
-            return userAgentJobService.ConvertUserAgent(userAgent);
+            return jobServices.UserAgentJobService.ConvertUserAgent(userAgent);
         }
 
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await transactionJobService.Execute(size, numberOfBatch, false);
+            return await jobServices.TransactionJobService.Execute(size, numberOfBatch, false);
         }
 
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await deviceJobService.Execute(size, numberOfBatch, false);
+            return await jobServices.DeviceJobService.Execute(size, numberOfBatch, false);
         }
 
         [HttpPost("deviceevolution")]
         public async Task<bool> DeviceEvolution([FromForm] int batchSize)
         {
-            return await deviceJobService.DeviceEvolution(batchSize, false);
+            return await jobServices.DeviceJobService.DeviceEvolution(batchSize, false);
         }
 
         [HttpPost("sumtransaction")]
         public async Task<bool> SumTransaction()
         {
-            return await sumTransactionJobService.Execute();
+            return await jobServices.SumTransactionJobService.Execute();
         }
 
         [HttpPost("pushabnormaltransaction")]
         public async Task<bool> PushAbnormalTransaction([FromForm] int size)
         {
-            return await abnormalTransactionJobService.PushAbnormalTransaction(size);
+            return await jobServices.AbnormalTransactionJobService.PushAbnormalTransaction(size);
         }
 
         [HttpPost("updatemodifieddate")]
         public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
         {
-            return await archiveJobServices.Execute(batchSize, false);
+            return await jobServices.ArchiveJobServices.Execute(batchSize, false);
         }
 
         [HttpPost("updatedcsystemsettingbyid")]
         public async Task<bool> UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
         {
-            return await systemSettingServices.UpdateDCSystemSettingByID(id, value);
+            return await jobServices.SystemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
-            return await archiveJobServices.DeleteBotComponent(retentionDays, false);
+            return await jobServices.ArchiveJobServices.DeleteBotComponent(retentionDays, false);
         }
 
         #region Mobile app
         [HttpPost("mbtransformtransaction")]
         public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
         {
-            return await mbTransactionJobService.Execute(batchSize, numberOfBatch);
+            return await jobServices.MBTransactionJobService.Execute(batchSize, numberOfBatch);
         }
 
         [HttpPost("mbtransformdevice")]
         public async Task<bool> MBTransformDevice([FromForm] int limitTotalRecord, [FromForm] int numberOfBatch)
         {
-            return await mbDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
+            return await jobServices.MBDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
         }
 
         [HttpPost("mbupdatelastaccesseddate")]
         public async Task<bool> UpdateMBLastAccessedDate([FromForm] int batchSize)
         {
-            return await archiveJobServices.UpdateMBLastAccessedDate(batchSize);
+            return await jobServices.ArchiveJobServices.UpdateMBLastAccessedDate(batchSize);
         }
         #endregion
     }

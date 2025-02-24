@@ -32,6 +32,7 @@
             var service = GetService();
 
             userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Returns(userAgents);
+
             userAgentService.TransformUserAgent(userAgents).Returns(transformUserAgent);
 
             // Act

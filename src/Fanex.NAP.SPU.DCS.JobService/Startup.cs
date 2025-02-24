@@ -19,6 +19,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using System.Net.Http;
     using System.Threading;
 
+    // The Startup class is excluded from code coverage because it contains boilerplate code
+    // for setting up and configuring the ASP.NET Core application, which is not typically unit tested.
     [ExcludeFromCodeCoverage]
     public class Startup
     {

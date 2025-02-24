@@ -29,6 +29,7 @@
 
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
+
             deviceDataAcess.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
 
             // Act
@@ -56,6 +57,7 @@
         {
             // Arrange
             var expectedDeviceEvolutions = (fixture.CreateMany<DeviceEvolutionEntity>(), fixture.CreateMany<DeviceEvolutionEntity>());
+
             deviceDataAcess.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(expectedDeviceEvolutions);
 
             // Act
@@ -71,6 +73,7 @@
         {
             // Arrange
             var expectedEmptyDeviceEvolutionList = new List<DeviceEvolutionEntity>();
+
             var expectedEmptyAdditionalDeviceEvolutionList = new List<DeviceEvolutionEntity>();
 
             // Act
@@ -79,6 +82,7 @@
             // Assert
             Assert.Equal(expectedEmptyDeviceEvolutionList, actualDeviceEvolutionList);
             Assert.Equal(expectedEmptyAdditionalDeviceEvolutionList, actualAdditionalDeviceEvolutionList);
+
             await deviceDataAcess.DidNotReceive().GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>());
         }
 
@@ -101,7 +105,9 @@
         {
             // Arrange
             var stagingTransIds = fixture.CreateMany<StagingTransId>();
+
             bool isReadyDbExtra = true;
+
             string transIDs = string.Join(",", stagingTransIds.Select(t => t.TransId.ToString()));
 
             // Act

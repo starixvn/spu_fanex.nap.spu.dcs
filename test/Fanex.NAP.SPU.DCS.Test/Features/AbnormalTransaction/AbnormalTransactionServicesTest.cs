@@ -32,9 +32,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         {
             // Arrange
             var size = fixture.Create<int>();
+
             var abnormalTransactionUrl = fixture.Create<string>();
+
             var ignorePushData = false;
+
             var abnormalTransactions = new List<AbnormalTransactionEntity>();
+
             var rangeID = new RangeIDModel { MinID = 0, MaxID = 1 };
 
             dataAccess.GetAbnormalTransactionsAsync(size).Returns((abnormalTransactions, rangeID));
@@ -52,9 +56,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
         {
             // Arrange
             var size = fixture.Create<int>();
+
             var abnormalTransactionUrl = fixture.Create<string>();
+
             var ignorePushData = true;
+
             var abnormalTransactions = fixture.CreateMany<AbnormalTransactionEntity>().ToList();
+
             var rangeID = new RangeIDModel { MinID = 0, MaxID = 0 };
 
             dataAccess.GetAbnormalTransactionsAsync(size).Returns((abnormalTransactions, rangeID));

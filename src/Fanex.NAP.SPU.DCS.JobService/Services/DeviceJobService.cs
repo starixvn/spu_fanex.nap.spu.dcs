@@ -64,56 +64,58 @@
         {
             try
             {
-                if (batchSize > 0)
-                {
-                    var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
-
-                    var dataEvolution = resultDeviceEvolution.Item1;
-                    var dataEvolutionAttribute = resultDeviceEvolution.Item2;
-
-                    if (dataEvolution != null && dataEvolution.Any())
-                    {
-                        var listInsert = new List<InsertDeviceEvolutionEntity>();
-                        var listCandidate = new List<DeviceEvolutionEntity>();
-                        foreach (var itemEvolution in dataEvolution)
-                        {
-                            var itemEntity = new InsertDeviceEvolutionEntity
-                            {
-                                FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID,
-                                EvolveByID = FindMatchingCandidate(itemEvolution, listCandidate)
-                            };
-
-                            if (itemEntity.EvolveByID == 0 && !string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
-                            {
-                                itemEntity.EvolveByID = FindMatchingReference(itemEvolution, dataEvolutionAttribute);
-                            }
-
-                            listInsert.Add(itemEntity);
-                            listCandidate.Add(itemEvolution);
-                        }
-
-                        if (listInsert.Any())
-                        {
-                            var deviceEvolutionJson = JsonSerializer.Serialize(listInsert);
-                            await deviceService.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isReadyDbExtra);
-                        }
-                    }
-                }
-                else
+                if (batchSize <= 0)
                 {
                     await logService.ErrorAsync(new Exception("DeviceEvolution BatchSize = 0!"));
-
                     return await Task.FromResult(false);
+                }
+
+                var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
+                var dataEvolution = resultDeviceEvolution.Item1;
+                var dataEvolutionAttribute = resultDeviceEvolution.Item2;
+
+                if (dataEvolution != null && dataEvolution.Any())
+                {
+                    var listInsert = CreateDeviceEvolutionList(dataEvolution, dataEvolutionAttribute);
+                    if (listInsert.Any())
+                    {
+                        var deviceEvolutionJson = JsonSerializer.Serialize(listInsert);
+                        await deviceService.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isReadyDbExtra);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
-
                 return await Task.FromResult(false);
             }
 
             return await Task.FromResult(true);
+        }
+
+        private List<InsertDeviceEvolutionEntity> CreateDeviceEvolutionList(IEnumerable<DeviceEvolutionEntity> dataEvolution, IEnumerable<DeviceEvolutionEntity> dataEvolutionAttribute)
+        {
+            var listInsert = new List<InsertDeviceEvolutionEntity>();
+            var listCandidate = new List<DeviceEvolutionEntity>();
+
+            foreach (var itemEvolution in dataEvolution)
+            {
+                var itemEntity = new InsertDeviceEvolutionEntity
+                {
+                    FPDeviceFingerprintAccountID = itemEvolution.FPDeviceFingerprintAccountID,
+                    EvolveByID = FindMatchingCandidate(itemEvolution, listCandidate)
+                };
+
+                if (itemEntity.EvolveByID == 0 && !string.IsNullOrEmpty(itemEvolution.FPDeviceFingerprintAccountIDRef))
+                {
+                    itemEntity.EvolveByID = FindMatchingReference(itemEvolution, dataEvolutionAttribute);
+                }
+
+                listInsert.Add(itemEntity);
+                listCandidate.Add(itemEvolution);
+            }
+
+            return listInsert;
         }
 
         private ulong FindMatchingCandidate(DeviceEvolutionEntity itemEvolution, List<DeviceEvolutionEntity> listCandidate)
@@ -123,7 +125,7 @@
                                     .OrderByDescending(candidate => candidate.FPDeviceFingerprintAccountID)
                                     .ToList();
 
-            var resultCandidate = filteredByAccount.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+            var resultCandidate = filteredByAccount.Find(destination => CompareRules(itemEvolution, destination));
 
             return resultCandidate?.FPDeviceFingerprintAccountID ?? 0;
         }
@@ -139,7 +141,7 @@
                                 .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
                                 .ToList();
 
-            var result = matchingRecords.FirstOrDefault(destination => CompareRules(itemEvolution, destination));
+            var result = matchingRecords.Find(destination => CompareRules(itemEvolution, destination));
 
             return result?.FPDeviceFingerprintAccountID ?? 0;
         }
@@ -231,11 +233,11 @@
             }
             else
             {
-                int dashIndex = version.IndexOf("-");
+                int dashIndex = version.IndexOf("-", StringComparison.Ordinal);
                 if (dashIndex > -1)
                     version = version.Substring(0, dashIndex);
 
-                int parenthesisIndex = version.IndexOf("(");
+                int parenthesisIndex = version.IndexOf("(", StringComparison.Ordinal);
                 if (parenthesisIndex > -1)
                     version = version.Substring(0, parenthesisIndex);
 
@@ -373,10 +375,41 @@
             return true;
         }
 
-        struct ValuePair
+        struct ValuePair : IEquatable<ValuePair>
         {
             public object Source;
             public object Destination;
+
+            public bool Equals(ValuePair other)
+            {
+                return Equals(Source, other.Source) && Equals(Destination, other.Destination);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ValuePair other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 23 + (Source?.GetHashCode() ?? 0);
+                    hash = hash * 23 + (Destination?.GetHashCode() ?? 0);
+                    return hash;
+                }
+            }
+
+            public static bool operator ==(ValuePair left, ValuePair right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(ValuePair left, ValuePair right)
+            {
+                return !(left == right);
+            }
         }
 
         #endregion "Evolution"

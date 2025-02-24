@@ -45,8 +45,11 @@
             var betTransactionInfos = fixture.CreateMany<BetTransactionInfo>();
 
             dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
+
             dataAccess.GetBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactionInfos);
+
             dataAccess.DeleteBetTransactionSummaryByDateAsync(Arg.Any<DateTime>()).Returns(1);
+
             dataAccess.InsertSummaryBetTransactionAsync(Arg.Any<string>()).Returns(1);
 
             // Act
@@ -64,9 +67,13 @@
             var betTransactionInfos = fixture.CreateMany<BetTransactionInfo>();
 
             dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
+
             dataAccess.GetSystemSettingParameterByID(Arg.Any<int>()).Returns(DateTimeOffset.Now.Date.AddDays(-2).ToString("yyyy-MM-dd"));
+
             dataAccess.GetBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactionInfos);
+
             dataAccess.DeleteBetTransactionSummaryByDateAsync(Arg.Any<DateTime>()).Returns(1);
+
             dataAccess.InsertSummaryBetTransactionAsync(Arg.Any<string>()).Returns(1);
 
             // Act
@@ -85,9 +92,11 @@
             var listAccountIDByBatch = fixture.CreateMany<string>();
 
             dataAccess.GetSystemSettingParameterByID(4).Returns(DateTimeOffset.Now.Date.ToString("yyyy-MM-dd"));
+
             dataAccess.GetSystemSettingParameterByID(2).Returns(DateTimeOffset.Now.Date.AddDays(1).ToString("yyyy-MM-dd"));
 
             dataAccess.GetMissingBetTransactionPackageAsync(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(listAccountIDByBatch);
+
             dataAccess.DeleteMissingTransactionByDate(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(1);
 
             // Act
@@ -105,9 +114,11 @@
             // Arrange
 
             dataAccess.GetSystemSettingParameterByID(4).Returns(DateTimeOffset.Now.Date.ToString("yyyy-MM-dd"));
+
             dataAccess.GetSystemSettingParameterByID(2).Returns(DateTimeOffset.Now.Date.AddDays(1).ToString("yyyy-MM-dd"));
 
             dataAccess.GetMissingBetTransactionPackageAsync(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(new List<string>());
+
             dataAccess.DeleteMissingTransactionByDate(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(1);
 
             // Act
@@ -124,9 +135,11 @@
             var missingLoginIDPackages = fixture.CreateMany<RangeIDPackage>();
 
             dataAccess.GetSystemSettingParameterByID(3).Returns(DateTimeOffset.Now.Date.ToString("yyyy-MM-dd"));
+
             dataAccess.GetSystemSettingParameterByID(2).Returns(DateTimeOffset.Now.Date.AddDays(1).ToString("yyyy-MM-dd"));
 
             dataAccess.GetMissingLoginTranPackageAsync(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(missingLoginIDPackages);
+
             dataAccess.DeleteMissingTransactionByDate(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(1);
 
             // Act
@@ -144,9 +157,11 @@
             // Arrange
 
             dataAccess.GetSystemSettingParameterByID(3).Returns(DateTimeOffset.Now.Date.ToString("yyyy-MM-dd"));
+
             dataAccess.GetSystemSettingParameterByID(2).Returns(DateTimeOffset.Now.Date.AddDays(1).ToString("yyyy-MM-dd"));
 
             dataAccess.GetMissingLoginTranPackageAsync(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(new List<RangeIDPackage>());
+
             dataAccess.DeleteMissingTransactionByDate(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(1);
 
             // Act
@@ -173,6 +188,7 @@
         {
             // Arrange
             var reportMissingTransactions = fixture.CreateMany<ReportMissingTransactionModel>();
+
             dataAccess.GetReportMissingTransaction(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportMissingTransactions);
 
             // Act
@@ -188,6 +204,7 @@
         {
             // Arrange
             var reportMissingTransactions = new List<ReportMissingTransactionModel>();
+
             dataAccess.GetReportMissingTransaction(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportMissingTransactions);
 
             // Act
@@ -203,6 +220,7 @@
         {
             // Arrange
             List<ReportMissingTransactionModel> reportMissingTransactions = null;
+
             dataAccess.GetReportMissingTransaction(Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportMissingTransactions);
 
             // Act
@@ -231,7 +249,9 @@
         {
             // Arrange
             var betTransactions = fixture.CreateMany<BetTransactionInfo>();
+
             dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
+
             dataAccess.GetBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactions);
 
             // Act
@@ -246,7 +266,9 @@
         {
             // Arrange
             var betTransactions = new List<BetTransactionInfo>();
+
             dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
+
             dataAccess.GetBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactions);
 
             // Act
@@ -262,7 +284,9 @@
         {
             // Arrange
             List<BetTransactionInfo> betTransactions = null;
+
             dataAccess.IsDailyTaskReadyAsync(Arg.Any<int>()).Returns(true);
+
             dataAccess.GetBetTransactionAsync(Arg.Any<DateTime>()).Returns(betTransactions);
 
             // Act
@@ -294,6 +318,7 @@
         {
             // Arrange
             var expectedTransactions = new List<TransactionLogstashModel>();
+
             dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
 
             // Act
@@ -309,6 +334,7 @@
         {
             // Arrange
             List<TransactionLogstashModel> expectedTransactions = null;
+
             dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
 
             // Act
@@ -324,6 +350,7 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionBySubscriberModel>();
+
             dataAccess.GetReportLoginTransactionBySubscriber(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -339,6 +366,7 @@
         {
             // Arrange
             var expectedData = new List<ReportLoginTransactionBySubscriberModel>();
+
             dataAccess.GetReportLoginTransactionBySubscriber(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -355,6 +383,7 @@
         {
             // Arrange
             List<ReportLoginTransactionBySubscriberModel> expectedData = null;
+
             dataAccess.GetReportLoginTransactionBySubscriber(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -371,6 +400,7 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionBySiteModel>();
+
             dataAccess.GetReportLoginTransactionBySite(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -386,6 +416,7 @@
         {
             // Arrange
             var expectedData = new List<ReportLoginTransactionBySiteModel>();
+
             dataAccess.GetReportLoginTransactionBySite(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -402,6 +433,7 @@
         {
             // Arrange
             List<ReportLoginTransactionBySiteModel> expectedData = null;
+
             dataAccess.GetReportLoginTransactionBySite(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -418,6 +450,7 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByAccountModel>();
+
             dataAccess.GetReportLoginTransactionByAccount(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -433,6 +466,7 @@
         {
             // Arrange
             var expectedData = new List<ReportLoginTransactionByAccountModel>();
+
             dataAccess.GetReportLoginTransactionByAccount(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -449,6 +483,7 @@
         {
             // Arrange
             List<ReportLoginTransactionByAccountModel> expectedData = null;
+
             dataAccess.GetReportLoginTransactionByAccount(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -465,6 +500,7 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByBrowserModel>();
+
             dataAccess.GetReportLoginTransactionByBrowser(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -480,6 +516,7 @@
         {
             // Arrange
             var expectedData = new List<ReportLoginTransactionByBrowserModel>();
+
             dataAccess.GetReportLoginTransactionByBrowser(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -496,6 +533,7 @@
         {
             // Arrange
             List<ReportLoginTransactionByBrowserModel> expectedData = null;
+
             dataAccess.GetReportLoginTransactionByBrowser(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -512,6 +550,7 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByFlaggedModel>();
+
             dataAccess.GetReportLoginTransactionByFlagged(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -527,6 +566,7 @@
         {
             // Arrange
             var expectedData = new List<ReportLoginTransactionByFlaggedModel>();
+
             dataAccess.GetReportLoginTransactionByFlagged(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 
@@ -543,6 +583,7 @@
         {
             // Arrange
             List<ReportLoginTransactionByFlaggedModel> expectedData = null;
+
             dataAccess.GetReportLoginTransactionByFlagged(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                       .Returns(expectedData);
 

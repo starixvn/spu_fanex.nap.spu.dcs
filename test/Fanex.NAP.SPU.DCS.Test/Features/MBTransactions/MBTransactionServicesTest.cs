@@ -24,8 +24,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBTransactions
         {
             // Arrange
             int numberOfTrans = 10;
+
             int numberOfBatch = 2;
+
             var expectedTransactions = fixture.CreateMany<MBRawTransactionEntity>();
+
             transactionDataAccess.GetMBRawTransaction(numberOfTrans, numberOfBatch).Returns(expectedTransactions);
 
             // Act
@@ -40,6 +43,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBTransactions
         {
             // Arrange
             var fromID = fixture.Create<ulong>();
+
             var toID = fixture.Create<ulong>();
 
             // Act

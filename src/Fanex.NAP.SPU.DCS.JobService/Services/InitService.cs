@@ -15,6 +15,8 @@
     using Microsoft.Extensions.DependencyInjection;
     using System.Diagnostics.CodeAnalysis;
 
+    // The InitService class is excluded from code coverage because it contains boilerplate code
+    // for registering services in the dependency injection container, which is not typically unit tested.
     [ExcludeFromCodeCoverage]
     public static class InitService
     {
@@ -34,6 +36,7 @@
             RegisterTransformMBTransaction(services);
             RegisterTransformMBDevice(services);
             RegisterLogstashService(services);
+            RegisterDCSJobService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -127,6 +130,11 @@
         private static void RegisterLogstashService(this IServiceCollection services)
         {
             services.AddSingleton<ILogstashService, LogstashService>();
+        }
+
+        private static void RegisterDCSJobService(this IServiceCollection services)
+        {
+            services.AddSingleton<DCSJobService>();
         }
     }
 }

@@ -27,6 +27,7 @@
         {
             // Arrange
             var criteria = fixture.Create<CheckDailyTaskReadyCriteria>();
+
             var expectedSettingKey = "Acc_CheckDailyTaskReadiness";
 
             repository.GetAsync<bool>(Arg.Do<CheckDailyTaskReadyCriteria>(x => criteria = x)).Returns(true);
@@ -47,7 +48,9 @@
         {
             // Arrange
             var betTransactions = fixture.CreateMany<BetTransactionInfo>();
+
             var criteria = fixture.Create<GetBetTransactionCriteria>();
+
             var expectedSettingKey = "Acc_Rpt_FPS_GetCustBettingInfo";
 
             repository.FetchAsync<BetTransactionInfo>(Arg.Do<GetBetTransactionCriteria>(x => criteria = x)).Returns(betTransactions);
@@ -68,6 +71,7 @@
         {
             // Arrange
             var criteria = fixture.Create<InsertSummaryBetTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_BetTransaction_Insert";
 
             repository.ExecuteAsync(Arg.Do<InsertSummaryBetTransactionCriteria>(x => criteria = x)).Returns(1);
@@ -88,6 +92,7 @@
         {
             // Arrange
             var criteria = fixture.Create<DeleteBetTransactionSummaryByDateCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_BetTransaction_Delete";
 
             repository.ExecuteAsync(Arg.Do<DeleteBetTransactionSummaryByDateCriteria>(x => criteria = x)).Returns(1);
@@ -108,6 +113,7 @@
         {
             // Arrange
             var criteria = fixture.Create<UpdateSystemSettingParameterCriteria>();
+
             var expectedSettingKey = "DCS_DT_SystemSetting_UpdateParameterByID";
 
             repository.ExecuteAsync(Arg.Do<UpdateSystemSettingParameterCriteria>(x => criteria = x)).Returns(1);
@@ -128,7 +134,9 @@
         {
             // Arrange
             var missingBets = fixture.CreateMany<string>();
+
             var criteria = fixture.Create<GetMissingBetTransactionPackageCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_MissingBetTransaction_GetPackage";
 
             repository.FetchAsync<string>(Arg.Do<GetMissingBetTransactionPackageCriteria>(x => criteria = x)).Returns(missingBets);
@@ -149,7 +157,9 @@
         {
             // Arrange
             var rangeIDPackages = fixture.CreateMany<RangeIDPackage>();
+
             var criteria = fixture.Create<GetMissingLoginTransactionPackageCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_MissingLoginTransaction_GetPackage";
 
             repository.FetchAsync<RangeIDPackage>(Arg.Do<GetMissingLoginTransactionPackageCriteria>(x => criteria = x)).Returns(rangeIDPackages);
@@ -170,6 +180,7 @@
         {
             // Arrange
             var criteria = fixture.Create<InsertMissingLoginTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_MissingLoginTransaction_Insert";
 
             repository.ExecuteAsync(Arg.Do<InsertMissingLoginTransactionCriteria>(x => criteria = x)).Returns(1);
@@ -190,6 +201,7 @@
         {
             // Arrange
             var criteria = fixture.Create<DeleteMissingTransactionByDateCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_MemberMissingTransaction_DeleteByDate";
 
             repository.ExecuteAsync(Arg.Do<DeleteMissingTransactionByDateCriteria>(x => criteria = x)).Returns(1);
@@ -210,7 +222,9 @@
         {
             // Arrange
             var reportMissingTransactions = fixture.CreateMany<ReportMissingTransactionModel>();
+
             var criteria = fixture.Create<GetReportMissingTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DT_Report_MissingTransaction_Get";
 
             repository.FetchAsync<ReportMissingTransactionModel>(Arg.Do<GetReportMissingTransactionCriteria>(x => criteria = x)).Returns(reportMissingTransactions);
@@ -231,7 +245,9 @@
         {
             // Arrange
             var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
+
             var criteria = fixture.Create<GetTranPackageCriteria>();
+
             var expectedSettingKey = "DCS_DT_OpenSearch_Transaction_Get";
 
             repository
@@ -252,6 +268,7 @@
         {
             // Arrange
             var criteria = fixture.Create<InsertMissingBetTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_MissingBetTransaction_Insert";
 
             repository.ExecuteAsync(Arg.Do<InsertMissingBetTransactionCriteria>(x => criteria = x)).Returns(1);
@@ -272,7 +289,9 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionBySubscriberModel>();
+
             var criteria = fixture.Create<GetReportLoginTransactionBySubscriberCriteria>();
+
             var expectedKey = "DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange";
 
             repository.FetchAsync<ReportLoginTransactionBySubscriberModel>(Arg.Do<GetReportLoginTransactionBySubscriberCriteria>(x => criteria = x))
@@ -291,7 +310,9 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionBySiteModel>();
+
             var criteria = fixture.Create<GetReportLoginTransactionBySiteCriteria>();
+
             var expectedKey = "DCS_DT_Report_LoginTransactionBySite_GetByDateRange";
 
             repository.FetchAsync<ReportLoginTransactionBySiteModel>(Arg.Do<GetReportLoginTransactionBySiteCriteria>(x => criteria = x))
@@ -310,7 +331,9 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByAccountModel>();
+
             var criteria = fixture.Create<GetReportLoginTransactionByAccountCriteria>();
+
             var expectedKey = "DCS_DT_Report_LoginTransactionByAccount_GetByDateRange";
 
             repository.FetchAsync<ReportLoginTransactionByAccountModel>(Arg.Do<GetReportLoginTransactionByAccountCriteria>(x => criteria = x))
@@ -329,7 +352,9 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByBrowserModel>();
+
             var criteria = fixture.Create<GetReportLoginTransactionByBrowserCriteria>();
+
             var expectedKey = "DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange";
 
             repository.FetchAsync<ReportLoginTransactionByBrowserModel>(Arg.Do<GetReportLoginTransactionByBrowserCriteria>(x => criteria = x))
@@ -348,7 +373,9 @@
         {
             // Arrange
             var expectedData = fixture.CreateMany<ReportLoginTransactionByFlaggedModel>();
+
             var criteria = fixture.Create<GetReportLoginTransactionByFlaggedCriteria>();
+
             var expectedKey = "DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange";
 
             repository.FetchAsync<ReportLoginTransactionByFlaggedModel>(Arg.Do<GetReportLoginTransactionByFlaggedCriteria>(x => criteria = x))
@@ -367,6 +394,7 @@
         {
             // Arrange
             var criteria = fixture.Create<CookDataLoginTransactionCriteria>();
+
             var expectedSettingKey = "DCS_DT_Summary_LoginTransaction_CookData";
 
             repository.ExecuteAsync(Arg.Do<CookDataLoginTransactionCriteria>(x => criteria = x)).Returns(1);

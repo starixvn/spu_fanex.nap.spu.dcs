@@ -110,9 +110,12 @@
         public async Task TransformDevice_WhenSizeAndNumberOfBatchAreGreaterThanZero_ShouldCallInsertFPDeviceMappingAndTransformDevice()
         {
             // Arrange
-            var deviceJobService = GetService();
+            var deviceJobService = GetService(); 
+
             int size = 1;
+
             int numberOfBatch = 1;
+
             var stagingTransIds = GetStagingTrans();
 
             deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
@@ -148,6 +151,7 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             deviceService.When(x => x.InsertFPDeviceMappingAsync(Arg.Any<int>(), Arg.Any<bool>()))
                          .Do(x => { throw new Exception("Test exception"); });
 
@@ -164,10 +168,15 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             int batchSize = 1;
+
             string deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
+
             var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+
             var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+
             var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
 
             deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
@@ -200,6 +209,7 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             deviceService.When(x => x.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()))
                          .Do(x => { throw new Exception("Test exception"); });
 
@@ -216,8 +226,11 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>();
+
             var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>();
+
             var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
 
             deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
@@ -234,6 +247,7 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             var resultDeviceEvolution = (null as IEnumerable<DeviceEvolutionEntity>, fixture.CreateMany<DeviceEvolutionEntity>());
 
             deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
@@ -252,6 +266,7 @@
         {
             // Arrange
             var deviceJobService = GetService();
+
             var resultDeviceEvolution = (Enumerable.Empty<DeviceEvolutionEntity>(), fixture.CreateMany<DeviceEvolutionEntity>());
 
             deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);

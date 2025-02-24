@@ -1,4 +1,5 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.MBDevice;
+using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
@@ -48,37 +49,39 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var transList = deviceService.GetMBTransaction(limitTotalRecord, numberOfBatch);
 
-            if (transList != null && transList.Any())
+            if (transList == null || !transList.Any())
             {
-                var groupByBatchTrans = transList.GroupBy(x => x.BatchID);
+                return;
+            }
 
-                var tasks = new List<Task>();
+            var groupByBatchTrans = transList.GroupBy(x => x.BatchID);
+            var tasks = new List<Task>();
 
-                foreach (var transInfo in groupByBatchTrans)
+            foreach (var transInfo in groupByBatchTrans)
+            {
+                tasks.Add(ProcessTransactionBatch(transInfo));
+                await Task.Delay(delayTime);
+            }
+
+            await Task.WhenAll(tasks.ToArray());
+        }
+
+        private async Task ProcessTransactionBatch(IGrouping<int, MBTransactionEntity> transInfo)
+        {
+            try
+            {
+                if (transInfo == null || !transInfo.Any())
                 {
-                    var task = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            if (transInfo != null && transInfo.Any())
-                            {
-                                var transactionInfoJson = JsonSerializer.Serialize(transInfo);
-                                deviceService.TransformDeviceInsert(transactionInfoJson);
-                            }    
-                        }   
-                        catch (Exception ex)
-                        {
-                            await logService.ErrorAsync(ex);
-                            throw;
-                        }
-                    });
-
-                    await Task.Delay(delayTime);
-
-                    tasks.Add(task);
+                    return;
                 }
 
-                await Task.WhenAll(tasks.ToArray());
+                var transactionInfoJson = JsonSerializer.Serialize(transInfo);
+                deviceService.TransformDeviceInsert(transactionInfoJson);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                throw;
             }
         }
     }

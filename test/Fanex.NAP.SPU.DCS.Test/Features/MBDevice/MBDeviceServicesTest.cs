@@ -24,8 +24,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBDevice
         {
             // Arrange
             int limitTotalRecord = 10;
+
             int numberOfBatch = 2;
+
             var expectedTransactions = fixture.CreateMany<MBTransactionEntity>();
+
             deviceDataAccess.GetMBTransaction(limitTotalRecord, numberOfBatch).Returns(expectedTransactions);
 
             // Act

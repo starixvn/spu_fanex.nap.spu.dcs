@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
     {
         IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
-        void InsertDevice(string transIDs);
+        void InsertDevice(string transactionInfoJson);
     }
 
     public class MBDeviceDataAccess : IMBDeviceDataAccess

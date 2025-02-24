@@ -16,21 +16,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         [HttpPost("bettingmessagecount")]
         public async Task<bool> GetBettingMessageCount()
         {
-            var utcNow = DateTime.UtcNow;
+            var utcNow = DateTimeOffset.UtcNow;
+            var lastMonth = utcNow.AddMonths(-1);
 
-            var lastmonth = utcNow.AddMonths(-1);
+            return await elkJobService.Execute(new DateTimeOffset(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0, TimeSpan.Zero), new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero));
+        }
 
-            return await elkJobService.Execute(new DateTime(lastmonth.Year, lastmonth.Month, 1), new DateTime(utcNow.Year, utcNow.Month, 1));
-            
+        [HttpPost("bettingmessagecountmanual")]
+        public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)
+        {
+            return await elkJobService.Execute(startTime, endTime);
         }
 
         [HttpPost("bettingmessagecountdaily")]
         public async Task<bool> GetBettingMessageCountDaily()
         {
-            var utcNow = DateTime.UtcNow;
+            var utcNow = DateTimeOffset.UtcNow;
 
-            return await elkJobService.Execute(new DateTime(utcNow.Year, utcNow.Month, 1), utcNow);
-
+            return await elkJobService.Execute(new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero), utcNow);
         }
 
         [HttpPost("bettingmessagecountdailymanual")]
@@ -42,7 +45,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         [HttpPost("bettingmessagecountdailyleaguegroup")]
         public async Task<bool> GetBettingMessageCountDailyByLeagueGroup()
         {
-            var utcNow = DateTime.UtcNow;
+            var utcNow = DateTimeOffset.UtcNow;
 
             var yesterday = utcNow.AddDays(-1);
 
@@ -51,7 +54,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             await elkJobService.Execute(beforeYesterday, yesterday, beforeYesterday);
 
             return await elkJobService.Execute(yesterday, utcNow, yesterday);
-
         }
 
         [HttpPost("bettingmessagecountdailyleaguegroupmanual")]
@@ -59,11 +61,5 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         {            
             return await elkJobService.Execute(startTime, endTime, startTime);
       }
-
-        [HttpPost("bettingmessagecountmanual")]
-        public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)
-        {
-            return await elkJobService.Execute(startTime, endTime);
-        }
     }
 }
