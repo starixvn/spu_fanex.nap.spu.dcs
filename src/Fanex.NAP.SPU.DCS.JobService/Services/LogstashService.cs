@@ -1,6 +1,5 @@
 ﻿using System.Net.Sockets;
 using System.Text;
-using Fanex.Logging;
 using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Newtonsoft.Json;
