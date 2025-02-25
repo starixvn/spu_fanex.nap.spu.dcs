@@ -156,30 +156,24 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
 
-                if (transactionLogsTash != null && transactionLogsTash.Any())
+                if (!transactionLogsTash.Any())
+                    return true;
+
+                var processedTransID = await logstashService.PushLogAsync(transactionLogsTash);
+
+                if (processedTransID > 0)
                 {
-                    var processedTransIDs = await logstashService.PushLogAsync(transactionLogsTash);
+                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());
 
-                    if (processedTransIDs.Any())
-                    {
-                        var maxId = processedTransIDs.Max();
-
-                        await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, maxId.ToString());
-
-                        return true;
-                    }
-
-                    return false;
+                    return true;
                 }
-
-                return true;
-
             }
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
-                return false;
             }
+
+            return false;
         }
 
         #region Report

@@ -9,7 +9,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ILogstashService
     {
-        Task<IEnumerable<ulong>> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
+        Task<ulong> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
     }
     public class LogstashService: ILogstashService
     {
@@ -21,12 +21,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.appSettings = appSettings;
             this.logService = logService;
         }
-        public async Task<IEnumerable<ulong>> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
+        public async Task<ulong> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
         {
-            var processedTransIDs = new List<ulong>();
+            ulong processedTransID = 0;
 
             if (!appSettings.IsEnableLogstash)
-                return processedTransIDs;
+                return processedTransID;
 
             try
             {
@@ -43,7 +43,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                     await stream.WriteAsync(data);
 
-                    processedTransIDs.Add(transaction.TransID);
+                    processedTransID = Math.Max(processedTransID, transaction.TransID);
                 }
             }
             catch (Exception ex)
@@ -51,7 +51,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync execute exception message: {ex.Message}");
             }
 
-            return processedTransIDs;
+            return processedTransID;
         }
 
         private LogstashModel TransformLogMessage(TransactionLogstashModel transaction)
