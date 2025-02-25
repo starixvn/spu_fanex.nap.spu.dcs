@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using Fanex.Logging;
 using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
 using Fanex.NAP.SPU.DCS.JobService.Models;
 using Newtonsoft.Json;
@@ -8,39 +9,57 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ILogstashService
     {
-        Task PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
+        Task<IEnumerable<ulong>> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
     }
     public class LogstashService: ILogstashService
     {
         private readonly IAppSettings appSettings;
+        private readonly ILogService logService;
 
-        public LogstashService(IAppSettings appSettings)
+        public LogstashService(IAppSettings appSettings, ILogService logService)
         {
             this.appSettings = appSettings;
+            this.logService = logService;
         }
-        public async Task PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
+        public async Task<IEnumerable<ulong>> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
         {
-            if (!appSettings.IsEnableLogstash)
-            {
-                return;
-            }
+            var processedTransIDs = new List<ulong>();
 
-            using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
-            using var stream = client.GetStream();
-            foreach (var transaction in transactions)
+            if (!appSettings.IsEnableLogstash)
+                return processedTransIDs;
+
+            try
             {
+                using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
+                using var stream = client.GetStream();
+                foreach (var transaction in transactions)
+                {
                 if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLowerInvariant()))
                 {
-                    continue;
+                            continue;
                 }
 
-                var logMessage = TransformLogMessage(transaction);
+                        var logMessage = TransformLogMessage(transaction);
 
-                string jsonLog = JsonConvert.SerializeObject(logMessage);
+                        string jsonLog = JsonConvert.SerializeObject(logMessage);
 
-                byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
-                await stream.WriteAsync(data);
+                        byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
+                        await stream.WriteAsync(data);
+
+                        processedTransIDs.Add(transaction.TransID);
+                    }
+                    catch (Exception ex)
+                    {
+                        await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync failed for TransID: {transaction.TransID}. Exception: {ex.Message}");
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync execute exception message: {ex.Message}");
+            }
+
+            return processedTransIDs;
         }
 
         private LogstashModel TransformLogMessage(TransactionLogstashModel transaction)
