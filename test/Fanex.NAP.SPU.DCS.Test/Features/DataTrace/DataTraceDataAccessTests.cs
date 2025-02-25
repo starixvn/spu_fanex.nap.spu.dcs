@@ -247,8 +247,7 @@
             var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
 
             var criteria = fixture.Create<GetTranPackageCriteria>();
-
-            var expectedSettingKey = "DCS_DT_OpenSearch_Transaction_Get";
+            var expectedSettingKey = "DCS_DC_OpenSearch_Transaction_Get";
 
             repository
                 .FetchAsync<TransactionLogstashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))

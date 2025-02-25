@@ -5,6 +5,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
 
     public interface IDataTraceJobService
     {
@@ -39,12 +40,21 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly IDataTraceServices dataTraceServices;
         private readonly ILogService logService;
         private readonly ILogstashService logstashService;
+        private readonly ISystemSettingServices systemSettingServices;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, ILogstashService logstashService)
+        private readonly int openSearchTransaction07SystemSettingID = 101;
+
+        public DataTraceJobService(
+            IDataTraceServices dataTraceServices, 
+            ILogService logService, 
+            IAppSettings appSettings, 
+            ILogstashService logstashService, 
+            ISystemSettingServices systemSettingServices)
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
             this.logstashService = logstashService;
+            this.systemSettingServices = systemSettingServices;
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -145,10 +155,16 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
+
                 if (transactionLogsTash != null && transactionLogsTash.Any())
                 {
                     await logstashService.PushLogAsync(transactionLogsTash);
+
+                    var maxId = transactionLogsTash.Max(x => x.TransID);
+
+                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, maxId.ToString());
                 }
+
                 return true;
             }
             catch (Exception ex)
