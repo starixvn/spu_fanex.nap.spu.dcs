@@ -16,13 +16,13 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string URL { get; set; }
 
-        public int DeviceID { get; set; }
+        public ulong DeviceID { get; set; }
 
-        public string DeviceCode { get; set; }
+        public ulong DeviceCodeID { get; set; }
 
         public string FirstDeviceCode { get; set; }
 
-        public int DeviceStatus { get; set; }
+        public bool DeviceStatus { get; set; }
 
         public string FingerprintCode { get; set; }
 
@@ -36,7 +36,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string Flagged { get; set; }
 
-        public int PluginID { get; set; }
+        public long PluginID { get; set; }
 
         public int TransStatus { get; set; }
 
