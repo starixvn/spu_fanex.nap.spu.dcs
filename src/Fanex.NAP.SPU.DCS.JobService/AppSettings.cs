@@ -33,8 +33,6 @@
 
         int LogstashTcpPort { get; }
 
-        List<string> LogstashIgnoreSubscribers { get; }
-
         T GetValue<T>(string key);
 
         T GetSection<T>(string key);
@@ -57,7 +55,6 @@
         private readonly bool isEnableLogstash;
         private readonly string logstashTcpHostname;
         private readonly int logstashTcpPort;
-        private readonly List<string> logstashIgnoreSubscribers;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -89,7 +86,6 @@
 
             logstashTcpPort = Convert.ToInt32(string.IsNullOrEmpty(GetValue<string>("Logstash:Tcp:Port")) ? "32705" : GetValue<string>("Logstash:Tcp:Port"));
 
-            logstashIgnoreSubscribers = GetSection<List<string>>("Logstash:IgnoreSubscribers") ?? new List<string>();
         }
 
         public int Environment
@@ -139,8 +135,6 @@
         public string LogstashTcpHostname => logstashTcpHostname;
 
         public int LogstashTcpPort => logstashTcpPort;
-
-        public List<string> LogstashIgnoreSubscribers => logstashIgnoreSubscribers;
 
         public T GetValue<T>(string key)
         {

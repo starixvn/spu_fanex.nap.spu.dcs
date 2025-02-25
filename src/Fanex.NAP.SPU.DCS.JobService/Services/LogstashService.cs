@@ -35,9 +35,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 foreach (var transaction in transactions)
                 {
-                    if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLower()))
-                        continue;
-
                     var logMessage = TransformLogMessage(transaction);
 
                     string jsonLog = JsonConvert.SerializeObject(logMessage);
@@ -52,8 +49,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync execute exception message: {ex.Message}");
-
-                return processedTransIDs;
             }
 
             return processedTransIDs;
