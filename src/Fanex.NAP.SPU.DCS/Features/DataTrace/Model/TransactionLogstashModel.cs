@@ -14,7 +14,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string SubscriberName { get; set; }
 
-        public string URLDetails { get; set; }
+        public string URL { get; set; }
 
         public int DeviceID { get; set; }
 
@@ -26,19 +26,19 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string FingerprintCode { get; set; }
 
+        public string UserAgent { get; set; }
+
         public string IP { get; set; }
 
         public int IPID { get; set; }
 
         public string Action { get; set; }
 
-        public string FlaggedCode { get; set; }
+        public string Flagged { get; set; }
 
         public int PluginID { get; set; }
 
         public int TransStatus { get; set; }
-
-        public string UserAgent { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
