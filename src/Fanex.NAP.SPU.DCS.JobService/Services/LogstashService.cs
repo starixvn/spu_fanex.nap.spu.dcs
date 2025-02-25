@@ -32,31 +32,28 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
                 using var stream = client.GetStream();
+
                 foreach (var transaction in transactions)
                 {
-                if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLowerInvariant()))
-                {
-                            continue;
-                }
+                    if (appSettings.LogstashIgnoreSubscribers.Count != 0 && appSettings.LogstashIgnoreSubscribers.Contains(transaction.SubscriberName.ToLower()))
+                        continue;
 
-                        var logMessage = TransformLogMessage(transaction);
+                    var logMessage = TransformLogMessage(transaction);
 
-                        string jsonLog = JsonConvert.SerializeObject(logMessage);
+                    string jsonLog = JsonConvert.SerializeObject(logMessage);
 
-                        byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
-                        await stream.WriteAsync(data);
+                    byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
 
-                        processedTransIDs.Add(transaction.TransID);
-                    }
-                    catch (Exception ex)
-                    {
-                        await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync failed for TransID: {transaction.TransID}. Exception: {ex.Message}");
-                    }
+                    await stream.WriteAsync(data);
+
+                    processedTransIDs.Add(transaction.TransID);
                 }
             }
             catch (Exception ex)
             {
                 await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync execute exception message: {ex.Message}");
+
+                return processedTransIDs;
             }
 
             return processedTransIDs;

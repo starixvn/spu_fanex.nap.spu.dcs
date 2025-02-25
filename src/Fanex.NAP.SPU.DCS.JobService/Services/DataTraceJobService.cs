@@ -160,12 +160,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     var processedTransIDs = await logstashService.PushLogAsync(transactionLogsTash);
 
-                    var maxId = processedTransIDs.Max();
+                    if (processedTransIDs.Any())
+                    {
+                        var maxId = processedTransIDs.Max();
 
-                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, maxId.ToString());
+                        await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, maxId.ToString());
+
+                        return true;
+                    }
+
+                    return false;
                 }
 
                 return true;
+
             }
             catch (Exception ex)
             {
