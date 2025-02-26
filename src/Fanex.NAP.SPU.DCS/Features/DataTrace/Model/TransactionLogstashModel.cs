@@ -10,6 +10,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public ulong AccountID { get; set; }
 
+        public int IsTransformed { get; set; }
+
         public string LoginName { get; set; }
 
         public string SubscriberName { get; set; }
