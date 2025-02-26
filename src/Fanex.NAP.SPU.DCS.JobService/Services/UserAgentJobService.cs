@@ -32,30 +32,12 @@
         {
             try
             {
-                if (size > 0)
-                {
-                    JobRun(size, isTransformExtra);
+                if (size < 0 ) {
+                    return await Task.FromResult(false);
                 }
-            }
-            catch (Exception ex)
-            {
-                await logService.ErrorAsync(ex);
 
-                return await Task.FromResult(false);
-            }
+                var isReadyDbExtra = isTransformExtra && appSettings.IsReadyDbExtra;
 
-            return await Task.FromResult(true);
-        }
-
-        private void JobRun(int size, bool isTransformExtra)
-        {
-            TransformUserAgent(size, isTransformExtra && appSettings.IsReadyDbExtra);
-        }
-
-        private void TransformUserAgent(int size, bool isReadyDbExtra)
-        {
-            try
-            {
                 var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
 
                 if (userAgents != null && userAgents.Any())
@@ -72,10 +54,12 @@
             }
             catch (Exception ex)
             {
-                logService.ErrorAsync(ex);
+                await logService.ErrorAsync(ex);
 
-                throw;
+                return await Task.FromResult(false);
             }
+
+            return await Task.FromResult(true);
         }
     }
 }
