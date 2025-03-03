@@ -14,6 +14,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string LoginName { get; set; }
 
+        public int SubscriberID { get; set; }
+
         public string SubscriberName { get; set; }
 
         public string URL { get; set; }
@@ -29,6 +31,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
         public string FingerprintCode { get; set; }
 
         public string UserAgent { get; set; }
+
+        public string DeviceType { get; set; }
 
         public string IP { get; set; }
 
