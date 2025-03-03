@@ -9,13 +9,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
     using Xunit;
     using AutoFixture;
 
-    public class ArchiveDataDataAccessTest
+    public class ArchiveDataDataAccessTests
     {
         private readonly IDynamicRepository repository;
         private readonly IArchiveDataDataAccess archiveDataDataAccess;
         private IFixture fixture = new Fixture();
 
-        public ArchiveDataDataAccessTest()
+        public ArchiveDataDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             archiveDataDataAccess = new ArchiveDataDataAccess(repository);

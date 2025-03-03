@@ -11,13 +11,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
     using NSubstitute;
     using Xunit;
 
-    public class MBTransactionJobServiceTest
+    public class MBTransactionJobServiceTests
     {
         private readonly ILogService logService;
         private readonly IMBTransactionServices transactionService;
         private readonly MBTransactionJobService mbTransactionJobService;
 
-        public MBTransactionJobServiceTest()
+        public MBTransactionJobServiceTests()
         {
             logService = Substitute.For<ILogService>();
             transactionService = Substitute.For<IMBTransactionServices>();

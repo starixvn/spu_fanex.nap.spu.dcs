@@ -9,13 +9,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
     using NSubstitute;
     using Xunit;
 
-    public class SystemSettingDataAccessTest
+    public class SystemSettingDataAccessTests
     {
         private readonly IDynamicRepository repository;
         private readonly ISystemSettingDataAccess systemSettingDataAccess;
         private readonly IFixture fixture = new Fixture();
 
-        public SystemSettingDataAccessTest()
+        public SystemSettingDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             systemSettingDataAccess = new SystemSettingDataAccess(repository);

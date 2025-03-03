@@ -7,13 +7,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBDevice
     using Xunit;
     using NSubstitute;
 
-    public class MBDeviceServicesTest
+    public class MBDeviceServicesTests
     {
         private readonly IMBDeviceDataAccess deviceDataAccess;
         private readonly IMBDeviceServices deviceServices;
         private readonly IFixture fixture = new Fixture();
 
-        public MBDeviceServicesTest()
+        public MBDeviceServicesTests()
         {
             deviceDataAccess = Substitute.For<IMBDeviceDataAccess>();
             deviceServices = new MBDeviceServices(deviceDataAccess);

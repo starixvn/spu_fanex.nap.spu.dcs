@@ -12,14 +12,14 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
     using NSubstitute;
     using Xunit;
 
-    public class AbnormalTransactionServicesTest
+    public class AbnormalTransactionServicesTests
     {
         private readonly IAbnormalTransactionDataAccess dataAccess;
         private readonly ILogService logService;
         private readonly IAbnormalTransactionServices abnormalServices;
         private readonly IFixture fixture = new Fixture();
 
-        public AbnormalTransactionServicesTest()
+        public AbnormalTransactionServicesTests()
         {
             dataAccess = Substitute.For<IAbnormalTransactionDataAccess>();
             logService = Substitute.For<ILogService>();

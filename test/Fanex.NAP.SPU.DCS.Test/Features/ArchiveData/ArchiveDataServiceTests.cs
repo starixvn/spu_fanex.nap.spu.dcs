@@ -5,12 +5,12 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
     using NSubstitute;
     using Xunit;
 
-    public class ArchiveDataServiceTest
+    public class ArchiveDataServiceTests
     {
         private readonly IArchiveDataDataAccess archiveDataAccess;
         private readonly IArchiveDataService archiveDataService;
 
-        public ArchiveDataServiceTest()
+        public ArchiveDataServiceTests()
         {
             archiveDataAccess = Substitute.For<IArchiveDataDataAccess>();
             archiveDataService = new ArchiveDataService(archiveDataAccess);

@@ -6,13 +6,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using NSubstitute;
     using Xunit;
-    public class SystemSettingServicesTest
+    public class SystemSettingServicesTests
     {
         private readonly ISystemSettingDataAccess dataAccess;
         private readonly ISystemSettingServices systemSettingServices;
         private readonly IFixture fixture = new Fixture();
 
-        public SystemSettingServicesTest()
+        public SystemSettingServicesTests()
         {
             dataAccess = Substitute.For<ISystemSettingDataAccess>();
             systemSettingServices = new SystemSettingServices(dataAccess);

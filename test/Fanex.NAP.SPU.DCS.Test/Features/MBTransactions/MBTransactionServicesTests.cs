@@ -7,13 +7,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.MBTransactions
     using NSubstitute;
     using Xunit;
 
-    public class MBTransactionServicesTest
+    public class MBTransactionServicesTests
     {
         private readonly IMBTransactionDataAccess transactionDataAccess;
         private readonly IMBTransactionServices transactionServices;
         private readonly IFixture fixture = new Fixture();
 
-        public MBTransactionServicesTest()
+        public MBTransactionServicesTests()
         {
             transactionDataAccess = Substitute.For<IMBTransactionDataAccess>();
             transactionServices = new MBTransactionServices(transactionDataAccess);

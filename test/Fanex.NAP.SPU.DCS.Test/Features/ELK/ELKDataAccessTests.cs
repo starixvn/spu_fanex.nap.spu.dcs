@@ -9,13 +9,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
     using NSubstitute;
     using Xunit;
 
-    public class ELKDataAccessTest
+    public class ELKDataAccessTests
     {
         private readonly IDynamicRepository repository;
         private readonly IELKDataAccess elkDataAccess;
         private readonly IFixture fixture = new Fixture();
 
-        public ELKDataAccessTest()
+        public ELKDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             elkDataAccess = new ELKDataAccess(repository);

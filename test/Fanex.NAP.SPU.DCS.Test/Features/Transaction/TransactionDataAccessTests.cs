@@ -8,13 +8,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
     using NSubstitute;
     using Xunit;
 
-    public class TransactionDataAccessTest
+    public class TransactionDataAccessTests
     {
         private readonly IDynamicRepository repository;
         private readonly ITransactionDataAccess transactionDataAccess;
         private readonly IFixture fixture = new Fixture();
 
-        public TransactionDataAccessTest()
+        public TransactionDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             transactionDataAccess = new TransactionDataAccess(repository);

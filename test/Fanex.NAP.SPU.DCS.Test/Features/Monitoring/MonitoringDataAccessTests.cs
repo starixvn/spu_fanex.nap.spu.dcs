@@ -10,13 +10,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Monitoring
     using NSubstitute;
     using Xunit;
 
-    public class MonitoringDataAccessTest
+    public class MonitoringDataAccessTests
     {
         private readonly IDynamicRepository repository;
         private readonly IMonitoringDataAccess monitoringDataAccess;
         private readonly IFixture fixture = new Fixture();
 
-        public MonitoringDataAccessTest()
+        public MonitoringDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             monitoringDataAccess = new MonitoringDataAccess(repository);

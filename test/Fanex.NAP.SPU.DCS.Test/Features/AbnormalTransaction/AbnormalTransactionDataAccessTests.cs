@@ -8,13 +8,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.AbnormalTransaction
     using NSubstitute;
     using Xunit;
 
-    public class AbnormalTransactionDataAccessTest
+    public class AbnormalTransactionDataAccessTests
     {
         private IDynamicRepository repository;
         private IAbnormalTransactionDataAccess abnormalTransactionDataAccess;
         private IFixture fixture = new Fixture();
 
-        public AbnormalTransactionDataAccessTest()
+        public AbnormalTransactionDataAccessTests()
         {
             repository = Substitute.For<IDynamicRepository>();
             abnormalTransactionDataAccess = new AbnormalTransactionDataAccess(repository);

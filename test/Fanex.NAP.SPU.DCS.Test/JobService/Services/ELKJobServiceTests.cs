@@ -9,14 +9,14 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
     using NSubstitute;
     using Xunit;
 
-    public class ELKJobServiceTest
+    public class ELKJobServiceTests
     {
         private readonly IELKServices elkService;
         private readonly IAppSettings appSettings;
         private readonly ILogService logService;
         private readonly ELKJobService elkJobService;
 
-        public ELKJobServiceTest()
+        public ELKJobServiceTests()
         {
             elkService = Substitute.For<IELKServices>();
             appSettings = Substitute.For<IAppSettings>();

@@ -10,13 +10,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
     using NSubstitute;
     using Xunit;
 
-    public class MBDeviceJobServiceTest
+    public class MBDeviceJobServiceTests
     {
         private readonly ILogService logService;
         private readonly IMBDeviceServices deviceService;
         private readonly MBDeviceJobService mbDeviceJobService;
 
-        public MBDeviceJobServiceTest()
+        public MBDeviceJobServiceTests()
         {
             logService = Substitute.For<ILogService>();
             deviceService = Substitute.For<IMBDeviceServices>();

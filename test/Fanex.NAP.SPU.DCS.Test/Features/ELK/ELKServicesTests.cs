@@ -8,13 +8,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ELK
     using Xunit;
     using NSubstitute;
 
-    public class ELKServicesTest
+    public class ELKServicesTests
     {
         private readonly IELKDataAccess elkDataAccess;
         private readonly IELKServices elkServices;
         private readonly IFixture fixture = new Fixture();
 
-        public ELKServicesTest()
+        public ELKServicesTests()
         {
             elkDataAccess = Substitute.For<IELKDataAccess>();
             elkServices = new ELKServices(elkDataAccess);
