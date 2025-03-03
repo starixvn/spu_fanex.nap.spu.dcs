@@ -13,9 +13,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IELKJobService
     {
-        Task<bool> Execute(DateTimeOffset startTime, DateTimeOffset endTime);
+        Task<bool> Execute(DateTime startTime, DateTime endTime);
 
-        Task<bool> Execute(DateTimeOffset startTime, DateTimeOffset endTime, DateTimeOffset betDate);
+        Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate);
     }
 
     public enum SportType
@@ -52,11 +52,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.logService = logService;
         }
 
-        public async Task<bool> Execute(DateTimeOffset startTime, DateTimeOffset endTime)
+        public async Task<bool> Execute(DateTime startTime, DateTime endTime)
         {
             try
             {
-                await Task.WhenAll(ProccessForMixParlay(startTime.DateTime, endTime.DateTime), ProccessForSoccerBasketball(startTime.DateTime, endTime.DateTime));
+                await Task.WhenAll(ProccessForMixParlay(startTime, endTime), ProccessForSoccerBasketball(startTime, endTime));
             }
             catch (Exception ex)
             {
@@ -68,11 +68,11 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> Execute(DateTimeOffset startTime, DateTimeOffset endTime, DateTimeOffset betDate)
+        public async Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate)
         {
             try
             {
-                await ProccessForSoccerBasketballWithLeagueGroup(startTime.DateTime, endTime.DateTime, betDate.DateTime);
+                await ProccessForSoccerBasketballWithLeagueGroup(startTime, endTime, betDate);
             }
             catch (Exception ex)
             {

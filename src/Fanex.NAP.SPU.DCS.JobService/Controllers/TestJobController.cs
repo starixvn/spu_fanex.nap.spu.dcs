@@ -27,7 +27,7 @@
         }
 
         [HttpPost("Decrypt")]
-        public async Task<string> Decrypt()
+        public string Decrypt()
         {
             return Fanex.Data.Cryptography.DecryptPassword("l4exNQ2KUgCjzhehUWfktg==");
         }

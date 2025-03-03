@@ -21,8 +21,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             var utcNow = DateTimeOffset.UtcNow;
             var lastMonth = utcNow.AddMonths(-1);
 
-            var startTime = new DateTimeOffset(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0, TimeSpan.Zero);
-            var endTime = new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero);
+            var startTime = new DateTime(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0);
+            var endTime = new DateTime(utcNow.Year, utcNow.Month, 1, 0, 0, 0);
 
             return await elkJobService.Execute(startTime, endTime);
         }
@@ -36,9 +36,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         [HttpPost("bettingmessagecountdaily")]
         public async Task<bool> GetBettingMessageCountDaily()
         {
-            var utcNow = DateTimeOffset.UtcNow;
+            var utcNow = DateTime.UtcNow;
 
-            return await elkJobService.Execute(new DateTimeOffset(utcNow.Year, utcNow.Month, 1, 0, 0, 0, TimeSpan.Zero), utcNow);
+            return await elkJobService.Execute(new DateTime(utcNow.Year, utcNow.Month, 1, 0, 0, 0), utcNow);
         }
 
         [HttpPost("bettingmessagecountdailymanual")]
@@ -50,7 +50,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         [HttpPost("bettingmessagecountdailyleaguegroup")]
         public async Task<bool> GetBettingMessageCountDailyByLeagueGroup()
         {
-            var utcNow = DateTimeOffset.UtcNow;
+            var utcNow = DateTime.UtcNow;
 
             var yesterday = utcNow.AddDays(-1);
 
