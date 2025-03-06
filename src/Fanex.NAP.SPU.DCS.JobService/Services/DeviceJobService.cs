@@ -144,8 +144,8 @@
                                     .ToList();
 
             var matchingRecords = dataEvolutionAttribute
-            .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
-            .ToList();
+                                .Where(attrEntity => refIds.Contains(attrEntity.FPDeviceFingerprintAccountID))
+                                .ToList();
 
             foreach (var destination in matchingRecords)
             {
@@ -323,7 +323,7 @@
             {
                 foreach (var value in values.Where(v => !v.Source.Equals(v.Destination)))
                 {
-                    var ratioResult = await  CheckRatio(value.Source.ToString(), value.Destination.ToString());
+                    var ratioResult = await CheckRatio(value.Source.ToString(), value.Destination.ToString());
 
                     if (!ratioResult) return (false, counter);
 
@@ -393,6 +393,6 @@
             public bool Equals(ValuePair other) => Equals(Source, other.Source) && Equals(Destination, other.Destination);
         }
 
-            #endregion "Evolution"
-        }
+        #endregion "Evolution"
+    }
 }

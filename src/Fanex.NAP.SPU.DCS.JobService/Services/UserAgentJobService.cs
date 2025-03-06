@@ -32,8 +32,9 @@
         {
             try
             {
-                if (size < 0 ) {
-                    return await Task.FromResult(false);
+                if (size < 0 ) 
+                {
+                    return false;
                 }
 
                 var isReadyDbExtra = isTransformExtra && appSettings.IsReadyDbExtra;
@@ -56,10 +57,10 @@
             {
                 await logService.ErrorAsync(ex);
 
-                return await Task.FromResult(false);
+                return false;
             }
 
-            return await Task.FromResult(true);
+            return true;
         }
     }
 }

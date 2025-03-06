@@ -70,8 +70,6 @@
             var isNotify = !string.IsNullOrWhiteSpace(data.YesterdayLess50Percent)
                         || !string.IsNullOrWhiteSpace(data.ValidLess50Percent);
 
-            var utcNow = DateTimeOffset.UtcNow;
-
             if (isNotify)
             {
                 var message = $"Monitoring Transaction job run COMPLETED.";
@@ -86,15 +84,14 @@
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
                 }
 
-                var messageModel = new MessageModel("DCS - Notify Transaction Service", utcNow.DateTime.AddHours(extraHour), appSettings.EnvironmentString, message);
+                var messageModel = new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message);
                 notificationService.Send(token, "-1001459619983", proxy, messageModel);
             }
         }
 
         public Task<bool> TestTelegramNotifyMessage()
         {
-            var utcNow = DateTimeOffset.UtcNow;
-            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", utcNow.DateTime.AddHours(extraHour), appSettings.EnvironmentString, "test"));
+            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, "test"));
 
             return Task.FromResult(true);
         }
@@ -103,14 +100,13 @@
         {
             const string format = "MM/dd/yyyy";
             DateTime parsedDate;
-            var utcNow = DateTimeOffset.UtcNow;
 
             if (DateTime.TryParseExact(input, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
             {
                 return parsedDate;
             }
 
-            return utcNow.DateTime.AddDays(-1);
+            return DateTime.Now.AddDays(-1);
         }
 
         public Task<bool> MonitorTransactionAndNotify(string rptDateStr, int batchSize, int limitShowCust)
@@ -213,8 +209,7 @@
         {
             if (model != null)
             {
-                var utcNow = DateTimeOffset.UtcNow;
-                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, utcNow.DateTime.AddHours(extraHour), appSettings.EnvironmentString, model.Message, model.MoreInfo));
+                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, model.Message, model.MoreInfo));
             }
         }
 

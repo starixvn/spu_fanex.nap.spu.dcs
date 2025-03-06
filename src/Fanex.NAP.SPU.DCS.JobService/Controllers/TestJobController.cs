@@ -7,6 +7,7 @@
     public class TestJobController : Controller
     {
         private readonly INotifyTransactionJobService notifyTransactionJobService;
+        
         public TestJobController(INotifyTransactionJobService notifyTransactionJobService)
         {
             this.notifyTransactionJobService = notifyTransactionJobService;
@@ -22,8 +23,6 @@
         public async Task<bool> Sentry([FromForm] string message)
         {
             return await notifyTransactionJobService.TestSentryCaptureMessage(message);
-
-            
         }
 
         [HttpPost("Decrypt")]

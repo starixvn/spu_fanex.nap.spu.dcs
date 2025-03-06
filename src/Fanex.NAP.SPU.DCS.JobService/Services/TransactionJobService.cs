@@ -13,7 +13,7 @@
         private readonly ITransactionServices transactionService;
 
         private readonly IList<string> IgnoreMessages;
-        private const int delayTime = 500; // milliseconds
+        private const int DelayTimeMilliseconds = 500;
 
         public TransactionJobService(ILogService logService, ITransactionServices transactionService)
         {
@@ -33,7 +33,7 @@
                     await JobRun(numberOfTrans, numberOfBatch, isTransformExtra);
                 }
 
-                return await Task.FromResult(true);
+                return true;
             }
             catch (Exception ex)
             {
@@ -41,11 +41,11 @@
                 {
                     await logService.ErrorAsync(ex);
 
-                    return await Task.FromResult(false);
+                    return false;
                 }
                 else
                 {
-                    return await Task.FromResult(true);
+                    return true;
                 }
             }
         }
@@ -71,7 +71,7 @@
                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
                     });
 
-                    await Task.Delay(delayTime);
+                    await Task.Delay(DelayTimeMilliseconds);
 
                     tasks.Add(task);
                 }
