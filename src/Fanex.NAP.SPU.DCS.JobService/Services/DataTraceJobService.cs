@@ -45,10 +45,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly int openSearchTransaction07SystemSettingID = 101;
 
         public DataTraceJobService(
-            IDataTraceServices dataTraceServices, 
-            ILogService logService, 
-            IAppSettings appSettings, 
-            ILogstashService logstashService, 
+            IDataTraceServices dataTraceServices,
+            ILogService logService,
+            ILogstashService logstashService,
             ISystemSettingServices systemSettingServices)
         {
             this.dataTraceServices = dataTraceServices;

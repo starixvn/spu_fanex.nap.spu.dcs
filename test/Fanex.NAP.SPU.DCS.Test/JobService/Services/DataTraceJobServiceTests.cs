@@ -1,16 +1,16 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService;
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Fanex.NAP.SPU.Notification.Services;
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class DataTraceJobServiceTests
@@ -18,6 +18,7 @@
         private IDataTraceServices dataTraceServices;
         private ILogService logService;
         private ILogstashService logstashService;
+        private ISystemSettingServices systemSettingServices;
         private readonly DataTraceJobService service;
         private readonly IFixture fixture;
 
@@ -26,9 +27,10 @@
             dataTraceServices = Substitute.For<IDataTraceServices>();
             logService = Substitute.For<ILogService>();
             logstashService = Substitute.For<ILogstashService>();
+            systemSettingServices = Substitute.For<ISystemSettingServices>();
             fixture = new Fixture();
 
-            service = new DataTraceJobService(dataTraceServices, logService, logstashService);
+            service = new DataTraceJobService(dataTraceServices, logService, logstashService, systemSettingServices);
         }
 
         [Fact]
@@ -295,11 +297,13 @@
 
             var transactionLogs = fixture.Create<IEnumerable<TransactionLogstashModel>>();
 
+            var maxProcessedTransID = 3UL;
+
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
 
             appSettings.IsEnableLogstash.Returns(true);
 
-            logstashService.PushLogAsync(transactionLogs).Returns(Task.CompletedTask);
+            logstashService.PushLogAsync(transactionLogs).Returns(Task.FromResult(maxProcessedTransID));
 
             // Act
             var result = await service.SendTransactionToLogstash(1);
