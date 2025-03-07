@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.Devices.Entities;
@@ -25,46 +26,23 @@
 
 
         [Fact]
-        public async void TransformDevice_WhenSuccessAndIsDeviceRecover_ShouldCallExactFunctionAndExactParams()
+        public async Task TransformDevice_WhenSuccessAndIsDeviceRecover_ShouldCallExactFunctionAndExactParams()
         {
-            ////Arrange
-            //List<StagingTransId> stagingTransIds = GetStagingTrans();
+            // Arrange
+            var stagingTransIds = GetStagingTrans();
+            var deviceJobService = GetService();
 
-            //var groupTransCount = stagingTransIds.GroupBy(x => x.BatchId).Count();
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
 
-            //var transactionRecover = fixture.Build<TransactionRecover>()
-            //                        .With(x => x.TransID, (ulong)1)
-            //                        .With(x => x.FPDeviceID, (ulong)2)
-            //                        .CreateMany(3);
+            // Act
+            var result = await deviceJobService.Execute(1, 1, isExtra);
 
-            //var transactionAttr = GetEvolutionAttributes();
-            //var transactionEvolution = GetTransactionEvolution();
-
-            //var deviceRecovers = (transactionRecover, transactionEvolution);
-
-            //var identityDevice = fixture.Build<IdentityDevice>()
-            //                        .With(x => x.TransID, (ulong)1)
-            //                        .CreateMany();
-
-            //var deviceJobService = GetService();
-
-            //deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
-            //deviceService.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), isExtra).Returns(identityDevice);
-            //deviceService.GetIdentityDeviceRecoverAsync(Arg.Any<string>(), isExtra).Returns(deviceRecovers);
-            //deviceService.GetIdentityEvolutionAttributesAsync(Arg.Any<string>(), Arg.Any<string>(), isExtra).Returns(transactionAttr);
-            //deviceService.IdentityEvolutionInsertAsync(Arg.Any<IEnumerable<IdentifyEvolutionModel>>(), isExtra).Returns(transactionRecover);
-
-            ////Act
-            //var result = await deviceJobService.Execute(1, 1, false);
-
-            ////Assert
-            //await deviceService.Received().TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), isExtra);
-            //await deviceService.Received().GetIdentityDeviceRecoverAsync(Arg.Any<string>(), isExtra);
-
-            //await deviceService.DidNotReceive().IdentityDeviceInsertAsync(Arg.Any<string>(), isExtra);
-            //await deviceService.Received().TransformTransaction07InsertAsync(Arg.Any<IEnumerable<TransformTransactionModel>>(), isExtra);
-
-            //Assert.True(result);
+            // Assert
+            foreach (var group in stagingTransIds.GroupBy(x => x.BatchId))
+            {
+                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)), isExtra);
+            }
+            Assert.True(result);
         }
 
         [Fact]
@@ -129,49 +107,165 @@
         }
 
         [Fact]
-        public async void TransformDevice_WhenGetIdentityDeviceRecoverAsyncThrowError_ShouldCallExactSentryWithTimes()
+        public async Task TransformDevice_WhenSizeAndNumberOfBatchAreGreaterThanZero_ShouldCallInsertFPDeviceMappingAndTransformDevice()
         {
+            // Arrange
+            var deviceJobService = GetService(); 
 
-            //Arrange
-            List<StagingTransId> stagingTransIds = GetStagingTrans();
+            int size = 1;
 
-            var deviceJobService = GetService();
+            int numberOfBatch = 1;
+
+            var stagingTransIds = GetStagingTrans();
 
             deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
 
-            //Act
-            var result = await deviceJobService.Execute(1, 1, false);
+            // Act
+            var result = await deviceJobService.Execute(size, numberOfBatch, isExtra);
 
-            //Assert
-            await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
+            // Assert
+            await deviceService.Received(1).InsertFPDeviceMappingAsync(size * numberOfBatch, isExtra);
+            foreach (var group in stagingTransIds.GroupBy(x => x.BatchId))
+            {
+                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)), isExtra);
+            }
+            Assert.True(result);
+        }
 
+        [Fact]
+        public async Task Execute_WhenExceptionIsThrown_ShouldLogErrorAndReturnFalse()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+
+            deviceService.When(x => x.InsertFPDeviceMappingAsync(Arg.Any<int>(), Arg.Any<bool>()))
+                         .Do(x => { throw new Exception("Test exception"); });
+
+            // Act
+            var result = await deviceJobService.Execute(1, 1, isExtra);
+
+            // Assert
+            await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "Test exception"));
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task DeviceEvolution_WhenBatchSizeIsGreaterThanZero_ShouldCallGetFPDeviceEvolutionAsyncOnly()
+        {
+            // Arrange
+            var deviceJobService = GetService();
 
+            int batchSize = 1;
+
+            string deviceEvolutionJson = "{\"id\":1,\"name\":\"Device 1\"}";
+
+            var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+
+            var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>().ToList();
+
+            var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
+
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(batchSize, isExtra);
+
+            // Assert
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize, isExtra);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isExtra);
+            Assert.False(result);
+        }
 
         [Fact]
-        public async void TransformDevice_WhenTwoTasksThrowError_ShouldCallExactSentryWithTimes()
+        public async Task DeviceEvolution_WhenBatchSizeIsZero_ShouldLogErrorAndReturnFalse()
         {
-            ////Arrange
-            //List<StagingTransId> stagingTransIds = GetStagingTrans();
+            // Arrange
+            var deviceJobService = GetService();
 
-            //var identityDevice = fixture.Create<IEnumerable<IdentityDevice>>();
+            // Act
+            var result = await deviceJobService.DeviceEvolution(0, isExtra);
 
-            //var deviceJobService = GetService();
-
-            //deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
-
-            //deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), isExtra)).Do(x => { throw new Exception("Sql exception"); });
-            
-            ////Act
-            //var result = await deviceJobService.Execute(1, 1, false);
-
-            ////Assert
-            //await logService.Received(3).ErrorAsync(Arg.Any<Exception>());
-
-            //Assert.False(result);
+            // Assert
+            await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "DeviceEvolution BatchSize = 0!"));
+            Assert.False(result);
         }
+
+        [Fact]
+        public async Task DeviceEvolution_WhenExceptionIsThrown_ShouldLogErrorAndReturnFalse()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+
+            deviceService.When(x => x.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()))
+                         .Do(x => { throw new Exception("Test exception"); });
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+
+            // Assert
+            await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "Test exception"));
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task DeviceEvolution_WhenFindMatchingCandidateExceptionIsThrown_ShouldLogErrorAndReturnFalse()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+
+            var dataEvolution = fixture.CreateMany<DeviceEvolutionEntity>();
+
+            var dataEvolutionAttribute = fixture.CreateMany<DeviceEvolutionEntity>();
+
+            var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
+
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(1, true);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task DeviceEvolution_WhenDataEvolutionIsNull_ShouldNotCallInsertFPDeviceEvolutionAsync()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+
+            var resultDeviceEvolution = (null as IEnumerable<DeviceEvolutionEntity>, fixture.CreateMany<DeviceEvolutionEntity>());
+
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+
+            // Assert
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1, isExtra);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>(), isExtra);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task DeviceEvolution_WhenDataEvolutionIsEmpty_ShouldNotCallInsertFPDeviceEvolutionAsync()
+        {
+            // Arrange
+            var deviceJobService = GetService();
+
+            var resultDeviceEvolution = (Enumerable.Empty<DeviceEvolutionEntity>(), fixture.CreateMany<DeviceEvolutionEntity>());
+
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+
+            // Act
+            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+
+            // Assert
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1, isExtra);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>(), isExtra);
+            Assert.True(result);
+        }
+
         private static List<StagingTransId> GetStagingTrans()
         {
             return new List<StagingTransId>

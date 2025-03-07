@@ -13,7 +13,9 @@
     using Fanex.NAP.SPU.DCS.Features.Transactions;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Microsoft.Extensions.DependencyInjection;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public static class InitService
     {
         public static void RegisterService(this IServiceCollection services)
@@ -31,6 +33,8 @@
             RegisterELKService(services);
             RegisterTransformMBTransaction(services);
             RegisterTransformMBDevice(services);
+            RegisterLogstashService(services);
+            RegisterDCSJobService(services);
         }
 
         private static void RegisterUserAgentService(this IServiceCollection services)
@@ -119,6 +123,16 @@
             services.AddSingleton<IELKDataAccess, ELKDataAccess>();
             services.AddSingleton<IELKServices, ELKServices>();
             services.AddSingleton<IELKJobService, ELKJobService>();
+        }
+
+        private static void RegisterLogstashService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILogstashService, LogstashService>();
+        }
+
+        private static void RegisterDCSJobService(this IServiceCollection services)
+        {
+            services.AddSingleton<DCSTransactionJobService>();
         }
     }
 }

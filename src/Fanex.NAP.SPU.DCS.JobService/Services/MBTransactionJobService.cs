@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.NAP.SPU.DCS.Features.MBTransactions;
+    using Fanex.NAP.SPU.DCS.Features.MBTransactions.Entities;
 
     public interface IMBTransactionJobService
     {
@@ -12,49 +13,60 @@
         private readonly ILogService logService;
         private readonly IMBTransactionServices transactionService;
 
-        private const int delayTime = 100; // milliseconds
+        private const int DelayTimeMilliseconds = 100;
 
         public MBTransactionJobService(ILogService logService, IMBTransactionServices transactionService)
         {
-            this.logService = logService;
-            this.transactionService = transactionService;
+            this.logService = logService ?? throw new ArgumentNullException(nameof(logService));
+            this.transactionService = transactionService ?? throw new ArgumentNullException(nameof(transactionService));
         }
 
         public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
         {
+            if (numberOfTrans <= 0 || numberOfBatch <= 0)
+            {
+                await logService.ErrorAsync(new ArgumentException("NumberOfTrans and NumberOfBatch must be greater than zero."));
+                return false;
+            }
+
             try
             {
-                if (numberOfTrans > 0 && numberOfBatch > 0)
-                    await MBTransformTransaction(numberOfTrans, numberOfBatch);
-
+                await MBTransformTransactionAsync(numberOfTrans, numberOfBatch);
                 return true;
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
-
                 return false;
             }
         }
 
-        private async Task MBTransformTransaction(int numberOfTrans, int numberOfBatch)
+        private async Task MBTransformTransactionAsync(int numberOfTrans, int numberOfBatch)
         {
-            var rawTrans = transactionService.GetMBRawTransaction(numberOfTrans, numberOfBatch);
+            var rawTransactions = transactionService.GetMBRawTransaction(numberOfTrans, numberOfBatch);
 
-            var tasks = new List<Task>();
-            foreach (var trans in rawTrans)
+            if (rawTransactions == null || !rawTransactions.Any())
             {
-                var task = Task.Run(() =>
-                {
-                    transactionService.InsertMBTransaction(trans.MinTransID, trans.MaxTransID);
-                });
-
-                await Task.Delay(delayTime);
-
-                tasks.Add(task);
+                return;
             }
 
-            await Task.WhenAll(tasks.ToArray());
+            var tasks = rawTransactions.Select(ProcessTransactionAsync).ToList();
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task ProcessTransactionAsync(MBRawTransactionEntity transaction)
+        {
+            try
+            {
+                transactionService.InsertMBTransaction(transaction.MinTransID, transaction.MaxTransID);
+                await Task.Delay(DelayTimeMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                throw;
+            }
         }
     }
 }

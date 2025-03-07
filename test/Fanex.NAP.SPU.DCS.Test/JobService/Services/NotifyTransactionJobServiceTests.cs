@@ -73,8 +73,11 @@
         {
             // Arrange
             var mainCust = new List<CustModel>();
+
             var rptDateStr = "2023-01-01";
+
             var batchSize = 1;
+
             var limitShowCust = 1;
 
             var service = GetService();
@@ -96,7 +99,9 @@
         {
             // Arrange
             var rptDateStr = "2023-01-01";
+
             var batchSize = 1;
+
             var limitShowCust = 1;
 
             var service = GetService();
@@ -117,7 +122,9 @@
         {
             // Arrange
             var notifyMessage = fixture.Create<NotifyMessageModel>();
+
             uint notifyMessageID = 1;
+
             var service = GetService();
 
             monitoringServices.GetNotifyMessageById(notifyMessageID).Returns(notifyMessage);
@@ -154,8 +161,11 @@
         {
             // Arrange
             var notifyMessages = fixture.CreateMany<NotifyMessageModel>();
+
             var notifyType = "notifyType";
+
             var batchSize = 1;
+
             var service = GetService();
 
             monitoringServices.GetNotifyMessage(notifyType, batchSize).Returns(notifyMessages);
@@ -173,7 +183,9 @@
         public async Task NotifyMessageByNotifyType_WhenThrowException_ShouldReturnFalseAndCallExactFunction()
         {
             var notifyType = "notifyType";
+
             var batchSize = 1;
+
             var service = GetService();
 
             monitoringServices.GetNotifyMessage(Arg.Any<string>(), Arg.Any<int>()).Throws(new Exception("Simulate Exception"));
@@ -185,6 +197,22 @@
             Assert.False(result);
 
             await logService.Received().ErrorMessageAsync(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task TestSentryCaptureMessage_WhenCalled_LogsInfoMessage()
+        {
+            // Arrange
+            var message = fixture.Create<string>();
+
+            var service = GetService();
+
+            // Act
+            var result = await service.TestSentryCaptureMessage(message);
+
+            // Assert
+            await logService.Received(1).InfoMessageAsync(message);
+            Assert.True(result);
         }
 
         public NotifyTransactionJobService GetService()

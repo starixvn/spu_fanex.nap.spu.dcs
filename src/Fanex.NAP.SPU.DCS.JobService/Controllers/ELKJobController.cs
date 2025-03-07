@@ -1,7 +1,9 @@
 ﻿using Fanex.NAP.SPU.DCS.JobService.Services;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     [ApiController]
     [Route("api/elkjob")]
     public class ELKJobController : ControllerBase
@@ -17,11 +19,18 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         public async Task<bool> GetBettingMessageCount()
         {
             var utcNow = DateTime.UtcNow;
+            var lastMonth = utcNow.AddMonths(-1);
 
-            var lastmonth = utcNow.AddMonths(-1);
+            var startTime = new DateTime(lastMonth.Year, lastMonth.Month, 1, 0, 0, 0);
+            var endTime = new DateTime(utcNow.Year, utcNow.Month, 1, 0, 0, 0);
 
-            return await elkJobService.Execute(new DateTime(lastmonth.Year, lastmonth.Month, 1), new DateTime(utcNow.Year, utcNow.Month, 1));
-            
+            return await elkJobService.Execute(startTime, endTime);
+        }
+
+        [HttpPost("bettingmessagecountmanual")]
+        public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)
+        {
+            return await elkJobService.Execute(startTime, endTime);
         }
 
         [HttpPost("bettingmessagecountdaily")]
@@ -30,7 +39,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             var utcNow = DateTime.UtcNow;
 
             return await elkJobService.Execute(new DateTime(utcNow.Year, utcNow.Month, 1), utcNow);
-
         }
 
         [HttpPost("bettingmessagecountdailymanual")]
@@ -51,19 +59,12 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
             await elkJobService.Execute(beforeYesterday, yesterday, beforeYesterday);
 
             return await elkJobService.Execute(yesterday, utcNow, yesterday);
-
         }
 
         [HttpPost("bettingmessagecountdailyleaguegroupmanual")]
         public async Task<bool> GetBettingMessageCountByLeagueGroup(DateTime startTime, DateTime endTime)
         {            
             return await elkJobService.Execute(startTime, endTime, startTime);
-      }
-
-        [HttpPost("bettingmessagecountmanual")]
-        public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)
-        {
-            return await elkJobService.Execute(startTime, endTime);
         }
     }
 }

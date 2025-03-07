@@ -11,16 +11,14 @@
     {
         private readonly ILogService logService;
         private readonly ITransactionServices transactionService;
-        private readonly IAppSettings appSettings;
 
         private readonly IList<string> IgnoreMessages;
-        private const int delayTime = 500; // milliseconds
+        private const int DelayTimeMilliseconds = 500;
 
-        public TransactionJobService(ILogService logService, ITransactionServices transactionService, IAppSettings appSettings)
+        public TransactionJobService(ILogService logService, ITransactionServices transactionService)
         {
             this.logService = logService;
             this.transactionService = transactionService;
-            this.appSettings = appSettings;
             IgnoreMessages = new List<string> {
                 "Deadlock found when trying to get lock; try restarting transaction"
             };
@@ -32,10 +30,10 @@
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                    JobRun(numberOfTrans, numberOfBatch, isTransformExtra);
+                    await JobRun(numberOfTrans, numberOfBatch, isTransformExtra);
                 }
 
-                return await Task.FromResult(true);
+                return true;
             }
             catch (Exception ex)
             {
@@ -43,18 +41,18 @@
                 {
                     await logService.ErrorAsync(ex);
 
-                    return await Task.FromResult(false);
+                    return false;
                 }
                 else
                 {
-                    return await Task.FromResult(true);
+                    return true;
                 }
             }
         }
 
-        private void JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
+        private async Task JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
         {
-            TransformTransaction(numberOfTrans, numberOfBatch, isTransformExtra).Wait();
+            await TransformTransaction(numberOfTrans, numberOfBatch, isTransformExtra);
         }
 
         private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
@@ -73,7 +71,7 @@
                                .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
                     });
 
-                    await Task.Delay(delayTime);
+                    await Task.Delay(DelayTimeMilliseconds);
 
                     tasks.Add(task);
                 }

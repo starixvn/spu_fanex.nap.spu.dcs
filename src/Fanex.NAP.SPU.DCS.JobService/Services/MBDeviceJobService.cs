@@ -1,10 +1,11 @@
 ﻿using Fanex.NAP.SPU.DCS.Features.MBDevice;
+using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IMBDeviceJobService
     {
-        Task<bool> Execute(int limitTotalRecord, int numberOfBatch);
+        Task<bool> Execute(int numberOfTrans, int numberOfBatch);
     }
 
     public class MBDeviceJobService : IMBDeviceJobService
@@ -12,73 +13,66 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly ILogService logService;
         private readonly IMBDeviceServices deviceService;
 
-        private const int delayTime = 100; // milliseconds
+        private const int DelayTimeMilliseconds = 100;
+
         public MBDeviceJobService(ILogService logService, IMBDeviceServices deviceService)
         {
-            this.logService = logService;
-            this.deviceService = deviceService;
+            this.logService = logService ?? throw new ArgumentNullException(nameof(logService));
+            this.deviceService = deviceService ?? throw new ArgumentNullException(nameof(deviceService));
         }
 
-        public async Task<bool> Execute(int limitTotalRecord, int numberOfBatch)
+        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
         {
+            if (numberOfTrans <= 0 || numberOfBatch <= 0)
+            {
+                await logService.ErrorAsync(new ArgumentException("LimitTotalRecord and NumberOfBatch must be greater than zero."));
+                return false;
+            }
+
             try
             {
-                if (limitTotalRecord > 0 && numberOfBatch > 0)
-                {
-                    await MBTransformDevice(limitTotalRecord, numberOfBatch);
-                }
-                else
-                {
-                    await logService.ErrorAsync(new Exception("MBTransformDevice BatchSize = 0!"));
-
-                    return await Task.FromResult(false);
-                }
+                await MBTransformDeviceAsync(numberOfTrans, numberOfBatch);
+                return true;
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
-
-                return await Task.FromResult(false);
+                return false;
             }
-
-            return await Task.FromResult(true);
         }
 
-        private async Task MBTransformDevice(int limitTotalRecord, int numberOfBatch)
+        private async Task MBTransformDeviceAsync(int numberOfTrans, int numberOfBatch)
         {
-            var transList = deviceService.GetMBTransaction(limitTotalRecord, numberOfBatch);
+            var transactions = deviceService.GetMBTransaction(numberOfTrans, numberOfBatch);
 
-            if (transList != null && transList.Any())
+            if (transactions == null || !transactions.Any())
             {
-                var groupByBatchTrans = transList.GroupBy(x => x.BatchID);
+                return;
+            }
 
-                var tasks = new List<Task>();
+            var groupedTransactions = transactions.GroupBy(x => x.BatchID);
+            var tasks = groupedTransactions.Select(ProcessTransactionBatchAsync).ToList();
 
-                foreach (var transInfo in groupByBatchTrans)
-                {
-                    var task = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            if (transInfo != null && transInfo.Any())
-                            {
-                                var transactionInfoJson = JsonSerializer.Serialize(transInfo);
-                                deviceService.TransformDeviceInsert(transactionInfoJson);
-                            }    
-                        }   
-                        catch (Exception ex)
-                        {
-                            await logService.ErrorAsync(ex);
-                            throw;
-                        }
-                    });
+            await Task.WhenAll(tasks);
+        }
 
-                    await Task.Delay(delayTime);
+        private async Task ProcessTransactionBatchAsync(IGrouping<int, MBTransactionEntity> transactionGroup)
+        {
+            if (transactionGroup == null || !transactionGroup.Any())
+            {
+                return;
+            }
 
-                    tasks.Add(task);
-                }
-
-                await Task.WhenAll(tasks.ToArray());
+            try
+            {
+                var transactionInfoJson = JsonSerializer.Serialize(transactionGroup);
+                deviceService.TransformDeviceInsert(transactionInfoJson);
+                await Task.Delay(DelayTimeMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                throw;
             }
         }
     }

@@ -24,7 +24,9 @@
         {
             // Arrange
             var fixture = new Fixture();
+
             var sumTransaction = fixture.Create<SumTransactionModel>();
+
             monitoringDataAccess.UpdateSumRawTransaction(
                     Arg.Any<SumTransactionModel>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()
                 ).Returns(1);
@@ -41,7 +43,9 @@
         {
             // Arrange
             var fixture = new Fixture();
+
             var notifyTransactionModel = fixture.Create<NotifyTransactionModel>();
+
             monitoringDataAccess.GetNotificationTransaction().Returns(notifyTransactionModel);
 
             // Act
@@ -56,7 +60,9 @@
         {
             // Arrange
             var fixture = new Fixture();
+
             var custModels = fixture.CreateMany<CustModel>();
+
             monitoringDataAccess.GetMainCustByDate(Arg.Any<DateTime>(), Arg.Any<int>(), Arg.Any<int>()).Returns(custModels);
 
             // Act
@@ -84,6 +90,7 @@
         {
             // Arrange
             uint expectd = 1;
+
             monitoringDataAccess.InsertNotifyMonitorTransaction(Arg.Any<DateTime>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>()).Returns(expectd);
 
             // Act
@@ -98,8 +105,11 @@
         {
             // Arrange
             var fixture = new Fixture();
+
             uint notifyMessageID = 1;
+
             var notifyMessageModel = fixture.Create<NotifyMessageModel>();
+
             monitoringDataAccess.GetNotifyMessageById(Arg.Any<uint>()).Returns(notifyMessageModel);
 
             // Act
@@ -114,9 +124,13 @@
         {
             // Arrange
             var fixture = new Fixture();
+
             var notifyType = "notifyType";
+
             var batchSize = 1;
+
             var notifyMessageModels = fixture.CreateMany<NotifyMessageModel>();
+
             monitoringDataAccess.GetNotifyMessage(notifyType, batchSize).Returns(notifyMessageModels);
 
             // Act
@@ -137,6 +151,23 @@
 
             // Assert
             Assert.Equal(1, actual);
+        }
+
+        [Fact]
+        public void GetSumTransaction_WhenCalled_ReturnsExpectedData()
+        {
+            // Arrange
+            var fixture = new Fixture();
+
+            var expectedSumTransaction = fixture.Create<SumTransactionModel>();
+
+            monitoringDataAccess.GetSumTransaction().Returns(expectedSumTransaction);
+
+            // Act
+            var actual = monitoringServices.GetSumTransaction();
+
+            // Assert
+            Assert.Equal(expectedSumTransaction, actual);
         }
     }
 }

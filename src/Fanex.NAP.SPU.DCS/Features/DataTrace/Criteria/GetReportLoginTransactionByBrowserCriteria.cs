@@ -4,7 +4,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
-    internal class GetReportLoginTransactionByBrowserCriteria : CriteriaBase
+    public class GetReportLoginTransactionByBrowserCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_FromDate")]
         public DateTime FromDate { get; set; }

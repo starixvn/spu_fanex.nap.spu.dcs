@@ -10,16 +10,16 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
     {
         IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
-        void InsertDevice(string transIDs);
+        void InsertDevice(string transactionInfoJson);
     }
 
     public class MBDeviceDataAccess : IMBDeviceDataAccess
     {
         private readonly IDynamicRepository repository;
 
-        public MBDeviceDataAccess()
+        public MBDeviceDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch)

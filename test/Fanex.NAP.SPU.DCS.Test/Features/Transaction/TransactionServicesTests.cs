@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using AutoFixture;
-using Fanex.NAP.SPU.DCS.Features.Transactions;
-using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
-using FluentAssertions;
-using NSubstitute;
-using Xunit;
-
+﻿
 namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 {
+    using System.Collections.Generic;
+    using Fanex.NAP.SPU.DCS.Features.Transactions;
+    using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
+    using FluentAssertions;
+    using NSubstitute;
+    using Xunit;
+
     public class TransactionServicesTests
     {
         private readonly ITransactionDataAccess transactionDataAccess;

@@ -20,6 +20,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
+        Task<bool> SendTransactionToLogstash(int batchSize);
+
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -36,11 +38,13 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     {
         private readonly IDataTraceServices dataTraceServices;
         private readonly ILogService logService;
+        private readonly ILogstashService logstashService;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService)
+        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, ILogstashService logstashService)
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
+            this.logstashService = logstashService;
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -136,6 +140,23 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        public async Task<bool> SendTransactionToLogstash(int batchSize)
+        {
+            try
+            {
+                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
+                if (transactionLogsTash != null && transactionLogsTash.Any())
+                {
+                    await logstashService.PushLogAsync(transactionLogsTash);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
+                return false;
+            }
+        }
 
         #region Report
 

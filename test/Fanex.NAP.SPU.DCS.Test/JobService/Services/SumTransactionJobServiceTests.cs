@@ -22,9 +22,11 @@
         {
             // Arrange
             var sumTransaction = fixture.Create<SumTransactionModel>();
+
             var service = GetService();
 
             monitoringServices.GetSumTransaction().Returns(sumTransaction);
+
             monitoringServices.UpdateSumRawTransaction(sumTransaction).Returns(1);
 
             // Act
@@ -40,6 +42,7 @@
         {
             // Arrange
             var sumTransaction = fixture.Create<SumTransactionModel>();
+
             var service = GetService();
 
             monitoringServices.GetSumTransaction().Throws(new Exception("Simulate exception"));

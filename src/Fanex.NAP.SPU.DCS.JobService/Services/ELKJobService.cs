@@ -4,6 +4,7 @@ using Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.Responses;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -37,6 +38,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Licensee
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     public class ELKJobService : IELKJobService
     {
         private readonly IELKServices elkService;
@@ -88,27 +90,36 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 foreach (SportType sport in Enum.GetValues(typeof(SportType)))
                 {
-                    foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
-                    {
-                        var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType);
-
-                        if (elkRateReport != null && elkRateReport.Any())
-                        {
-                            var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
-
-                            if (!string.IsNullOrWhiteSpace(elkRateReportJson))
-                            {
-                                elkService.PrepareStagingForBetMessage(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 1);
-
-                                elkService.PrepareStagingForBetMessage(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 2);
-                            }
-                        }
-                    }
+                    await ProcessSiteTypesForSport(startTime, endTime, sport);
                 }
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
+            }
+        }
+
+        private async Task ProcessSiteTypesForSport(DateTime startTime, DateTime endTime, SportType sport)
+        {
+            foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+            {
+                await ProcessElkRateReport(startTime, endTime, sport, siteType);
+            }
+        }
+
+        private async Task ProcessElkRateReport(DateTime startTime, DateTime endTime, SportType sport, SiteTypeSetting siteType)
+        {
+            var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType);
+
+            if (elkRateReport != null && elkRateReport.Any())
+            {
+                var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+
+                if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                {
+                    elkService.PrepareStagingForBetMessage(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 1);
+                    elkService.PrepareStagingForBetMessage(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 2);
+                }
             }
         }
 
@@ -130,65 +141,51 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     foreach (var leagueGroup in leagueGroups)
                     {
-                        foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-                        {
-                            if (leagueGroup.SportType.Equals(sport))
-                            {
-                                foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
-                                {
-                                    
-                                    var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroup.LeagueGroupId);
-
-                                    if (elkRateReport != null && elkRateReport.Any())
-                                    {
-                                        var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
-
-                                        if (!string.IsNullOrWhiteSpace(elkRateReportJson))
-                                        {
-                                            elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 1);
-
-                                            elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 2);
-
-                                            if (leagueGroup.LeagueGroupId == -1)
-                                            {
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        //else
-                        //{
-                        //    foreach (SportType sport in Enum.GetValues(typeof(SportType)))
-                        //    {
-                        //        foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
-                        //        {
-                        //            var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType);
-
-                        //            if (elkRateReport != null && elkRateReport.Any())
-                        //            {
-                        //                var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
-
-                        //                if (!string.IsNullOrWhiteSpace(elkRateReportJson))
-                        //                {
-                        //                    elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), -1, elkRateReportJson, 1);
-
-                        //                    elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), -1, elkRateReportJson, 2);
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //}
-
+                        await ProcessLeagueGroup(startTime, endTime, leagueGroup);
                     }
                 }
-
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
             }
+        }
+
+        private async Task ProcessLeagueGroup(DateTime startTime, DateTime endTime, LeagueGroupModel leagueGroup)
+        {
+            var tasks = Enum.GetValues(typeof(SportType))
+                            .Cast<SportType>()
+                            .Where(sport => leagueGroup.SportType.Equals(sport))
+                            .Select(sport => ProcessSiteTypes(startTime, endTime, leagueGroup, sport));
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task ProcessSiteTypes(DateTime startTime, DateTime endTime, LeagueGroupModel leagueGroup, SportType sport)
+        {
+            foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+            {
+                var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroup.LeagueGroupId);
+
+                if (elkRateReport != null && elkRateReport.Any())
+                {
+                    var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+
+                    if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                    {
+                        await PrepareStagingForBetMessageDaily(startTime, sport, siteType, leagueGroup, elkRateReportJson);
+                    }
+                }
+            }
+        }
+
+        private async Task PrepareStagingForBetMessageDaily(DateTime startTime, SportType sport, SiteTypeSetting siteType, LeagueGroupModel leagueGroup, string elkRateReportJson)
+        {
+            await Task.Run(() =>
+            {
+                elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 1);
+                elkService.PrepareStagingForBetMessageDaily(startTime, sport.ToString(), siteType.ToString(), leagueGroup.LeagueGroupId, elkRateReportJson, 2);
+            });
         }
 
         private async Task ProccessForMixParlay(DateTime startTime, DateTime endTime)
@@ -197,22 +194,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 foreach (SportSetting sport in Enum.GetValues(typeof(SportSetting)))
                 {
-                    foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
-                    {
-                        var elkRateReport = await GetELKDataForMixParlay(startTime, endTime, sport, siteType);
-
-                        if (elkRateReport != null && elkRateReport.Any())
-                        {
-                            var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
-
-                            if (!string.IsNullOrWhiteSpace(elkRateReportJson))
-                            {
-                                elkService.PrepareStagingForParlayValidationStats(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 1);
-
-                                elkService.PrepareStagingForParlayValidationStats(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 2);
-                            }
-                        }
-                    }
+                    await ProcessSiteTypesForMixParlay(startTime, endTime, sport);
                 }
             }
             catch (Exception ex)
@@ -221,9 +203,49 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        private async Task ProcessSiteTypesForMixParlay(DateTime startTime, DateTime endTime, SportSetting sport)
+        {
+            foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+            {
+                await ProcessElkRateReportForMixParlay(startTime, endTime, sport, siteType);
+            }
+        }
+
+        private async Task ProcessElkRateReportForMixParlay(DateTime startTime, DateTime endTime, SportSetting sport, SiteTypeSetting siteType)
+        {
+            var elkRateReport = await GetELKDataForMixParlay(startTime, endTime, sport, siteType);
+
+            if (elkRateReport != null && elkRateReport.Any())
+            {
+                var elkRateReportJson = System.Text.Json.JsonSerializer.Serialize(elkRateReport);
+
+                if (!string.IsNullOrWhiteSpace(elkRateReportJson))
+                {
+                    elkService.PrepareStagingForParlayValidationStats(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 1);
+                    elkService.PrepareStagingForParlayValidationStats(startTime, sport.ToString(), siteType.ToString(), elkRateReportJson, 2);
+                }
+            }
+        }
+
         private string BuildConfigForSoccerBasketball(SportType sportType, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime, int? leagueGroupId)
         {
-            var reportConfig = new SoccerBasketballElasticConfigModel.RequestBody()
+            var reportConfig = InitializeReportConfig();
+            AddMustConditions(reportConfig, startTime, endTime, siteTypeSetting, sportType, leagueGroupId);
+            AddMustNotConditions(reportConfig);
+            AddAggregations(reportConfig);
+
+            var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            };
+
+            return JsonConvert.SerializeObject(reportConfig, settings);
+        }
+
+        private SoccerBasketballElasticConfigModel.RequestBody InitializeReportConfig()
+        {
+            return new SoccerBasketballElasticConfigModel.RequestBody
             {
                 From = 0,
                 Size = 0,
@@ -232,42 +254,23 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                     Bool = new SoccerBasketballElasticConfigModel.Bool
                     {
                         Must = new List<SoccerBasketballElasticConfigModel.Must>(),
-
-                        MustNot = new List<SoccerBasketballElasticConfigModel.MustNot>
-                        {
-                            new SoccerBasketballElasticConfigModel.MustNot
-                            {
-                                Terms = new SoccerBasketballElasticConfigModel.Terms
-                                {
-                                    LeagueGroupId = new List<int> { 42, 74, 108, 113, 122, 151 },
-                                    Size = null,
-                                    CustomerClass = null,
-                                    Field = null
-                                }
-                            }
-                        }
-
+                        MustNot = new List<SoccerBasketballElasticConfigModel.MustNot>()
                     }
                 },
-                Aggs = new SoccerBasketballElasticConfigModel.Aggs
-                {
-                    GroupByErrorMessage = new SoccerBasketballElasticConfigModel.GroupByErrorMessage
-                    {
-                        Terms = new SoccerBasketballElasticConfigModel.Terms
-                        {
-                            Field = "BettingErrorMessage",
-                            Size = 200,
-                            CustomerClass = null,
-                            LeagueGroupId = null
-                        }
-                    }
-                }
+                Aggs = new SoccerBasketballElasticConfigModel.Aggs()
             };
+        }
 
+        private void AddMustConditions(
+            SoccerBasketballElasticConfigModel.RequestBody reportConfig, 
+            DateTime startTime, 
+            DateTime endTime, 
+            SiteTypeSetting siteTypeSetting, 
+            SportType sportType, 
+            int? leagueGroupId)
+        {
             reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
             {
-                Term = null,
-                Match = null,
                 Range = new SoccerBasketballElasticConfigModel.Range
                 {
                     Timestamp = new SoccerBasketballElasticConfigModel.Timestamp
@@ -282,9 +285,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 Term = new SoccerBasketballElasticConfigModel.Term
                 {
-                    IsLive = true,
-                    IsLicensee = null,
-                    SportType = null
+                    IsLive = true
                 }
             });
 
@@ -294,34 +295,29 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     Term = new SoccerBasketballElasticConfigModel.Term
                     {
-                        IsLive = null,
-                        IsLicensee = false,
-                        SportType = null
+                        IsLicensee = false
                     }
                 });
             }
-            else if (siteTypeSetting == SiteTypeSetting.Licensee)
+            if (siteTypeSetting == SiteTypeSetting.Licensee)
             {
                 reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
                 {
                     Term = new SoccerBasketballElasticConfigModel.Term
                     {
-                        IsLive = null,
-                        IsLicensee = true,
-                        SportType = null
+                        IsLicensee = true
                     }
                 });
             }
+
             reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
             {
                 Terms = new SoccerBasketballElasticConfigModel.Terms
                 {
-                    CustomerClass = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 },
-                    Field = null,
-                    LeagueGroupId = null,
-                    Size = null
+                    CustomerClass = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 }
                 }
             });
+
             reportConfig.Query.Bool.Must.Add(new SoccerBasketballElasticConfigModel.Must
             {
                 Match = new SoccerBasketballElasticConfigModel.Match
@@ -334,8 +330,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 Term = new SoccerBasketballElasticConfigModel.Term
                 {
-                    IsLive = null,
-                    IsLicensee = null,
                     SportType = (int)sportType
                 }
             });
@@ -346,26 +340,90 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     Term = new SoccerBasketballElasticConfigModel.Term
                     {
-                        IsLive = null,
-                        IsLicensee = null,
-                        SportType = null,
                         LeagueGroupId = leagueGroupId
                     }
                 });
             }
+        }
+
+        private void AddMustNotConditions(SoccerBasketballElasticConfigModel.RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.MustNot.Add(new SoccerBasketballElasticConfigModel.MustNot
+            {
+                Terms = new SoccerBasketballElasticConfigModel.Terms
+                {
+                    LeagueGroupId = new List<int> { 42, 74, 108, 113, 122, 151 }
+                }
+            });
+        }
+
+        private void AddAggregations(SoccerBasketballElasticConfigModel.RequestBody reportConfig)
+        {
+            reportConfig.Aggs.GroupByErrorMessage = new SoccerBasketballElasticConfigModel.GroupByErrorMessage
+            {
+                Terms = new SoccerBasketballElasticConfigModel.Terms
+                {
+                    Field = "BettingErrorMessage",
+                    Size = 200
+                }
+            };
+        }
+
+        private string BuildConfigForMixParlay(SportSetting sportSetting, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
+        {
+            var reportConfig = InitializeMixParlayReportConfig();
+            AddMixParlayMustConditions(reportConfig, startTime, endTime, sportSetting, siteTypeSetting);
+            AddMixParlayMustNotConditions(reportConfig);
+            AddMixParlayAggregations(reportConfig);
 
             var settings = new JsonSerializerSettings
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore
             };
 
             return JsonConvert.SerializeObject(reportConfig, settings);
         }
 
-        private string BuildConfigForMixParlay(SportSetting sportSetting, SiteTypeSetting siteTypeSetting, DateTime startTime, DateTime endTime)
+        private RequestBody InitializeMixParlayReportConfig()
         {
-            var mustRange = new Must
+            return new RequestBody
+            {
+                From = 0,
+                Size = 0,
+                Query = new Query
+                {
+                    Bool = new Bool
+                    {
+                        Must = new List<Must>()
+                    }
+                },
+                Aggs = new Aggs
+                {
+                    GroupByErrorMessage = new GroupByErrorMessage
+                    {
+                        Terms = new Terms
+                        {
+                            Field = "ParlayStatistics.BettingErrorMessage",
+                            Size = 100
+                        }
+                    }
+                }
+            };
+        }
+
+        private void AddMixParlayMustConditions(RequestBody reportConfig, DateTime startTime, DateTime endTime, SportSetting sportSetting, SiteTypeSetting siteTypeSetting)
+        {
+            AddRangeCondition(reportConfig, startTime, endTime);
+            AddMatchCondition(reportConfig);
+            AddCustomerClassCondition(reportConfig);
+            AddSportTypeCondition(reportConfig, sportSetting);
+            AddIsLiveCondition(reportConfig);
+            AddSiteTypeCondition(reportConfig, siteTypeSetting);
+        }
+
+        private void AddRangeCondition(RequestBody reportConfig, DateTime startTime, DateTime endTime)
+        {
+            reportConfig.Query.Bool.Must.Add(new Must
             {
                 Range = new Models.MixParlayElasticConfig.Range
                 {
@@ -375,154 +433,135 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                         EndTime = endTime.ToString("yyyy-MM-dd") + "T04:00:00"
                     }
                 }
+            });
+        }
 
-            };
-
-            var mustMatch = new Must
+        private void AddMatchCondition(RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.Must.Add(new Must
             {
                 Match = new Match
                 {
-                    ParlayStatisticsTopic = "MixParlay",
-                    ParlayStatisticsSportType = null
+                    ParlayStatisticsTopic = "MixParlay"
                 }
+            });
+        }
 
-            };
-
-            var mustTerms = new Must
+        private void AddCustomerClassCondition(RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.Must.Add(new Must
             {
                 Terms = new Terms
                 {
-                    ParlayStatisticsSubTicketsCustomerClass = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 },
-                    Size = null,
-                },
-                Bool = null,
+                    ParlayStatisticsSubTicketsCustomerClass = new List<int>
+            {
+                1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201
+            }
+                }
+            });
+        }
 
-            };
-
+        private void AddSportTypeCondition(RequestBody reportConfig, SportSetting sportSetting)
+        {
             var mustBool = new Must
             {
                 Bool = new Bool()
             };
 
-            var mustTerm = new Must
-            {
-                Term = new Term()
-            };
-
-            var mustTermIsLive = new Must
-            {
-                Term = new Term
-                {
-                    ParlayStatisticsSubTicketsIsLive = true,
-                    ParlayStatisticsIsLicensee = null
-                }
-            };
-
-            var reportConfig = new RequestBody()
-            {
-                From = 0,
-                Size = 0,
-                Aggs = new Aggs
-                {
-                    GroupByErrorMessage = new GroupByErrorMessage
-                    {
-                        Terms = new Terms
-                        {
-                            Field = "ParlayStatistics.BettingErrorMessage",
-                            Size = 100,
-                        }
-                    }
-                },
-                Query = new Query
-                {
-                    Bool = new Bool
-                    {
-                        Must = new List<Must>()
-                    }
-                }
-            };
-
             if (sportSetting == SportSetting.All)
             {
-                mustBool.Bool.Should = new List<Should> {
-                        new Should
-                        {
-                            Match = new Match
-                            {
-                                ParlayStatisticsSportType = 1
-                            }
-                        },
-                        new Should
-                        {
-                            Match = new Match
-                            {
-                                ParlayStatisticsSportType = 99
-                            }
-                        }
-                    };
-
+                mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
+                {
+                    ParlayStatisticsSportType = 1
+                }
+            },
+            new Should
+            {
+                Match = new Match
+                {
+                    ParlayStatisticsSportType = 99
+                }
+            }
+        };
             }
             else if (sportSetting == SportSetting.OnlySoccer)
             {
-                mustBool.Bool.Should = new List<Should> {
-                        new Should
-                        {
-                            Match = new Match
-                            {
-                                ParlayStatisticsSportType = 1
-                            }
-                        }
-                    };
+                mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
+                {
+                    ParlayStatisticsSportType = 1
+                }
+            }
+        };
             }
             else
             {
-                mustBool.Bool.Should = new List<Should> {
-                        new Should
-                        {
-                            Match = new Match
-                            {
-                                ParlayStatisticsSportType = 99
-                            }
-                        }
-                    };
+                mustBool.Bool.Should = new List<Should>
+        {
+            new Should
+            {
+                Match = new Match
+                {
+                    ParlayStatisticsSportType = 99
+                }
+            }
+        };
             }
 
+            reportConfig.Query.Bool.Must.Add(mustBool);
+        }
+
+        private void AddIsLiveCondition(RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.Must.Add(new Must
+            {
+                Term = new Term
+                {
+                    ParlayStatisticsSubTicketsIsLive = true
+                }
+            });
+        }
+
+        private void AddSiteTypeCondition(RequestBody reportConfig, SiteTypeSetting siteTypeSetting)
+        {
             if (siteTypeSetting == SiteTypeSetting.Licensee)
             {
-                mustTerm.Term = new Term
+                reportConfig.Query.Bool.Must.Add(new Must
                 {
-                    ParlayStatisticsIsLicensee = true,
-                    ParlayStatisticsSubTicketsIsLive = null
-                };
+                    Term = new Term
+                    {
+                        ParlayStatisticsIsLicensee = true
+                    }
+                });
             }
-            else if (siteTypeSetting == SiteTypeSetting.Credit)
+            if (siteTypeSetting == SiteTypeSetting.Credit)
             {
-                mustTerm.Term = new Term
+                reportConfig.Query.Bool.Must.Add(new Must
                 {
-                    ParlayStatisticsIsLicensee = false,
-                    ParlayStatisticsSubTicketsIsLive = null
-                };
+                    Term = new Term
+                    {
+                        ParlayStatisticsIsLicensee = false
+                    }
+                });
             }
+        }
 
-            reportConfig.Query.Bool.Must.Add(mustRange);
-            reportConfig.Query.Bool.Must.Add(mustMatch);
-            reportConfig.Query.Bool.Must.Add(mustBool);
-            reportConfig.Query.Bool.Must.Add(mustTermIsLive);
-
-            if (siteTypeSetting != SiteTypeSetting.All)
+        private void AddMixParlayMustNotConditions(RequestBody reportConfig)
+        {
+            reportConfig.Query.Bool.MustNot = new List<MustNot>
             {
-                reportConfig.Query.Bool.Must.Add(mustTerm);
-            }
-
-
-            reportConfig.Query.Bool.Must.Add(mustTerms);
-
-            reportConfig.Query.Bool.MustNot = new List<MustNot> {
                 new MustNot
                 {
-                    Term = new Term{
-                        ParlayStatisticsSubTicketsIsLive = false,
-                        ParlayStatisticsIsLicensee = null
+                    Term = new Term
+                    {
+                        ParlayStatisticsSubTicketsIsLive = false
                     }
                 },
                 new MustNot
@@ -535,32 +574,30 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                             Params = new Params
                             {
                                 Excluded = new List<int> { 1, 2, 100, 111, 112, 113, 201, 202, 901, 999, 1001, 2001, 2101, 2201 }
-                            },
-                            Script1 = null
+                            }
                         }
                     }
                 }
             };
+        }
 
-            var settings = new JsonSerializerSettings
+        private void AddMixParlayAggregations(RequestBody reportConfig)
+        {
+            reportConfig.Aggs.GroupByErrorMessage = new GroupByErrorMessage
             {
-                NullValueHandling = NullValueHandling.Ignore
+                Terms = new Terms
+                {
+                    Field = "ParlayStatistics.BettingErrorMessage",
+                    Size = 100
+                }
             };
-
-            return JsonConvert.SerializeObject(reportConfig, settings);
         }
 
         private async Task<IEnumerable<SuccessRateModel>> GetELKDataForMixParlay(DateTime startTime, DateTime endTime, SportSetting sportSetting, SiteTypeSetting siteTypeSetting)
         {
             var config = BuildConfigForMixParlay(sportSetting, siteTypeSetting, startTime, endTime);
 
-            HttpClientHandler handler = new HttpClientHandler
-            {
-                // Bypass SSL certificate validation for testing purposes
-                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
-            };
-
-            var httpClient = new HttpClient(handler)
+            var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
@@ -576,7 +613,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             var successRate = elasticResponse
                 .TryGetBuckets()
-                .Select(x => new SuccessRateModel()
+                .Select(x => new SuccessRateModel
                 {
                     BettingErrorMessage = x.key,
                     Count = x.doc_count,
@@ -590,13 +627,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             var config = BuildConfigForSoccerBasketball(sportType, siteType, startTime, endTime, leagueGroupId);
 
-            HttpClientHandler handler = new HttpClientHandler
-            {
-                // Bypass SSL certificate validation for testing purposes
-                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
-            };
-
-            var httpClient = new HttpClient(handler)
+            var httpClient = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(100),
                 BaseAddress = new Uri(appSettings.ELKUrl),
@@ -612,7 +643,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             var successRate = elasticResponse
                 .TryGetBuckets()
-                .Select(x => new SuccessRateModel()
+                .Select(x => new SuccessRateModel
                 {
                     BettingErrorMessage = x.key,
                     Count = x.doc_count,

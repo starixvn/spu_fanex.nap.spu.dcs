@@ -33,9 +33,9 @@
     {
         private readonly IDynamicRepository repository;
 
-        public MonitoringDataAccess()
+        public MonitoringDataAccess(IDynamicRepository repository)
         {
-            repository = new DynamicRepository();
+            this.repository = repository ?? new DynamicRepository();
         }
 
         public SumTransactionModel GetSumTransaction()
