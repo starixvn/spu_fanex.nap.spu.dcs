@@ -164,10 +164,6 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                 {
                     await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());
 
-                    var maxId = processedTransIDs.Max();
-
-                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, maxId.ToString());
-
                     return true;
                 }
             }
