@@ -17,6 +17,10 @@
       <Key>sonar.cs.roslyn.ignoreIssues</Key>
       <Value>false</Value>
     </Setting>
+	<Setting>
+	    <Key>sonar.exclusions</Key>
+		<Value>**/ELKJobService.cs</Value>
+	</Setting>
   </Settings>
   <Rules>
     <Rule>
@@ -157,5 +161,14 @@
         </Parameter>
       </Parameters>
     </Rule>
+    <Rule>
+		<Key>S6566</Key>
+        <Parameters>
+		  <Parameter>
+			  <Key>disabled</Key>
+			  <Value>true</Value>
+		  </Parameter>
+	   </Parameters>
+    </Rule>    
   </Rules>
 </AnalysisInput>

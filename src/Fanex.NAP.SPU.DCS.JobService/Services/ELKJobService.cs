@@ -38,9 +38,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Licensee
     }
 
-
     [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Smell", "*", Justification = "Excluded from SonarQube analysis")]
     public class ELKJobService : IELKJobService
     {
         private readonly IELKServices elkService;
