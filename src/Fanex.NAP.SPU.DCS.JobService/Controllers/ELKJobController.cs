@@ -1,5 +1,6 @@
 ﻿using Fanex.NAP.SPU.DCS.JobService.Services;
 
+#pragma warning disable
 namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
     [ApiController]
@@ -67,3 +68,4 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
     }
 }
+#pragma warning restore

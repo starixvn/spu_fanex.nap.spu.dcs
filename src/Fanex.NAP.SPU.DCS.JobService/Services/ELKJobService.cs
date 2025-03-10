@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
+#pragma warning disable
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface IELKJobService
@@ -626,4 +627,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
 
     }
+
 }
+
+#pragma warning restore
