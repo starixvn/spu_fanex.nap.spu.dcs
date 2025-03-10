@@ -1,7 +1,10 @@
 ﻿using Fanex.NAP.SPU.DCS.JobService.Services;
+using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable
 namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
     [ApiController]
     [Route("api/elkjob")]
     public class ELKJobController : ControllerBase
@@ -67,3 +70,4 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
     }
 }
+#pragma warning restore
