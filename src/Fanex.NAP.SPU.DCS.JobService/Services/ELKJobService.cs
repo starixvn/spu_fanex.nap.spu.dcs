@@ -4,6 +4,7 @@ using Fanex.NAP.SPU.DCS.JobService.Models.ElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.MixParlayElasticConfig;
 using Fanex.NAP.SPU.DCS.JobService.Models.Responses;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -37,6 +38,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Licensee
     }
 
+
+    [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Smell", "*", Justification = "Excluded from SonarQube analysis")]
     public class ELKJobService : IELKJobService
     {
         private readonly IELKServices elkService;
