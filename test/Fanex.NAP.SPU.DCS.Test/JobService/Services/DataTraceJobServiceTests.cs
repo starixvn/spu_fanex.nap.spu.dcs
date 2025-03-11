@@ -293,15 +293,11 @@
         public async Task SendTransactionToLogstash_SuccessfulExecution_ShouldCallExactFunctionAndReturnTrue()
         {
             // Arrange
-            var appSettings = Substitute.For<IAppSettings>();
-
             var transactionLogs = fixture.Create<IEnumerable<TransactionLogstashModel>>();
 
             var maxProcessedTransID = 3UL;
 
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
-
-            appSettings.IsEnableLogstash.Returns(true);
 
             logstashService.PushLogAsync(transactionLogs).Returns(Task.FromResult(maxProcessedTransID));
 

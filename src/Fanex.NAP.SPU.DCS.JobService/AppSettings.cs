@@ -27,8 +27,6 @@
 
         string ELKUrl { get; }
 
-        bool IsEnableLogstash { get; }
-
         string LogstashTcpHostname { get; }
 
         int LogstashTcpPort { get; }
@@ -52,7 +50,6 @@
         private readonly bool isReadyDbExtra;
         private readonly string ratioUrl;
         private readonly string elkUrl;
-        private readonly bool isEnableLogstash;
         private readonly string logstashTcpHostname;
         private readonly int logstashTcpPort;
 
@@ -79,8 +76,6 @@
             ratioUrl = GetValue<string>("RatioUrl");
 
             elkUrl = GetValue<string>("ELK:Url");
-
-            isEnableLogstash = !string.IsNullOrEmpty(GetValue<string>("Logstash:IsEnable")) && Convert.ToBoolean(GetValue<string>("Logstash:IsEnable"));
 
             logstashTcpHostname = GetValue<string>("Logstash:Tcp:Hostname") ?? string.Empty;
 
@@ -130,7 +125,6 @@
 
         public string ELKUrl => elkUrl;
 
-        public bool IsEnableLogstash => isEnableLogstash;
 
         public string LogstashTcpHostname => logstashTcpHostname;
 
