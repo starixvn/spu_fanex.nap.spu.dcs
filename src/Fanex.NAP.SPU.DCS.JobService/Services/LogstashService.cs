@@ -25,7 +25,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             ulong processedTransID = 0;
 
             if (!appSettings.IsEnableLogstash)
+            {
                 return processedTransID;
+            }
 
             try
             {
