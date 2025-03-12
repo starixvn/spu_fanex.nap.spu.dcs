@@ -138,6 +138,7 @@
             // Arrange
             var deviceJobService = GetService();
 
+
             deviceService.When(x => x.InsertFPDeviceMappingAsync(Arg.Any<int>(), Arg.Any<bool>()))
                          .Do(x => { throw new Exception("Test exception"); });
 

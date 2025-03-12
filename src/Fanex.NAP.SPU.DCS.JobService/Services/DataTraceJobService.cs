@@ -5,6 +5,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     using Fanex.Logging.Extensions.Database;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
+    using Fanex.NAP.SPU.DCS.Features.SystemSetting;
 
     public interface IDataTraceJobService
     {
@@ -39,12 +40,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly IDataTraceServices dataTraceServices;
         private readonly ILogService logService;
         private readonly ILogstashService logstashService;
+        private readonly ISystemSettingServices systemSettingServices;
 
-        public DataTraceJobService(IDataTraceServices dataTraceServices, ILogService logService, ILogstashService logstashService)
+        private readonly int openSearchTransaction07SystemSettingID = 101;
+
+        public DataTraceJobService(
+            IDataTraceServices dataTraceServices,
+            ILogService logService,
+            ILogstashService logstashService,
+            ISystemSettingServices systemSettingServices)
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
             this.logstashService = logstashService;
+            this.systemSettingServices = systemSettingServices;
         }
 
         public async Task<bool> SummaryBetTransactionAsync(DateTime? fromDate, DateTime? toDate, int batchSize)
@@ -145,17 +154,25 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
-                if (transactionLogsTash != null && transactionLogsTash.Any())
+
+                if (!transactionLogsTash.Any())
+                    return true;
+
+                var processedTransID = await logstashService.PushLogAsync(transactionLogsTash);
+
+                if (processedTransID > 0)
                 {
-                    await logstashService.PushLogAsync(transactionLogsTash);
+                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());
+
+                    return true;
                 }
-                return true;
             }
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
-                return false;
             }
+
+            return false;
         }
 
         #region Report

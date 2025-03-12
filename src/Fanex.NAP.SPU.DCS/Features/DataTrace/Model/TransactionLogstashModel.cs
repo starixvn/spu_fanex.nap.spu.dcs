@@ -10,47 +10,37 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public ulong AccountID { get; set; }
 
+        public int IsTransformed { get; set; }
+
         public string LoginName { get; set; }
 
         public int SubscriberID { get; set; }
 
         public string SubscriberName { get; set; }
 
-        public int URLID { get; set; }
+        public string URL { get; set; }
 
-        public string URLDetails { get; set; }
+        public ulong DeviceID { get; set; }
 
-        public int DeviceCodeID { get; set; }
-
-        public int DeviceID { get; set; }
-
-        public string DeviceCode { get; set; }
+        public ulong DeviceCodeID { get; set; }
 
         public string FirstDeviceCode { get; set; }
 
         public int DeviceStatus { get; set; }
 
-        public int DeviceFingerprintID { get; set; }
-
         public string FingerprintCode { get; set; }
 
-        public string UserAgentKey { get; set; }
+        public string UserAgent { get; set; }
+
+        public string DeviceType { get; set; }
 
         public string IP { get; set; }
 
-        public int IPID { get; set; }
-
-        public int ActionResultID { get; set; }
+        public string IPID { get; set; }
 
         public string Action { get; set; }
 
-        public string FlaggedCode { get; set; }
-
-        public int PluginID { get; set; }
-
-        public int TransStatus { get; set; }
-
-        public string UserAgent { get; set; }
+        public string Flagged { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
@@ -60,20 +50,8 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public string BotDetection { get; set; }
 
-        public int BotComponentID { get; set; }
-
         public string FakeIP { get; set; }
 
         public bool IsIncognitoMode { get; set; }
-
-        public int JSChallengeInfoID { get; set; }
-
-        public int FP_UserAgentID { get; set; }
-
-        public int FP_DeviceMappingID { get; set; }
-
-        public int FP_DeviceID { get; set; }
-
-        public int FP_DeviceStatus { get; set; }
     }
 }

@@ -6,6 +6,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage(Justification = "Excluded from code coverage")]
+    // for setting up and running the ASP.NET Core application, which is not typically unit tested.
     public static class Program
     {
         public static void Main(string[] args)

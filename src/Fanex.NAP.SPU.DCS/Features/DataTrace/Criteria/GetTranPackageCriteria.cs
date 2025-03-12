@@ -10,7 +10,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DT_OpenSearch_Transaction_Get";
+            return "DCS_DC_OpenSearch_Transaction_Get";
         }
 
         public override bool IsValid()
