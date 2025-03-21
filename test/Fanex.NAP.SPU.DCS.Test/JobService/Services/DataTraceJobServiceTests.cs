@@ -10,6 +10,7 @@
     using NSubstitute.ExceptionExtensions;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -413,6 +414,55 @@
 
             // Assert
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetTransactionToLogstash_SuccessfulExecution_ReturnsCorrectValues()
+        {
+            // Arrange
+            var transactions = fixture.CreateMany<TransactionLogstashModel>(10).ToList();
+            dataTraceServices.GetTransactionLogstash(Arg.Any<int>()).Returns(transactions);
+
+            // Act
+            var (minTransID, maxTransID, totalRecord) = await service.GetTransactionToLogstash(1);
+
+            // Assert
+            Assert.Equal(transactions.Min(x => x.TransID), minTransID);
+            Assert.Equal(transactions.Max(x => x.TransID), maxTransID);
+            Assert.Equal(transactions.Count, totalRecord);
+        }
+
+        [Fact]
+        public async Task GetTransactionToLogstash_NoTransactions_ReturnsZeroValues()
+        {
+            // Arrange
+            dataTraceServices.GetTransactionLogstash(Arg.Any<int>()).Returns(Enumerable.Empty<TransactionLogstashModel>());
+
+            // Act
+            var (minTransID, maxTransID, totalRecord) = await service.GetTransactionToLogstash(1);
+
+            // Assert
+            Assert.Equal(0UL, minTransID);
+            Assert.Equal(0UL, maxTransID);
+            Assert.Equal(0, totalRecord);
+            await logService.Received(1).InfoMessageAsync("DCS - DataTrace GetTransactionToLogstash found no transactions.");
+        }
+
+        [Fact]
+        public async Task GetTransactionToLogstash_ExceptionThrown_ReturnsZeroValuesAndLogsError()
+        {
+            // Arrange
+            var exception = new Exception("Test exception");
+            dataTraceServices.GetTransactionLogstash(Arg.Any<int>()).Throws(exception);
+
+            // Act
+            var (minTransID, maxTransID, totalRecord) = await service.GetTransactionToLogstash(1);
+
+            // Assert
+            Assert.Equal(0UL, minTransID);
+            Assert.Equal(0UL, maxTransID);
+            Assert.Equal(0, totalRecord);
+            await logService.Received(1).ErrorAsync(exception);
         }
     }
 }

@@ -34,6 +34,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<IEnumerable<ReportLoginTransactionByBrowserModel>> GetReportLoginTransactionByBrowser(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionByFlaggedModel>> GetReportLoginTransactionByFlagged(DateTime fromDate, DateTime toDate);
+
+        Task<(ulong minTransID, ulong maxTransID, int totalRecord)> GetTransactionToLogstash(int batchSize);
     }
     public class DataTraceJobService : IDataTraceJobService
     {
@@ -246,6 +248,31 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public async Task<(ulong minTransID, ulong maxTransID, int totalRecord)> GetTransactionToLogstash(int batchSize)
+        {
+            try
+            {
+                var transactions = await dataTraceServices.GetTransactionLogstash(batchSize);
+
+                if (transactions == null || !transactions.Any())
+                {
+                    await logService.InfoMessageAsync("DCS - DataTrace GetTransactionToLogstash found no transactions.");
+                    return (0, 0, 0);
+                }
+
+                var minTransID = transactions.Min(x => x.TransID);
+                var maxTransID = transactions.Max(x => x.TransID);
+                var totalRecord = transactions.Count();
+
+                return (minTransID, maxTransID, totalRecord);
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return (0, 0, 0);
             }
         }
         #endregion

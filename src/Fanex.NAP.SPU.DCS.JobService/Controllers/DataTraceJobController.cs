@@ -246,6 +246,26 @@
 
             return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "ReportLoginTransactionByFlagged.csv");
         }
+
+        [HttpGet("get-transaction-to-logstash")]
+        public async Task<IActionResult> GetTransactionToLogstash(int batchSize = 5000)
+        {
+            var (minTransID, maxTransID, totalRecord) = await dataTraceJobService.GetTransactionToLogstash(batchSize);
+
+            if (totalRecord == 0)
+            {
+                return NotFound("No transactions found.");
+            }
+
+            var result = new
+            {
+                MinTransID = minTransID,
+                MaxTransID = maxTransID,
+                TotalRecord = totalRecord
+            };
+
+            return Ok(result);
+        }
         #endregion
     }
 }
