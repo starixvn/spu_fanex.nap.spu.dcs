@@ -8,7 +8,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ILogstashService
     {
-        Task<ulong> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
+        ulong PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
     }
     public class LogstashService: ILogstashService
     {
@@ -20,31 +20,23 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             this.appSettings = appSettings;
             this.logService = logService;
         }
-        public async Task<ulong> PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
+        public ulong PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
         {
             ulong processedTransID = 0;
+            using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
+            using var stream = client.GetStream();
 
-            try
+            foreach (var transaction in transactions)
             {
-                using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
-                using var stream = client.GetStream();
+                var logMessage = TransformLogMessage(transaction);
 
-                foreach (var transaction in transactions)
-                {
-                    var logMessage = TransformLogMessage(transaction);
+                string jsonLog = JsonConvert.SerializeObject(logMessage);
 
-                    string jsonLog = JsonConvert.SerializeObject(logMessage);
+                byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
 
-                    byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
+                stream.Write(data);
 
-                    await stream.WriteAsync(data);
-
-                    processedTransID = Math.Max(processedTransID, transaction.TransID);
-                }
-            }
-            catch (Exception ex)
-            {
-                await logService.ErrorMessageAsync($"DCS - DataTrace PushLogAsync execute exception message: {ex.Message}");
+                processedTransID = Math.Max(processedTransID, transaction.TransID);
             }
 
             return processedTransID;

@@ -9,7 +9,7 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
     {
         Task<string> GetDCSystemSettingByID(int parameterID);
 
-        Task<int> UpdateDCSystemSettingByID(int id, string value);
+        int UpdateDCSystemSettingByID(int id, string value);
     }
     public class SystemSettingDataAccess : ISystemSettingDataAccess
     {
@@ -31,7 +31,7 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
             return await db.QueryEntityAsync<string>(criteria);
         }
 
-        public async Task<int> UpdateDCSystemSettingByID(int id, string value)
+        public int UpdateDCSystemSettingByID(int id, string value)
         {
             var criteria = new UpdateDCSystemSettingParameterCriteria
             {
@@ -39,7 +39,7 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
                 ParameterID = id
             };
 
-            return await repository.ExecuteAsync(criteria);
+            return repository.Execute(criteria);
         }
     }
 }

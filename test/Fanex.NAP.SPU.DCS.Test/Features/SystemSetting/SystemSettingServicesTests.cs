@@ -19,7 +19,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
         }
 
         [Fact]
-        public async Task UpdateDCSystemSettingByID_WhenCalled_ExecutesWithCorrectParameters()
+        public void UpdateDCSystemSettingByID_WhenCalled_ExecutesWithCorrectParameters()
         {
             // Arrange
             var systemSettingID = fixture.Create<int>();
@@ -27,10 +27,11 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
             var systemSettingValue = fixture.Create<string>();
 
             // Act
-            var result = await systemSettingServices.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
+            var result = systemSettingServices.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
 
             // Assert
-            await dataAccess.Received(1).UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
+            dataAccess.Received(1).UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
+
             Assert.True(result);
         }
     }

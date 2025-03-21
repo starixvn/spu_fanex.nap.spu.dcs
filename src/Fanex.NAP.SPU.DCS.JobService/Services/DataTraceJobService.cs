@@ -21,7 +21,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
-        Task<bool> SendTransactionToLogstash(int batchSize);
+        bool SendTransactionToLogstash(int batchSize);
 
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
@@ -149,30 +149,30 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
-        public async Task<bool> SendTransactionToLogstash(int batchSize)
+        public bool SendTransactionToLogstash(int batchSize)
         {
             try
             {
-                var transactionLogsTash = await dataTraceServices.GetTransactionLogstash(batchSize);
+                var transactionLogstash = dataTraceServices.GetTransactionLogstash(batchSize);
 
-                if (!transactionLogsTash.Any())
-                    return true;
-
-                var processedTransID = await logstashService.PushLogAsync(transactionLogsTash);
-
-                if (processedTransID > 0)
+                if(transactionLogstash != null && transactionLogstash.Any())
                 {
-                    await systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());
+                    var processedTransID = logstashService.PushLogAsync(transactionLogstash);
 
-                    return true;
-                }
+                    if (processedTransID > 0)
+                    {
+                        return systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());                     
+                    }                 
+                }              
             }
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
+
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         #region Report

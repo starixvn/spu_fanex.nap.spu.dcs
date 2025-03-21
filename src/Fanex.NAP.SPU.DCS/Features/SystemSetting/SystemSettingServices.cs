@@ -4,7 +4,7 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
 {
     public interface ISystemSettingServices
     {
-        Task<bool> UpdateDCSystemSettingByID(int SystemSettingID, string SystemSettingValue);
+        bool UpdateDCSystemSettingByID(int SystemSettingID, string SystemSettingValue);
     }
 
     public class SystemSettingServices : ISystemSettingServices
@@ -16,11 +16,11 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
             this.dataAccess = dataAccess;
         }
 
-        public async Task<bool> UpdateDCSystemSettingByID(int SystemSettingID, string SystemSettingValue)
+        public bool UpdateDCSystemSettingByID(int SystemSettingID, string SystemSettingValue)
         {
-            await dataAccess.UpdateDCSystemSettingByID(SystemSettingID, SystemSettingValue);
+            var result = dataAccess.UpdateDCSystemSettingByID(SystemSettingID, SystemSettingValue);
 
-            return true;
+            return result > 0;
         }
     }
 }

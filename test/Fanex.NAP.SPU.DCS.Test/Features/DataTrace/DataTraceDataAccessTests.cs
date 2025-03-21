@@ -241,7 +241,7 @@
         }
 
         [Fact]
-        public async Task GetTranPackageAsync_WhenCalled_ReturnsExpectedData()
+        public void GetTranPackageAsync_WhenCalled_ReturnsExpectedData()
         {
             // Arrange
             var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
@@ -254,7 +254,7 @@
                 .Returns(expectedTransactions);
 
             // Act
-            var actual = await dataTraceDataAccess.GetTranPackageAsync(1);
+            var actual = dataTraceDataAccess.GetTransactionForLogtash(1);
             var settingKey = criteria.GetSettingKey();
 
             // Assert

@@ -290,7 +290,7 @@
         }
 
         [Fact]
-        public async Task SendTransactionToLogstash_SuccessfulExecution_ShouldCallExactFunctionAndReturnTrue()
+        public void SendTransactionToLogstash_SuccessfulExecution_ShouldCallExactFunctionAndReturnTrue()
         {
             // Arrange
             var transactionLogs = fixture.Create<IEnumerable<TransactionLogstashModel>>();
@@ -299,14 +299,15 @@
 
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
 
-            logstashService.PushLogAsync(transactionLogs).Returns(Task.FromResult(maxProcessedTransID));
+            logstashService.PushLogAsync(transactionLogs).Returns(maxProcessedTransID);
 
             // Act
-            var result = await service.SendTransactionToLogstash(1);
+            var result = service.SendTransactionToLogstash(1);
 
             // Assert
             Assert.True(result);
-            await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
+            
+            logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
 
         [Fact]
@@ -316,7 +317,7 @@
             dataTraceServices.GetTransactionLogstash(1).Throws(new Exception("Test exception"));
 
             // Act
-            var result = await service.SendTransactionToLogstash(1);
+            var result = service.SendTransactionToLogstash(1);
 
             // Assert
             Assert.False(result);

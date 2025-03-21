@@ -81,9 +81,9 @@
         }
 
         [HttpPost("updatedcsystemsettingbyid")]
-        public async Task<bool> UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
+        public bool UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
         {
-            return await systemSettingServices.UpdateDCSystemSettingByID(id, value);
+            return  systemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
