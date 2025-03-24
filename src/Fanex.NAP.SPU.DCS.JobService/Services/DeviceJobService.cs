@@ -38,26 +38,34 @@
         {
             try
             {
-                if (size > 0 && numberOfBatch > 0)
-                {
-                    await deviceService.InsertFPDeviceMappingAsync(size * numberOfBatch, isReadyDbExtra);
-                    await TransformDevice(size, numberOfBatch, isReadyDbExtra);
-                }
-                else
+                if (size <= 0 || numberOfBatch <= 0)
                 {
                     await logService.ErrorAsync(new Exception("TransformDevice BatchSize = 0!"));
+                    return false;
+                }
 
-                    return await Task.FromResult(false);
+                await deviceService.InsertFPDeviceMappingAsync(size * numberOfBatch, isReadyDbExtra);
+                var transformResult = await TransformDevice(size, numberOfBatch, isReadyDbExtra);
+
+                if (transformResult)
+                {
+                    var updateResult = deviceService.UpdateMaxTransIDTransformDevice();
+                    if (updateResult < 0)
+                    {
+                        await logService.ErrorAsync(new Exception($"UpdateMaxTransIDTransformDevice return value: {updateResult}!"));
+
+                        return false;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
 
-                return await Task.FromResult(false);
+                return false;
             }
 
-            return await Task.FromResult(true);
+            return true;
         }
 
         public async Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra)
@@ -158,38 +166,40 @@
             return 0;
         }
 
-        private async Task TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        private async Task<bool> TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
         {
             var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
-
-            if (stagingTransIds != null && stagingTransIds.Any())
+            if (stagingTransIds == null || !stagingTransIds.Any())
             {
-                var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
-
-                var tasks = new List<Task>();
-
-                foreach (var trans in groupTrans)
-                {
-                    var task = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
-                        }
-                        catch (Exception ex)
-                        {
-                            await logService.ErrorAsync(ex);
-                            throw;
-                        }
-                    });
-
-                    await Task.Delay(delayTime);
-
-                    tasks.Add(task);
-                }
-
-                await Task.WhenAll(tasks.ToArray());
+                return false;
             }
+
+            var groupTrans = stagingTransIds.GroupBy(x => x.BatchId);
+            var tasks = new List<Task>();
+
+            foreach (var trans in groupTrans)
+            {
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                    }
+                    catch (Exception ex)
+                    {
+                        await logService.ErrorAsync(ex);
+                        throw;
+                    }
+                });
+
+                await Task.Delay(delayTime);
+
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks.ToArray());
+
+            return true;
         }
 
 

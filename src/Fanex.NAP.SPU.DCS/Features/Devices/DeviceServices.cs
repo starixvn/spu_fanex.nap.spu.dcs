@@ -17,6 +17,8 @@
         Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra);
 
         Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra);
+
+        int UpdateMaxTransIDTransformDevice();
     }
 
     public class DeviceServices : IDeviceServices
@@ -63,6 +65,11 @@
         public async Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra)
         {
             await deviceDataAcess.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isTransformExtra);
+        }
+
+        public int UpdateMaxTransIDTransformDevice()
+        {
+            return deviceDataAcess.UpdateMaxTransIDTransformDevice();
         }
     }
 }
