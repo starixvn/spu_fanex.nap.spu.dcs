@@ -1,15 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
 {
-    using Fanex.NAP.SPU.DCS.Features.Transactions;
-    using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Fanex.NAP.SPU.DCS.JobService;
-    using NSubstitute;
     using AutoFixture;
-    using System.Threading.Tasks;
-    using System;
-    using Xunit;
+    using Fanex.NAP.SPU.DCS.Features.Transactions;
     using Fanex.NAP.SPU.DCS.Features.Transactions.Entities;
+    using Fanex.NAP.SPU.DCS.JobService;
+    using Fanex.NAP.SPU.DCS.JobService.Services;
+    using NSubstitute;
     using NSubstitute.ExceptionExtensions;
+    using System;
+    using System.Threading.Tasks;
+    using Xunit;
 
     public class TransactionJobServiceTests
     {

@@ -298,51 +298,52 @@
         }
 
         [Fact]
-        public async Task GetTransactionLogstash_WhenCalled_ShouldCallExactFunction()
+        public void GetTransactionLogstash_WhenCalled_ShouldCallExactFunction()
         {
             // Arrange
             var expectedTransactions = fixture.CreateMany<TransactionLogstashModel>();
 
-            dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
+            dataAccess.GetTransactionForLogtash(Arg.Any<int>()).Returns(expectedTransactions);
 
             // Act
 
-            var actual = await dataTraceServices.GetTransactionLogstash(1);
+            var actual = dataTraceServices.GetTransactionLogstash(1);
 
             // Assert
             Assert.Equal(expectedTransactions, actual);
         }
 
         [Fact]
-        public async Task GetTransactionLogstash_WhenCalledWithEmptyData_ShouldReturnEmptyList()
+        public void GetTransactionLogstash_WhenCalledWithEmptyData_ShouldReturnEmptyList()
         {
             // Arrange
             var expectedTransactions = new List<TransactionLogstashModel>();
 
-            dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
+            dataAccess.GetTransactionForLogtash(Arg.Any<int>()).Returns(expectedTransactions);
 
             // Act
-            var actual = await dataTraceServices.GetTransactionLogstash(1);
+            var actual = dataTraceServices.GetTransactionLogstash(1);
 
             // Assert
             Assert.Empty(actual);
-            await dataAccess.Received(1).GetTranPackageAsync(Arg.Any<int>());
+            
+            dataAccess.Received(1).GetTransactionForLogtash(Arg.Any<int>());
         }
 
         [Fact]
-        public async Task GetTransactionLogstash_WhenCalledWithNullData_ShouldReturnNull()
+        public void GetTransactionLogstash_WhenCalledWithNullData_ShouldReturnNull()
         {
             // Arrange
             List<TransactionLogstashModel> expectedTransactions = null;
 
-            dataAccess.GetTranPackageAsync(Arg.Any<int>()).Returns(expectedTransactions);
+            dataAccess.GetTransactionForLogtash(Arg.Any<int>()).Returns(expectedTransactions);
 
             // Act
-            var actual = await dataTraceServices.GetTransactionLogstash(1);
+            var actual =  dataTraceServices.GetTransactionLogstash(1);
 
             // Assert
             Assert.Null(actual);
-            await dataAccess.Received(1).GetTranPackageAsync(Arg.Any<int>());
+             dataAccess.Received(1).GetTransactionForLogtash(Arg.Any<int>());
         }
 
         [Fact]
