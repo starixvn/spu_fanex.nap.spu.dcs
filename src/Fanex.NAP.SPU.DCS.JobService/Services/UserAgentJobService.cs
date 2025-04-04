@@ -5,7 +5,7 @@
 
     public interface IUserAgentJobService
     {
-        Task<bool> Execute(int size, bool isTransformExtra);
+        bool Execute(int size, bool isTransformExtra);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
@@ -28,7 +28,7 @@
             return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
-        public async Task<bool> Execute(int size, bool isTransformExtra)
+        public bool Execute(int size, bool isTransformExtra)
         {
             try
             {
@@ -55,7 +55,7 @@
             }
             catch (Exception ex)
             {
-                await logService.ErrorAsync(ex);
+                logService.ErrorAsync(ex);
 
                 return false;
             }

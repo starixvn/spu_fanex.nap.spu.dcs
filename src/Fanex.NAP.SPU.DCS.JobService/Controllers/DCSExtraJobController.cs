@@ -24,9 +24,11 @@
         }
 
         [HttpPost("useragent")]
-        public async Task<bool> UserAgent([FromForm] int size)
+        public IActionResult UserAgent([FromForm] int size)
         {
-            return await userAgentJobService.Execute(size, true);
+            var result = userAgentJobService.Execute(size, true);
+
+            return new JsonResult(result);
         }
 
         [HttpPost("transformtransaction")]
