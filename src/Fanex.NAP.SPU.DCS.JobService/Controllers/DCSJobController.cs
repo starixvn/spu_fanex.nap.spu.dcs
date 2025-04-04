@@ -37,7 +37,12 @@
         {
             var result = userAgentJobService.Execute(size, false);
 
-            return new JsonResult(result);
+            //return json format
+            // example: {"result":true}
+            // return new JsonResult(new { result });
+            // example: {"result":true}
+
+            return new JsonResult(new { data = result });                        
         }
 
         [HttpGet("ConvertUserAgent")]
@@ -85,7 +90,7 @@
         [HttpPost("updatedcsystemsettingbyid")]
         public bool UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
         {
-            return  systemSettingServices.UpdateDCSystemSettingByID(id, value);
+            return systemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
