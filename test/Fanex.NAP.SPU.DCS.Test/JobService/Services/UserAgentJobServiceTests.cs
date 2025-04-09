@@ -29,7 +29,7 @@
             var service = GetService();
 
             // Act
-            var result = await service.Execute(-1, false);
+            var result = service.Execute(-1, false);
 
             // Assert
             Assert.False(result);
@@ -44,7 +44,7 @@
             userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<UserAgentEntity>());
 
             // Act
-            var result = await service.Execute(10, false);
+            var result = service.Execute(10, false);
 
             // Assert
             Assert.True(result);
@@ -66,7 +66,7 @@
             userAgentService.TransformUserAgent(userAgents).Returns(transformUserAgent);
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = service.Execute(1, true);
 
             // Assert
             Assert.True(result);
@@ -85,7 +85,7 @@
             userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Throws(new Exception("Simulate Exception"));
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = service.Execute(1, true);
 
             // Assert
             Assert.False(result);
@@ -111,7 +111,7 @@
             userAgentService.TransformUserAgent(userAgents).Throws(new Exception("Simulate Exception"));
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = service.Execute(1, true);
 
             // Assert
             Assert.False(result);

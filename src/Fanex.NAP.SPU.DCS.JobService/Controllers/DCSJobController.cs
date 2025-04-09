@@ -35,14 +35,16 @@
         [HttpPost("useragent")]
         public IActionResult UserAgent([FromForm] int size)
         {
-            var result = userAgentJobService.Execute(size, false);
-
-            //return json format
-            // example: {"result":true}
-            // return new JsonResult(new { result });
-            // example: {"result":true}
+            var result = userAgentJobService.Execute(size, false);                       
 
             return new JsonResult(new { data = result });                        
+        }
+
+        [HttpPost("n8ntest")]
+        public IActionResult N8NTest([FromForm] int size)
+        {   
+
+            return new JsonResult(new { data = false });
         }
 
         [HttpGet("ConvertUserAgent")]
