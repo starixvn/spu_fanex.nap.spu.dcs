@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
+    using Fanex.NAP.SPU.DCS.Features.Common;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
@@ -14,6 +15,7 @@
         private readonly IArchiveJobServices archiveJobService;
         private readonly ISystemSettingServices systemSettingServices;
         private readonly IMBDeviceJobService mbDeviceJobService;
+        private readonly ICommonJobService commonJobService;
 
 
         public DCSJobController(
@@ -22,7 +24,8 @@
             IDeviceJobService deviceJobService,
             IArchiveJobServices archiveJobService,
             ISystemSettingServices systemSettingServices,
-            IMBDeviceJobService mbDeviceJobService)
+            IMBDeviceJobService mbDeviceJobService,
+            ICommonJobService commonJobService)
         {
             this.transactionJobServices = transactionJobServices;
             this.userAgentJobService = userAgentJobService;
@@ -30,6 +33,7 @@
             this.archiveJobService = archiveJobService;
             this.systemSettingServices = systemSettingServices;
             this.mbDeviceJobService = mbDeviceJobService;
+            this.commonJobService = commonJobService;
         }
 
         [HttpPost("useragent")]
@@ -90,6 +94,15 @@
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
             return await archiveJobService.DeleteBotComponent(retentionDays, false);
+        }
+
+        [HttpPost("insertidrangefpfingerprint")]
+        public bool InsertIDRangeFPFingerPrint([FromForm] DateTime? fromDate, [FromForm] DateTime? toDate)
+        {
+            fromDate ??= DateTime.Now.AddDays(-1);
+            toDate ??= fromDate;
+
+            return commonJobService.InsertIDRangeFPFingerPrint(fromDate.Value, toDate.Value);
         }
 
         #region Mobile app
