@@ -5,6 +5,8 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
     public interface ICommonServices
     {
         int InsertTableIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date);
+
+        int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID);
     }
 
     public class CommonServices : ICommonServices
@@ -19,6 +21,11 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
         public int InsertTableIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date)
         {
             return _dataAccess.InsertTableIDRange(databaseName, tableName, dateField, idField, date);
+        }
+
+        public int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID)
+        {
+            return _dataAccess.UpdateTableIDRange(databaseName, tableName, date, minID, maxID);
         }
     }
 }

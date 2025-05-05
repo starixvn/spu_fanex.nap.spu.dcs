@@ -7,6 +7,8 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
     public interface ICommonDataAccess
     {
         int InsertTableIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date);
+        
+        int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID);
     }
 
     public class CommonDataAccess : ICommonDataAccess
@@ -27,6 +29,20 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
                 DateField = dateField,
                 IDField = idField,
                 Date = date
+            };
+
+            return repository.Execute(criteria);
+        }
+
+        public int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID)
+        {
+            var criteria = new UpdateTableIDRangeCriteria
+            {
+                DatabaseName = databaseName,
+                TableName = tableName,
+                Date = date,
+                MinID = minID,
+                MaxID = maxID
             };
 
             return repository.Execute(criteria);

@@ -105,6 +105,12 @@
             return commonJobService.InsertIDRangeFPFingerPrint(fromDate.Value, toDate.Value);
         }
 
+        [HttpPost("updateidrangefpfingerprint")]
+        public bool UpdateIDRangeFPFingerPrint([FromForm] DateTime date, [FromForm] ulong minID, [FromForm] ulong maxID)
+        {
+            return commonJobService.UpdateIDRangeFPFingerPrint(date, minID, maxID);
+        }
+
         #region Mobile app
         [HttpPost("mbtransformtransaction")]
         public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
