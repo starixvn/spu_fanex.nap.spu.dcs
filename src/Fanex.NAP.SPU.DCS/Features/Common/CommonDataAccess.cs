@@ -6,9 +6,9 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
 {
     public interface ICommonDataAccess
     {
-        int InsertTableIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date);
+        int InsertTableDailyIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date);
         
-        int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID);
+        int UpdateTableDailyIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID);
     }
 
     public class CommonDataAccess : ICommonDataAccess
@@ -20,9 +20,9 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
             this.repository = repository ?? new DynamicRepository();
         }
 
-        public int InsertTableIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date)
+        public int InsertTableDailyIDRange(string databaseName, string tableName, string dateField, string idField, DateTime date)
         {
-            var criteria = new InsertTableIDRangeCriteria
+            var criteria = new InsertTableDailyIDRangeCriteria
             {
                 DatabaseName = databaseName,
                 TableName = tableName,
@@ -34,9 +34,9 @@ namespace Fanex.NAP.SPU.DCS.Features.Common
             return repository.Execute(criteria);
         }
 
-        public int UpdateTableIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID)
+        public int UpdateTableDailyIDRange(string databaseName, string tableName, DateTime date, ulong minID, ulong maxID)
         {
-            var criteria = new UpdateTableIDRangeCriteria
+            var criteria = new UpdateTableDailyIDRangeCriteria
             {
                 DatabaseName = databaseName,
                 TableName = tableName,

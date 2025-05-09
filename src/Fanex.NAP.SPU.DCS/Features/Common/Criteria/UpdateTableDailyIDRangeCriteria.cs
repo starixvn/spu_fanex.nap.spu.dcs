@@ -4,7 +4,7 @@ using System;
 
 namespace Fanex.NAP.SPU.DCS.Features.Common.Criteria
 {
-    public class UpdateTableIDRangeCriteria : NonQueryCommand
+    public class UpdateTableDailyIDRangeCriteria : NonQueryCommand
     {
         [SpParam(SqlParamName = "ip_DatabaseName")]
         public string DatabaseName { get; set; }
@@ -23,7 +23,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Common.Criteria
 
         public override string GetSettingKey()
         {
-            return "DCS_DC_OpenSearch_TableIDRange_Update";
+            return "DCS_DC_OpenSearch_TableDailyIDRange_Update";
         }
 
         public override bool IsValid()

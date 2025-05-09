@@ -34,7 +34,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
             for (var date = fromDate; date <= toDate; date = date.AddDays(1))
             {
-                var result = commonServices.InsertTableIDRange(DatabaseName, FingerPrintTable, DateField, IdField, date);
+                var result = commonServices.InsertTableDailyIDRange(DatabaseName, FingerPrintTable, DateField, IdField, date);
                 if (result < 0)
                 {
                     return false;
@@ -46,7 +46,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         public bool UpdateIDRangeFPFingerPrint(DateTime date, ulong minID, ulong maxID)
         {
-            var result = commonServices.UpdateTableIDRange(DatabaseName, FingerPrintTable, date, minID, maxID);
+            var result = commonServices.UpdateTableDailyIDRange(DatabaseName, FingerPrintTable, date, minID, maxID);
             if (result < 0)
             {
                 return false;
