@@ -8,6 +8,8 @@
 
     public interface ILogService
     {
+        void Error(Exception exception);
+
         Task ErrorAsync(Exception exception);
 
         Task InfoMessageAsync(string info);
@@ -21,6 +23,17 @@
         public LogService(ILogger logger)
         {
             this.logger = logger;
+        }
+
+        public void Error(Exception exception)
+        {
+            var logMessage = new LogMessage(exception.Message)
+                       .AddSection("Database Info", DatabaseInfoGetters.GetDbExceptionInfo(exception))
+                       .AddSection("Server Info", CommonInfoGetters.GetServerInfo())
+                       .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(exception))
+                       .ToString();
+
+            logger.Error(logMessage);
         }
 
         public async Task ErrorAsync(Exception exception)

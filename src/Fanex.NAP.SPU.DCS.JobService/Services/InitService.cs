@@ -3,6 +3,7 @@
     using Fanex.Logging;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
     using Fanex.NAP.SPU.DCS.Features.ArchiveData;
+    using Fanex.NAP.SPU.DCS.Features.Common;
     using Fanex.NAP.SPU.DCS.Features.DataTrace;
     using Fanex.NAP.SPU.DCS.Features.Devices;
     using Fanex.NAP.SPU.DCS.Features.ELK;
@@ -133,6 +134,9 @@
         private static void RegisterDCSJobService(this IServiceCollection services)
         {
             services.AddSingleton<DCSTransactionJobService>();
+            services.AddSingleton<ICommonJobService, CommonJobService>();
+            services.AddSingleton<ICommonServices, CommonServices>();
+            services.AddSingleton<ICommonDataAccess, CommonDataAccess>();
         }
     }
 }

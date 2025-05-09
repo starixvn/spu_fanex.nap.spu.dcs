@@ -47,6 +47,8 @@
 		
 		<Setting Key="DCS_DC_ArchiveData_MBLastAccessedDate_Update" SpName="DCS_DC_ArchiveData_MBLastAccessedDate_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_OpenSearch_Transaction_Get" SpName="DCS_DC_OpenSearch_Transaction_Get" DbName="MySQL.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Insert" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Insert" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Update" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Update" DbName="MySQL.DCS_DataCenter.ctsServiceAdmin"/>
 
 	</Function>
 

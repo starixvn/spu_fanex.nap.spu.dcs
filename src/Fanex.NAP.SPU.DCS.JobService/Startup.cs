@@ -74,6 +74,8 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             app.UseRouting();
 
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseHealthChecks("/healthz", new HealthCheckOptions
             {
                 Predicate = _ => true,
