@@ -242,7 +242,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
                             {
                                 Terms = new SoccerBasketballElasticConfigModel.Terms
                                 {
-                                    LeagueGroupId = new List<int> { 42, 74, 108, 113, 122, 151 },
+                                    LeagueGroupId = new List<int> { 42, 74, 108, 113, 122, 151, 252 },
                                     Size = null,
                                     CustomerClass = null,
                                     Field = null
