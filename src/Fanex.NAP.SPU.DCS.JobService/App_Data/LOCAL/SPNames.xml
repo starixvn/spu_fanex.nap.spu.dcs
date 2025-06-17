@@ -2,88 +2,88 @@
 
 <Functions>
 	<Function Name="JobSerice">
-		<Setting Key="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" DbName="CTSMain.DCS_DataCenter.ctsService" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_DC_Transform_UserAgent_UpdateOSBrowser" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_DC_Transform_UserAgent_UpdateOSBrowser" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_Device_UpdateMaxTransID" SpName="DCS_DC_Transform_Device_UpdateMaxTransID" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_UpdateMaxTransID" SpName="DCS_DC_Transform_Device_UpdateMaxTransID" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
 
-		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="CTSMain.DCS_DataCenter.ctsService" Timeout="600" />
-		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="CTSMain.DCS_DataCenter.ctsService" Timeout="600" />
+		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService" Timeout="600" />
+		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
+		<Setting Key="DCS_DC_Notification_Transaction" SpName="DCS_DC_Notification_Transaction" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService" Timeout="600" />
 
-		<Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Get" SpName="DCS_DC_MonitorTransaction_Get" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_MonitorTransaction_Insert" SpName="DCS_DC_MonitorTransaction_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_NotifyMessage_GetByID" SpName="DCS_DC_NotifyMessage_GetByID" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_NotifyMessage_GetByNotifyType" SpName="DCS_DC_NotifyMessage_GetByNotifyType" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_NotifyMessage_UpdateNotified" SpName="DCS_DC_NotifyMessage_UpdateNotified" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_InsertMonitorTransaction" SpName="DCS_DC_NotifyMessage_InsertMonitorTransaction" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByID" SpName="DCS_DC_NotifyMessage_GetByID" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_GetByNotifyType" SpName="DCS_DC_NotifyMessage_GetByNotifyType" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_NotifyMessage_UpdateNotified" SpName="DCS_DC_NotifyMessage_UpdateNotified" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_Transform_FP_DeviceMappingInsert" SpName="DCS_DC_Transform_FP_DeviceMappingInsert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_AbnormalTransaction_Get" SpName="DCS_DC_AbnormalTransaction_Get" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_AbnormalTransaction_Update" SpName="DCS_DC_AbnormalTransaction_Update" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_ModifiedDate_Update" SpName="DCS_DC_ArchiveData_ModifiedDate_Update" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceMappingInsert" SpName="DCS_DC_Transform_FP_DeviceMappingInsert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionGet" SpName="DCS_DC_Transform_FP_DeviceEvolutionGet" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionInsert" SpName="DCS_DC_Transform_FP_DeviceEvolutionInsert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionGet" SpName="DCS_DC_Transform_FP_DeviceEvolutionGet" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionInsert" SpName="DCS_DC_Transform_FP_DeviceEvolutionInsert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_Transform_MBRawTransaction_GetPackage" SpName="DCS_DC_Transform_MBRawTransaction_GetPackage" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_MBTransaction_Insert" SpName="DCS_DC_Transform_MBTransaction_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBRawTransaction_GetPackage" SpName="DCS_DC_Transform_MBRawTransaction_GetPackage" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBTransaction_Insert" SpName="DCS_DC_Transform_MBTransaction_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
 
-		<Setting Key="DCS_DC_Transform_MBTransaction_GetPackage" SpName="DCS_DC_Transform_MBTransaction_GetPackage" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_MBDevice_Insert" SpName="DCS_DC_Transform_MBDevice_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBTransaction_GetPackage" SpName="DCS_DC_Transform_MBTransaction_GetPackage" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBDevice_Insert" SpName="DCS_DC_Transform_MBDevice_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-		<Setting Key="DCS_DC_ArchiveData_MBLastAccessedDate_Update" SpName="DCS_DC_ArchiveData_MBLastAccessedDate_Update" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_OpenSearch_Transaction_Get" SpName="DCS_DC_OpenSearch_Transaction_Get" DbName="CTSMain.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Insert" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Insert" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
-		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Update" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Update" DbName="CTSMain.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_ArchiveData_MBLastAccessedDate_Update" SpName="DCS_DC_ArchiveData_MBLastAccessedDate_Update" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_OpenSearch_Transaction_Get" SpName="DCS_DC_OpenSearch_Transaction_Get" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Insert" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Insert" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
+		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Update" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Update" DbName="LOCAL_FPSDC.DCS_DataCenter.ctsServiceAdmin"/>
 
 	</Function>
 
 	<Function Name="DCSDataTrace">
-		<Setting Key="DCS_DT_Summary_BetTransaction_Insert" SpName="DCS_DT_Summary_BetTransaction_Insert" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Summary_BetTransaction_Delete" SpName="DCS_DT_Summary_BetTransaction_Delete" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Summary_MissingBetTransaction_GetPackage" SpName="DCS_DT_Summary_MissingBetTransaction_GetPackage" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Summary_MissingBetTransaction_Insert" SpName="DCS_DT_Summary_MissingBetTransaction_Insert" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="CTSMain.DCS_DataTrace.ctsService"/>
-		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
-		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_BetTransaction_Insert" SpName="DCS_DT_Summary_BetTransaction_Insert" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_BetTransaction_Delete" SpName="DCS_DT_Summary_BetTransaction_Delete" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MissingBetTransaction_GetPackage" SpName="DCS_DT_Summary_MissingBetTransaction_GetPackage" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Summary_MissingBetTransaction_Insert" SpName="DCS_DT_Summary_MissingBetTransaction_Insert" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_GetPackage" SpName="DCS_DT_Summary_MissingLoginTransaction_GetPackage" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Summary_MissingLoginTransaction_Insert" SpName="DCS_DT_Summary_MissingLoginTransaction_Insert" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" SpName="DCS_DT_Summary_MemberMissingTransaction_DeleteByDate" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Report_MissingTransaction_Get" SpName="DCS_DT_Report_MissingTransaction_Get" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySubscriber_GetByDateRange" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionBySite_GetByDateRange" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByAccount_GetByDateRange" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByBrowser_GetByDateRange" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" SpName="DCS_DT_Report_LoginTransactionByFlagged_GetByDateRange" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsService"/>
+		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="LOCAL_FPSDC.DCS_DataTrace.ctsServiceAdmin"/>
 	</Function>
 
 	<Function Name="MSSQL">
-		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="DBDW.bodb_VR2Model.wsv_cts"/>
-		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="DBDW.bodb_dwrs.wsv_cts"/>
-		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="DBDW.bodb_dwrs.wsv_cts"/>
+		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="TESTDB053.bodb_VR2Model.wsv_cts"/>
+		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="TESTDB053.bodb_dwrs.wsv_cts"/>
+		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="TESTDB053.bodb_dwrs.wsv_cts"/>
 	</Function>
 
 	<Function Name="ELK">
-		<Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBDW.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="TESTDB053.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="TESTDB053.bodb_Account.wsv_cts"/>
 
-		<Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBDW.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="TESTDB053.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="TESTDB053.bodb_Account.wsv_cts"/>
 
-		<Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBDW.bodb_Account.wsv_cts"/>
+		<Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="TESTDB053.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="TESTDB053.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="TESTDB053.bodb_Account.wsv_cts"/>
 	</Function>
 </Functions>
