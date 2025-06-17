@@ -1,16 +1,19 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
     using Fanex.NAP.SPU.DCS.JobService.Services;
+    using Microsoft.AspNetCore.Authorization;
 
     [ApiController]
     [Route("api/testjob")]
     public class TestJobController : Controller
     {
         private readonly INotifyTransactionJobService notifyTransactionJobService;
+        private readonly IAppSettings appSettings;
         
-        public TestJobController(INotifyTransactionJobService notifyTransactionJobService)
+        public TestJobController(INotifyTransactionJobService notifyTransactionJobService, IAppSettings appSettings)
         {
             this.notifyTransactionJobService = notifyTransactionJobService;
+            this.appSettings = appSettings;
         }
 
         [HttpPost("telegramnotifymessage")]
@@ -29,6 +32,17 @@
         public string Decrypt()
         {
             return Fanex.Data.Cryptography.DecryptPassword("l4exNQ2KUgCjzhehUWfktg==");
+        }
+
+        [HttpGet("check-vault-enable")]
+        public ActionResult<string> CheckVault()
+        {
+            if (!appSettings.VaultEnable)
+            {
+                return Ok("Vault is disabled!");
+            }
+
+            return Ok("Vault is enabled!");
         }
     }
 }
