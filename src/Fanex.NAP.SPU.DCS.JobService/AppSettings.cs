@@ -31,6 +31,8 @@
 
         int LogstashTcpPort { get; }
 
+        bool VaultEnable { get; }
+
         T GetValue<T>(string key);
 
         T GetSection<T>(string key);
@@ -52,6 +54,7 @@
         private readonly string elkUrl;
         private readonly string logstashTcpHostname;
         private readonly int logstashTcpPort;
+        private readonly bool vaultEnable;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -80,6 +83,8 @@
             logstashTcpHostname = GetValue<string>("Logstash:Tcp:Hostname") ?? string.Empty;
 
             logstashTcpPort = Convert.ToInt32(string.IsNullOrEmpty(GetValue<string>("Logstash:Tcp:Port")) ? "32705" : GetValue<string>("Logstash:Tcp:Port"));
+
+            vaultEnable = GetValue<bool>("VaultOptions:Enable");
 
         }
 
@@ -125,10 +130,11 @@
 
         public string ELKUrl => elkUrl;
 
-
         public string LogstashTcpHostname => logstashTcpHostname;
 
         public int LogstashTcpPort => logstashTcpPort;
+
+        public bool VaultEnable => vaultEnable;
 
         public T GetValue<T>(string key)
         {
