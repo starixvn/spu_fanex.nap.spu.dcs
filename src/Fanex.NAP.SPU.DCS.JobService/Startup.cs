@@ -93,7 +93,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
         private void FanexDataConfig(IAppSettings appSettings)
         {
             var resourcePath = Configuration["StoredProcedurePath"];
-            
+
             DbSettingProviderManager.StartNewSession()
               .WithSqlServer(Configuration)
               .WithMySql(Configuration)

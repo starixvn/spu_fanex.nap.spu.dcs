@@ -70,22 +70,22 @@
 		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
 		<Setting Key="DCS_DT_Summary_LoginTransaction_InitialData" SpName="DCS_DT_Summary_LoginTransaction_InitialData_xtest" DbName="CTSMain.DCS_DataTrace.ctsServiceAdmin"/>
 	</Function>
-	
+
 	<Function Name="MSSQL">
-		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="DBDW2.bodb_VR2Model.wsv_cts"/>
-		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="DBDW2.bodb_dwrs.wsv_cts"/>
-		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="DBDW2.bodb_dwrs.wsv_cts"/>
+		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="DBVR2.bodb_VR2Model.wsv_cts"/>
+		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="DBWH2.bodb_dwrs.wsv_cts"/>
+		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="DBWH2.bodb_dwrs.wsv_cts"/>
 	</Function>
 
 	<Function Name="ELK">
-		<Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBDW2.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBWH.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBWH2.bodb_Account.wsv_cts"/>
 
-		<Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBDW2.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBWH.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBWH2.bodb_Account.wsv_cts"/>
 
-		<Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBDW.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBDW2.bodb_Account.wsv_cts"/>
+		<Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="DBWH.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBWH.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBWH2.bodb_Account.wsv_cts"/>
 	</Function>
 </Functions>
