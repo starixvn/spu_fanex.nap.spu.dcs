@@ -6,10 +6,10 @@ namespace Fanex.NAP.SPU.DCS.Features.Monitoring.Criteria
 {
     public class InsertMonitorTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_RptDate")]
+        [SpParam(SqlParamName = "ip_RptDate", AllowNull = true)]
         public DateTime RptDate { get; set; }
 
-        [SpParam(SqlParamName = "ip_TransJson")]
+        [SpParam(SqlParamName = "ip_TransJson", AllowNull = true)]
         public string TransJson { get; set; }
 
         public override string GetSettingKey()

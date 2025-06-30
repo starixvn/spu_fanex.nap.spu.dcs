@@ -4,10 +4,10 @@
     using Fanex.Data.Repository;
     public class UpdateSystemSettingParameterCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_ParameterID")]
+        [SpParam(SqlParamName = "ip_ParameterID", AllowNull = true)]
         public int ID { get; set; }
 
-        [SpParam(SqlParamName = "ip_ParameterValue")]
+        [SpParam(SqlParamName = "ip_ParameterValue", AllowNull = true)]
         public string Value { get; set; }
 
         public override string GetSettingKey()

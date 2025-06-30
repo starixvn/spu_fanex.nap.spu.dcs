@@ -6,10 +6,10 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
     public class DeleteMissingTransactionByDateCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_TransDate")]
+        [SpParam(SqlParamName = "ip_TransDate", AllowNull = true)]
         public DateTime TransDate { get; set; }
 
-        [SpParam(SqlParamName = "ip_MissingType")]
+        [SpParam(SqlParamName = "ip_MissingType", AllowNull = true)]
         public int MissingType { get; set; }
 
         public override string GetSettingKey()

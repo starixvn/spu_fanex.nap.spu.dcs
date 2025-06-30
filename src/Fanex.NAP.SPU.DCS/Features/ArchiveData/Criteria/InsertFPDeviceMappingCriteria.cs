@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 {
     public class InsertFPDeviceMappingCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_BatchSize")]
+        [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
         [SpParam(Ignored = true)]

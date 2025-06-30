@@ -6,19 +6,19 @@ namespace Fanex.NAP.SPU.DCS.Features.Common.Criteria
 {
     public class UpdateTableDailyIDRangeCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_DatabaseName")]
+        [SpParam(SqlParamName = "ip_DatabaseName", AllowNull = true)]
         public string DatabaseName { get; set; }
 
-        [SpParam(SqlParamName = "ip_TableName")]
+        [SpParam(SqlParamName = "ip_TableName", AllowNull = true)]
         public string TableName { get; set; }
 
-        [SpParam(SqlParamName = "ip_Date")]
+        [SpParam(SqlParamName = "ip_Date", AllowNull = true)]
         public DateTime Date { get; set; }
 
-        [SpParam(SqlParamName = "ip_MinID")]
+        [SpParam(SqlParamName = "ip_MinID", AllowNull = true)]
         public ulong MinID { get; set; }
 
-        [SpParam(SqlParamName = "ip_MaxID")]
+        [SpParam(SqlParamName = "ip_MaxID", AllowNull = true)]
         public ulong MaxID { get; set; }
 
         public override string GetSettingKey()

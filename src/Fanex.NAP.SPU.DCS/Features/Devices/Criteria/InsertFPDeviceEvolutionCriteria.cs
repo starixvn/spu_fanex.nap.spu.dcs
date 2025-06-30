@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 {
     public class InsertFPDeviceEvolutionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_DeviceEvolutionJson")]
+        [SpParam(SqlParamName = "ip_DeviceEvolutionJson", AllowNull = true)]
         public string DeviceEvolutionJson { get; set; }
 
         [SpParam(Ignored = true)]

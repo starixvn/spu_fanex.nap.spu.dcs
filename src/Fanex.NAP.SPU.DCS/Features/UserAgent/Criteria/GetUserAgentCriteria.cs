@@ -5,7 +5,7 @@
 
     public class GetUserAgentCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_size")]
+        [SpParam(SqlParamName = "ip_size", AllowNull = true)]
         public int Size { get; set; }
 
         [SpParam(Ignored = true)]

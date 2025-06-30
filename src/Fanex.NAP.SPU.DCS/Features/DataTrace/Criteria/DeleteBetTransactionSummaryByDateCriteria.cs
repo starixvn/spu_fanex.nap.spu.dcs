@@ -6,7 +6,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Criteria
 {
     public class DeleteBetTransactionSummaryByDateCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_TransDate")]
+        [SpParam(SqlParamName = "ip_TransDate", AllowNull = true)]
         public DateTime TransDate { get; set; }
 
         public override string GetSettingKey()

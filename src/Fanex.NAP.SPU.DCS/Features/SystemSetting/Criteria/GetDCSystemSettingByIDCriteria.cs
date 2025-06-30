@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.SystemSetting.Criteria
 {
     public class GetDCSystemSettingByIDCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_ParameterID")]
+        [SpParam(SqlParamName = "ip_ParameterID", AllowNull = true)]
         public int ParameterID { get; set; }
 
         public override string GetSettingKey()

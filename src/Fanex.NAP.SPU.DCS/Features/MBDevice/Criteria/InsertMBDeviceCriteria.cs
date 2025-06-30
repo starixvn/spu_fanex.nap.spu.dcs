@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice.Criteria
 {
     public class InsertMBDeviceCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_MBTransactionInfoJson")]
+        [SpParam(SqlParamName = "ip_MBTransactionInfoJson", AllowNull = true)]
         public string MBTransactionInfoJson { get; set; }
 
         public override string GetSettingKey()
