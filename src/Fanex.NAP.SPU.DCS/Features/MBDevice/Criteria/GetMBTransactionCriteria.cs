@@ -5,10 +5,10 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice.Criteria
 {
     public class GetMBTransactionCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_LimitTotalRecord")]
+        [SpParam(SqlParamName = "ip_LimitTotalRecord", AllowNull = true)]
         public int LimitTotalRecord { get; set; }
 
-        [SpParam(SqlParamName = "ip_NoOfBatch")]
+        [SpParam(SqlParamName = "ip_NoOfBatch", AllowNull = true)]
         public int NumberOfBatch { get; set; }
 
         public override string GetSettingKey()

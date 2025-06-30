@@ -5,10 +5,10 @@ namespace Fanex.NAP.SPU.DCS.Features.MBTransactions.Criteria
 {
     public class InsertMBTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_FromTransID")]
+        [SpParam(SqlParamName = "ip_FromTransID", AllowNull = true)]
         public ulong FromTransID { get; set; }
 
-        [SpParam(SqlParamName = "ip_ToTransID")]
+        [SpParam(SqlParamName = "ip_ToTransID", AllowNull = true)]
         public ulong ToTransID { get; set; }
 
         public override string GetSettingKey()

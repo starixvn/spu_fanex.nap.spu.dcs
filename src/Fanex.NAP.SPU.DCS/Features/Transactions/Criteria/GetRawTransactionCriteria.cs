@@ -5,13 +5,13 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
     public class GetRawTransactionCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_IsProcessed")]
+        [SpParam(SqlParamName = "ip_IsProcessed", AllowNull = true)]
         public int IsProcessed { get; set; }
 
-        [SpParam(SqlParamName = "ip_NoOfTickets")]
+        [SpParam(SqlParamName = "ip_NoOfTickets", AllowNull = true)]
         public int NumberOfTickets { get; set; }
 
-        [SpParam(SqlParamName = "ip_NoOfBatch")]
+        [SpParam(SqlParamName = "ip_NoOfBatch", AllowNull = true)]
         public int NumberOfBatch { get; set; }
 
         [SpParam(Ignored = true)]

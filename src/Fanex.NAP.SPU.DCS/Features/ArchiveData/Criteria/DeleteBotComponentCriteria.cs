@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 {
     public class DeleteBotComponentCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_RetentionDays")]
+        [SpParam(SqlParamName = "ip_RetentionDays", AllowNull = true)]
         public int RetentionDays { get; set; }
 
         [SpParam(Ignored = true)]

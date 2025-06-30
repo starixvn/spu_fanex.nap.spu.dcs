@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
 {
     public class UpdateMBLastAccessedDateCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_BatchSize")]
+        [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
         public override string GetSettingKey()

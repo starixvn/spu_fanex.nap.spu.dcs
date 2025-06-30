@@ -4,7 +4,7 @@
     using Fanex.Data.Repository;
     public class InsertSummaryBetTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_BetTransactionJson")]
+        [SpParam(SqlParamName = "ip_BetTransactionJson", AllowNull = true)]
         public string RawTransJson { get; set; }
 
         public override string GetSettingKey()

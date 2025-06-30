@@ -5,7 +5,7 @@
 
     public class UpdateNotifyMessagesToNotifiedCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_IDs")]
+        [SpParam(SqlParamName = "ip_IDs", AllowNull = true)]
         public string IDs { get; set; }
 
         public override string GetSettingKey()

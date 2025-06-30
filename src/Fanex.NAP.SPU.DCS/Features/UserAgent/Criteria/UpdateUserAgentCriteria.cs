@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.UserAgent.Criteria
 {
     public class UpdateUserAgentCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_UserAgentJson")]
+        [SpParam(SqlParamName = "ip_UserAgentJson", AllowNull = true)]
         public string UserAgentJson { get; set; }
 
         [SpParam(Ignored = true)]
