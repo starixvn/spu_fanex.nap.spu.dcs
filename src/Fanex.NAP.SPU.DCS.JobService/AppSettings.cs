@@ -5,9 +5,7 @@
 
     public interface IAppSettings
     {
-        int Environment { get; }
-
-        string EnvironmentString { get; }
+        string Environment { get; }
 
         string SPName { get; }
 
@@ -60,7 +58,7 @@
         {
             this.configuration = configuration;
 
-            environment = GetValue<string>(nameof(Environment));
+            environment = GetValue<string>("Environment");
 
             spName = GetValue<string>(nameof(SPName));
 
@@ -88,30 +86,6 @@
 
         }
 
-        public int Environment
-        {
-            get
-            {
-                switch (environment)
-                {
-                    case "LOCAL":
-                        return 1;
-                    case "UAT":
-                        return 2;
-                    default:
-                        return 3;
-                }
-            }
-        }
-
-        public string EnvironmentString
-        {
-            get
-            {
-                return environment;
-            }
-        }
-
         public string SPName => spName;
 
         public string SentryDsn => sentryDsn;
@@ -135,6 +109,8 @@
         public int LogstashTcpPort => logstashTcpPort;
 
         public bool VaultEnable => vaultEnable;
+
+        public string Environment => environment;
 
         public T GetValue<T>(string key)
         {
