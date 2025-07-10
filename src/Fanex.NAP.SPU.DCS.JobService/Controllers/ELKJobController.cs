@@ -1,5 +1,6 @@
 ﻿using Fanex.NAP.SPU.DCS.JobService.Services;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 #pragma warning disable
 namespace Fanex.NAP.SPU.DCS.JobService.Controllers
@@ -37,9 +38,20 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("bettingmessagecountdailymanual")]
-        public async Task<bool> GetBettingMessageCountDaily(DateTime startTime, DateTime endTime)
+        public async Task<IActionResult> GetBettingMessageCountDaily(DateTime startTime, DateTime endTime, bool exportToFile)
         {
-            return await elkJobService.Execute(startTime, endTime);
+            if (exportToFile)
+            {
+                var ELKExecutionResponse = await elkJobService.ExecuteExportAsync(startTime, endTime);
+
+                var fileName = $"BettingMessageDaily_{startTime:yyyyMMdd}_{endTime:yyyyMMdd}.json";
+
+                var bytes = Encoding.UTF8.GetBytes(ELKExecutionResponse);
+
+                return File(bytes, "application/json", fileName);
+            }
+
+            return Ok(await elkJobService.Execute(startTime, endTime));
         }
 
         [HttpPost("bettingmessagecountdailyleaguegroup")]
@@ -58,15 +70,38 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
         }
 
         [HttpPost("bettingmessagecountdailyleaguegroupmanual")]
-        public async Task<bool> GetBettingMessageCountByLeagueGroup(DateTime startTime, DateTime endTime)
+        public async Task<IActionResult> GetBettingMessageCountByLeagueGroup(DateTime startTime, DateTime endTime, bool exportToFile)
         {
-            return await elkJobService.Execute(startTime, endTime, startTime);
+            if (exportToFile)
+            {
+                var ELKExecutionResponse = await elkJobService.ExecuteExportAsync(startTime, endTime, startTime);
+
+                var fileName = $"BettingMessageDailyLeagueGroup_{startTime:yyyyMMdd}_{endTime:yyyyMMdd}.json";
+
+                var bytes = Encoding.UTF8.GetBytes(ELKExecutionResponse);
+
+                return File(bytes, "application/json", fileName);
+
+            }
+
+            return Ok(await elkJobService.Execute(startTime, endTime, startTime));
         }
 
         [HttpPost("bettingmessagecountmanual")]
-        public async Task<bool> GetBettingMessageCount(DateTime startTime, DateTime endTime)
+        public async Task<IActionResult> GetBettingMessageCount(DateTime startTime, DateTime endTime, bool exportToFile)
         {
-            return await elkJobService.Execute(startTime, endTime);
+            if (exportToFile)
+            {
+                var ELKExecutionResponse = await elkJobService.ExecuteExportAsync(startTime, endTime);
+
+                var fileName = $"BettingMessage_{startTime:yyyyMMdd}_{endTime:yyyyMMdd}.json";
+
+                var bytes = Encoding.UTF8.GetBytes(ELKExecutionResponse);
+
+                return File(bytes, "application/json", fileName);
+            }
+
+            return Ok(await elkJobService.Execute(startTime, endTime));
         }
     }
 }

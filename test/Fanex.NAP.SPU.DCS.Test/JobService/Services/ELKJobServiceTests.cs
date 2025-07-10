@@ -53,5 +53,36 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             // Assert
             Assert.True(result);
         }
+
+        [Fact]
+        public async Task Execute_WithValidDatesAndExportToFile_ReturnsFileContent()
+        {
+            // Arrange
+            var startTime = DateTime.Now.AddDays(-1);
+            var endTime = DateTime.Now;
+
+            // Act
+            var result = await elkJobService.ExecuteExportAsync(startTime, endTime);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<string>(result);
+        }
+
+        [Fact]
+        public async Task Execute_WithValidDatesAndBetDateAndExportToFile_ReturnsFileContent()
+        {
+            // Arrange
+            var startTime = DateTime.Now.AddDays(-1);
+            var endTime = DateTime.Now;
+            var betDate = DateTime.Now.AddDays(-2);
+
+            // Act
+            var result = await elkJobService.ExecuteExportAsync(startTime, endTime, betDate);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<string>(result);
+        }
     }
 }
