@@ -55,6 +55,19 @@
             return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false);
         }
 
+        [HttpPost("transformtransaction1")]
+        public async Task<bool> TransformTransaction1([FromBody] TransformRequest transformRequest)
+        {
+            Fanex.Logging.LogService.Info($"FromBody: size = {transformRequest.Size}, numberOfBatch = {transformRequest.NumberOfBatch}");
+            return await transactionJobServices.TransactionJobService.Execute(transformRequest.Size, transformRequest.NumberOfBatch, false);
+        }
+
+        public class TransformRequest
+        {
+            public int Size { get; set; }
+            public int NumberOfBatch { get; set; }
+        }
+
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
