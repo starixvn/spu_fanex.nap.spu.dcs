@@ -51,6 +51,7 @@
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
+            Fanex.Logging.LogService.Info($"size = {size}, numberOfBatch = {numberOfBatch}");
             return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false);
         }
 
