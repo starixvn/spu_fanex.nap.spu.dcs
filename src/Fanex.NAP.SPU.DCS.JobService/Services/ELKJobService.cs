@@ -17,6 +17,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         Task<bool> Execute(DateTime startTime, DateTime endTime);
 
         Task<bool> Execute(DateTime startTime, DateTime endTime, DateTime betDate);
+
+        Task<string> ExecuteExportAsync(DateTime startTime, DateTime endTime);
+
+        Task<string> ExecuteExportAsync(DateTime startTime, DateTime endTime, DateTime betDate);
     }
 
     public enum SportType
@@ -85,6 +89,57 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             return await Task.FromResult(true);
         }
 
+        public async Task<string> ExecuteExportAsync(DateTime startTime, DateTime endTime)
+        {
+            try
+            {
+                var mixParlayReport = await GetMixParlayReports(startTime, endTime);
+                var soccerBasketballReport = await GetSoccerBasketballReports(startTime, endTime);
+
+                var reportPayload = new
+                {
+                    TimeRange = new { Start = startTime, End = endTime },
+                    MixParlay = mixParlayReport.Any() ? mixParlayReport : null,
+                    SoccerBasketball = soccerBasketballReport.Any() ? soccerBasketballReport : null
+                };
+
+                var reportJsonContent = System.Text.Json.JsonSerializer.Serialize(reportPayload, new JsonSerializerOptions { WriteIndented = true });
+
+                return reportJsonContent;
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+                return string.Empty;
+            }
+        }
+
+        public async Task<string> ExecuteExportAsync(DateTime startTime, DateTime endTime, DateTime betDate)
+        {
+            try
+            {
+                var soccerBasketballWithLeagueGroupReport = await GetSoccerBasketballWithLeagueGroupReports(startTime, endTime, betDate);
+
+                var reportPayload = new
+                {
+                    TimeRange = new { Start = startTime, End = endTime },
+                    SoccerBasketballWithLeagueGroupReport = soccerBasketballWithLeagueGroupReport.Any() 
+                        ? soccerBasketballWithLeagueGroupReport : null
+                };
+
+                var reportJsonContent = System.Text.Json.JsonSerializer.Serialize(reportPayload, new JsonSerializerOptions { WriteIndented = true });
+
+                return reportJsonContent;
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+
+               return string.Empty;
+            }
+        }
+
         private async Task ProccessForSoccerBasketball(DateTime startTime, DateTime endTime)
         {
             try
@@ -112,6 +167,39 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
+            }
+        }
+
+        private async Task<List<object>> GetSoccerBasketballReports(DateTime startTime, DateTime endTime)
+        {
+            try
+            {
+                var allReports = new List<object>();
+
+                foreach (SportType sport in Enum.GetValues(typeof(SportType)))
+                {
+                    foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                    {
+                        var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType);
+
+                        if (elkRateReport != null && elkRateReport.Any())
+                        {
+                            allReports.Add(new
+                            {
+                                Sport = sport.ToString(),
+                                SiteType = siteType.ToString(),
+                                Data = elkRateReport
+                            });
+                        }
+                    }
+                }
+
+                return allReports;
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return new List<object>();
             }
         }
 
@@ -194,6 +282,55 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             }
         }
 
+        private async Task<List<object>> GetSoccerBasketballWithLeagueGroupReports(DateTime startTime, DateTime endTime, DateTime betDate)
+        {
+            try
+            {
+                var allReports = new List<object>();
+
+                var leagueGroups = GetLeagueGroup(betDate);
+
+                if (leagueGroups != null && leagueGroups.Any())
+                {
+                    foreach (var leagueGroup in leagueGroups)
+                    {
+                        foreach (SportType sport in Enum.GetValues(typeof(SportType)))
+                        {
+                            if (leagueGroup.SportType.Equals(sport))
+                            {
+                                foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                                {
+                                    var elkRateReport = await GetELKDataForSoccerBasketball(startTime, endTime, sport, siteType, leagueGroup.LeagueGroupId);
+
+                                    if (elkRateReport != null && elkRateReport.Any())
+                                    {
+                                        allReports.Add(new
+                                        {
+                                            Sport = sport.ToString(),
+                                            SiteType = siteType.ToString(),
+                                            LeagueGroup = leagueGroup.LeagueGroupId,
+                                            Data = elkRateReport
+                                        });
+
+                                        if (leagueGroup.LeagueGroupId == -1)
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return allReports;
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return new List<object>();
+            }
+        }
+
         private async Task ProccessForMixParlay(DateTime startTime, DateTime endTime)
         {
             try
@@ -221,6 +358,39 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             catch (Exception ex)
             {
                 await logService.ErrorAsync(ex);
+            }
+        }
+
+        private async Task<List<object>> GetMixParlayReports(DateTime startTime, DateTime endTime)
+        {
+            try
+            {
+                var allReports = new List<object>();
+
+                foreach (SportSetting sport in Enum.GetValues(typeof(SportSetting)))
+                {
+                    foreach (SiteTypeSetting siteType in Enum.GetValues(typeof(SiteTypeSetting)))
+                    {
+                        var elkRateReport = await GetELKDataForMixParlay(startTime, endTime, sport, siteType);
+
+                        if (elkRateReport != null && elkRateReport.Any())
+                        {
+                            allReports.Add(new
+                            {
+                                Sport = sport.ToString(),
+                                SiteType = siteType.ToString(),
+                                Data = elkRateReport
+                            });
+                        }
+                    }
+                }
+
+                return allReports;
+            }
+            catch (Exception ex)
+            {
+                await logService.ErrorAsync(ex);
+                return new List<object>();
             }
         }
 
