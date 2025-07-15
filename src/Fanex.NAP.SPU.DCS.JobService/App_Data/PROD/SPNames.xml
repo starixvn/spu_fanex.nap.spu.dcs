@@ -70,8 +70,8 @@
 
 	<Function Name="MSSQL">
 		<Setting Key="CTS_Monitor_MissingFPSTrans_GetCustByDate" SpName="CTS_Monitor_MissingFPSTrans_GetCustByDate" DbName="DBVR2.bodb_VR2Model.wsv_cts"/>
-		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="DBVR2.bodb_dwrs.wsv_cts"/> 
-		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="DBVR2.bodb_dwrs.wsv_cts"/>
+		<Setting Key="Acc_CheckDailyTaskReadiness" SpName="Acc_CheckDailyTaskReadiness" DbName="DBVR2.bodb_DWRS.wsv_cts"/> 
+		<Setting Key="Acc_Rpt_FPS_GetCustBettingInfo" SpName="Acc_Rpt_FPS_GetCustBettingInfo" DbName="DBVR2.bodb_DWRS.wsv_cts"/>
 	</Function>
 
 	<Function Name="ELK">
