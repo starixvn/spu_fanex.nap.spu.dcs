@@ -5,9 +5,7 @@
 
     public interface IAppSettings
     {
-        int Environment { get; }
-
-        string EnvironmentString { get; }
+        string Environment { get; }
 
         string SPName { get; }
 
@@ -31,6 +29,8 @@
 
         int LogstashTcpPort { get; }
 
+        bool VaultEnable { get; }
+
         T GetValue<T>(string key);
 
         T GetSection<T>(string key);
@@ -52,12 +52,13 @@
         private readonly string elkUrl;
         private readonly string logstashTcpHostname;
         private readonly int logstashTcpPort;
+        private readonly bool vaultEnable;
 
         public AppSettings(IConfiguration configuration)
         {
             this.configuration = configuration;
 
-            environment = GetValue<string>(nameof(Environment));
+            environment = GetValue<string>("Environment");
 
             spName = GetValue<string>(nameof(SPName));
 
@@ -81,30 +82,8 @@
 
             logstashTcpPort = Convert.ToInt32(string.IsNullOrEmpty(GetValue<string>("Logstash:Tcp:Port")) ? "32705" : GetValue<string>("Logstash:Tcp:Port"));
 
-        }
+            vaultEnable = GetValue<bool>("VaultOptions:Enable");
 
-        public int Environment
-        {
-            get
-            {
-                switch (environment)
-                {
-                    case "LOCAL":
-                        return 1;
-                    case "UAT":
-                        return 2;
-                    default:
-                        return 3;
-                }
-            }
-        }
-
-        public string EnvironmentString
-        {
-            get
-            {
-                return environment;
-            }
         }
 
         public string SPName => spName;
@@ -125,10 +104,13 @@
 
         public string ELKUrl => elkUrl;
 
-
         public string LogstashTcpHostname => logstashTcpHostname;
 
         public int LogstashTcpPort => logstashTcpPort;
+
+        public bool VaultEnable => vaultEnable;
+
+        public string Environment => environment;
 
         public T GetValue<T>(string key)
         {

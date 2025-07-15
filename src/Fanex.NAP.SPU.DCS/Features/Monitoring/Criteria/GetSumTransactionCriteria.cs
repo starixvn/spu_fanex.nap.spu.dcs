@@ -6,10 +6,10 @@
 
     public class GetSumTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "op_MaxTransID")]
+        [SpParam(SqlParamName = "op_MaxTransID", AllowNull = true)]
         public UInt64 MaxTransID { get; set; }
 
-        [SpParam(SqlParamName = "op_DateScan")]
+        [SpParam(SqlParamName = "op_DateScan", AllowNull = true)]
         public DateTime DateScan { get; set; }
 
         [SpParam(SqlParamName = "op_AccountID")]

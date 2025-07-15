@@ -5,7 +5,7 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
 {
     public class GetFPDeviceEvolutionCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "ip_BatchSize")]
+        [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
         [SpParam(Ignored = true)]

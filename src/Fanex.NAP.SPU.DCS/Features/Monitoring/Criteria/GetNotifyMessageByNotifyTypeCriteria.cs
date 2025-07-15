@@ -5,10 +5,10 @@
 
     public class GetNotifyMessageByNotifyTypeCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_NotifyType")]
+        [SpParam(SqlParamName = "ip_NotifyType", AllowNull = true)]
         public string NotifyType { get; set; }
 
-        [SpParam(SqlParamName = "ip_BatchSize")]
+        [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
         public override string GetSettingKey()

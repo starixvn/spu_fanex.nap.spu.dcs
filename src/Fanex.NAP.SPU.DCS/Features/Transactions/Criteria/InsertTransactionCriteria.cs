@@ -5,10 +5,10 @@ namespace Fanex.NAP.SPU.DCS.Features.Transactions.Criteria
 {
     public class InsertTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_FromTransID")]
+        [SpParam(SqlParamName = "ip_FromTransID", AllowNull = true)]
         public long FromStagingTransId { get; set; }
 
-        [SpParam(SqlParamName = "ip_ToTransID")]
+        [SpParam(SqlParamName = "ip_ToTransID", AllowNull = true)]
         public long ToStagingTransId { get; set; }
 
         [SpParam(Ignored = true)]

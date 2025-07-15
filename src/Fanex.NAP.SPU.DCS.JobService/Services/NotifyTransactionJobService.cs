@@ -40,7 +40,7 @@
             this.appSettings = appSettings;
             this.notificationService = notificationService;
 
-            proxy = appSettings.EnvironmentString == "PROD" ? appSettings.TelegramProxy : null;
+            proxy = appSettings.Environment == "PROD" ? appSettings.TelegramProxy : null;
         }
 
         public Task<bool> Execute()
@@ -84,14 +84,14 @@
                     message += $"\n\r - Valid Trans < 50% Total Trans: {data.ValidLess50Percent}";
                 }
 
-                var messageModel = new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, message);
+                var messageModel = new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.Environment, message);
                 notificationService.Send(token, "-1001459619983", proxy, messageModel);
             }
         }
 
         public Task<bool> TestTelegramNotifyMessage()
         {
-            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, "test"));
+            notificationService.Send(token, "-1001459619983", proxy, new MessageModel("DCS - Notify Transaction Service", DateTime.UtcNow.AddHours(extraHour), appSettings.Environment, "test"));
 
             return Task.FromResult(true);
         }
@@ -209,7 +209,7 @@
         {
             if (model != null)
             {
-                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(extraHour), appSettings.EnvironmentString, model.Message, model.MoreInfo));
+                notificationService.Send(token, model.GroupID, proxy, new MessageModel(model.Title, DateTime.UtcNow.AddHours(extraHour), appSettings.Environment, model.Message, model.MoreInfo));
             }
         }
 

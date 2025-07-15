@@ -6,10 +6,10 @@
 
     public class InsertMissingBetTransactionCriteria : NonQueryCommand
     {
-        [SpParam(SqlParamName = "ip_TransDate")]
+        [SpParam(SqlParamName = "ip_TransDate", AllowNull = true)]
         public DateTime TransDate { get; set; }
 
-        [SpParam(SqlParamName = "ip_ListAccountID")]
+        [SpParam(SqlParamName = "ip_ListAccountID", AllowNull = true)]
         public string ListAccountID { get; set; }
 
         public override string GetSettingKey()
