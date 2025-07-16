@@ -43,6 +43,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fanex.NAP.SPU.DCS.JobService", Version = "v1" });
+                c.DocumentFilter<SwaggerServerFilter>();
             });
 
             services.RegisterService();
