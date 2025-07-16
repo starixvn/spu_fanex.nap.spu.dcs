@@ -79,13 +79,13 @@
 
 	<Function Name="ELK">
 		<Setting Key="Task_PrepareStaging_ParlayValidationStats1" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBWH_WEB_LAYER.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBWH_WEB_LAYER2.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_ParlayValidationStats2" SpName="Task_PrepareStaging_ParlayValidationStats" DbName="DBWH2_WEB_LAYER.bodb_Account.wsv_cts"/>
 
 		<Setting Key="Task_PrepareStaging_BetMessageELK1" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBWH_WEB_LAYER.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBWH_WEB_LAYER2.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELK2" SpName="Task_PrepareStaging_BetMessageELK" DbName="DBWH2_WEB_LAYER.bodb_Account.wsv_cts"/>
 
 		<Setting Key="NAP_DW_ELK_LeagueGroup_Select" SpName="NAP_DW_ELK_LeagueGroup_Select" DbName="DBWH_WEB_LAYER.bodb_Account.wsv_cts"/>
 		<Setting Key="Task_PrepareStaging_BetMessageELKDaily1" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBWH_WEB_LAYER.bodb_Account.wsv_cts"/>
-		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBWH_WEB_LAYER2.bodb_Account.wsv_cts"/>
+		<Setting Key="Task_PrepareStaging_BetMessageELKDaily2" SpName="Task_PrepareStaging_BetMessageELKDaily" DbName="DBWH2_WEB_LAYER.bodb_Account.wsv_cts"/>
 	</Function>
 </Functions>
