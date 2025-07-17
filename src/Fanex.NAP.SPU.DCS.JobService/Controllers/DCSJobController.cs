@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using Fanex.NAP.SPU.DCS.Features.Common;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
+    using Fanex.NAP.SPU.DCS.JobService.Models;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;
 
@@ -37,9 +37,9 @@
         }
 
         [HttpPost("useragent")]
-        public async Task<bool> UserAgent([FromForm] int size)
+        public async Task<bool> UserAgent([FromBody] TransformRequestModel transformRequest)
         {
-            return await userAgentJobService.Execute(size, false);
+            return await userAgentJobService.Execute(transformRequest.BatchSize, false);
         }
 
         [HttpGet("ConvertUserAgent")]
@@ -49,35 +49,22 @@
         }
 
         [HttpPost("transformtransaction")]
-        public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
+        public async Task<bool> TransformTransaction([FromBody] TransformRequestModel transformRequest)
         {
-            Fanex.Logging.LogService.Info($"size = {size}, numberOfBatch = {numberOfBatch}");
-            return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false);
-        }
-
-        [HttpPost("transformtransaction1")]
-        public async Task<bool> TransformTransaction1([FromBody] TransformRequest transformRequest)
-        {
-            Fanex.Logging.LogService.Info($"FromBody: size = {transformRequest.Size}, numberOfBatch = {transformRequest.NumberOfBatch}");
-            return await transactionJobServices.TransactionJobService.Execute(transformRequest.Size, transformRequest.NumberOfBatch, false);
-        }
-
-        public class TransformRequest
-        {
-            public int Size { get; set; }
-            public int NumberOfBatch { get; set; }
+            Fanex.Logging.LogService.Info($"FromBody: BatchSize = {transformRequest.BatchSize}, NumberOfBatch = {transformRequest.NumberOfBatch}");
+            return await transactionJobServices.TransactionJobService.Execute(transformRequest.BatchSize, transformRequest.NumberOfBatch, false);
         }
 
         [HttpPost("transformdevice")]
-        public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
+        public async Task<bool> TransformDevice([FromBody] TransformRequestModel transformRequest)
         {
-            return await deviceJobService.Execute(size, numberOfBatch, false);
+            return await deviceJobService.Execute(transformRequest.BatchSize, transformRequest.NumberOfBatch, false);
         }
 
         [HttpPost("deviceevolution")]
-        public async Task<bool> DeviceEvolution([FromForm] int batchSize)
+        public async Task<bool> DeviceEvolution([FromBody] TransformRequestModel transformRequest)
         {
-            return await deviceJobService.DeviceEvolution(batchSize, false);
+            return await deviceJobService.DeviceEvolution(transformRequest.BatchSize, false);
         }
 
         [HttpPost("sumtransaction")]
@@ -87,21 +74,21 @@
         }
 
         [HttpPost("pushabnormaltransaction")]
-        public async Task<bool> PushAbnormalTransaction([FromForm] int size)
+        public async Task<bool> PushAbnormalTransaction([FromBody] TransformRequestModel transformRequest)
         {
-            return await transactionJobServices.AbnormalTransactionJobService.PushAbnormalTransaction(size);
+            return await transactionJobServices.AbnormalTransactionJobService.PushAbnormalTransaction(transformRequest.BatchSize);
         }
 
         [HttpPost("updatemodifieddate")]
-        public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
+        public async Task<bool> UpdateModifiedDate([FromBody] TransformRequestModel transformRequest)
         {
-            return await archiveJobService.Execute(batchSize, false);
+            return await archiveJobService.Execute(transformRequest.BatchSize, false);
         }
 
         [HttpPost("updatedcsystemsettingbyid")]
         public bool UpdateDCSystemSettingByID([FromForm] int id, [FromForm] string value)
         {
-            return  systemSettingServices.UpdateDCSystemSettingByID(id, value);
+            return systemSettingServices.UpdateDCSystemSettingByID(id, value);
         }
 
         [HttpPost("deletebotcomponent")]
