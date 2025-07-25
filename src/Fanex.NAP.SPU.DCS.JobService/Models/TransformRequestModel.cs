@@ -5,9 +5,5 @@
         public int BatchSize { get; set; }
 
         public int NumberOfBatch { get; set; }
-
-        public DateTime? FromDate { get; set; }
-
-        public DateTime? ToDate { get; set; }
     }
 }
