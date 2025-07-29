@@ -51,7 +51,6 @@
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromBody] TransformRequestModel transformRequest)
         {
-            Fanex.Logging.LogService.Info($"FromBody: BatchSize = {transformRequest.BatchSize}, NumberOfBatch = {transformRequest.NumberOfBatch}");
             return await transactionJobServices.TransactionJobService.Execute(transformRequest.BatchSize, transformRequest.NumberOfBatch, false);
         }
 
