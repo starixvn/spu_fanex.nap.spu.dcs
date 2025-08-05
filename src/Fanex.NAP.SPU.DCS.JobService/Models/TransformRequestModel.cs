@@ -5,5 +5,7 @@
         public int BatchSize { get; set; }
 
         public int NumberOfBatch { get; set; }
+
+        public int LimitTotalRecord { get; set; }
     }
 }

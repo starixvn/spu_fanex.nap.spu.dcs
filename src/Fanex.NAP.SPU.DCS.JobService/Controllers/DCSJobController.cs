@@ -113,21 +113,21 @@
 
         #region Mobile app
         [HttpPost("mbtransformtransaction")]
-        public async Task<bool> MBTransformTransaction([FromForm] int batchSize, [FromForm] int numberOfBatch)
+        public async Task<bool> MBTransformTransaction([FromBody] TransformRequestModel transformRequest)
         {
-            return await transactionJobServices.MBTransactionJobService.Execute(batchSize, numberOfBatch);
+            return await transactionJobServices.MBTransactionJobService.Execute(transformRequest.BatchSize, transformRequest.NumberOfBatch);
         }
 
         [HttpPost("mbtransformdevice")]
-        public async Task<bool> MBTransformDevice([FromForm] int limitTotalRecord, [FromForm] int numberOfBatch)
+        public async Task<bool> MBTransformDevice([FromBody] TransformRequestModel transformRequest)
         {
-            return await mbDeviceJobService.Execute(limitTotalRecord, numberOfBatch);
+            return await mbDeviceJobService.Execute(transformRequest.LimitTotalRecord, transformRequest.NumberOfBatch);
         }
 
         [HttpPost("mbupdatelastaccesseddate")]
-        public async Task<bool> UpdateMBLastAccessedDate([FromForm] int batchSize)
+        public async Task<bool> UpdateMBLastAccessedDate([FromBody] TransformRequestModel transformRequest)
         {
-            return await archiveJobService.UpdateMBLastAccessedDate(batchSize);
+            return await archiveJobService.UpdateMBLastAccessedDate(transformRequest.BatchSize);
         }
         #endregion
     }
