@@ -9,6 +9,8 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
         IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
         void TransformDeviceInsert(string transactionInfoJson);
+
+        int UpdateMaxMBTransIDTransformDevice();
     }
 
     public class MBDeviceServices : IMBDeviceServices
@@ -28,6 +30,11 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
         public void TransformDeviceInsert(string transactionInfoJson)
         {
             deviceDataAccess.InsertDevice(transactionInfoJson);
+        }
+
+        public int UpdateMaxMBTransIDTransformDevice()
+        {
+            return deviceDataAccess.UpdateMaxMBTransIDTransformDevice();
         }
     }
 }

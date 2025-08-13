@@ -1,5 +1,4 @@
-﻿
-namespace Fanex.NAP.SPU.DCS.JobService.Services
+﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     using Fanex.Logging.Extensions;
     using Fanex.Logging.Extensions.Database;
@@ -23,6 +22,8 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
         bool SendTransactionToLogstash(int batchSize);
 
+        bool SendMBTransactionToLogstash(int batchSize);
+
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -43,6 +44,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         private readonly ISystemSettingServices systemSettingServices;
 
         private readonly int openSearchTransaction07SystemSettingID = 101;
+        private readonly int openSearchMBTransaction07SystemSettingID = 102;
 
         public DataTraceJobService(
             IDataTraceServices dataTraceServices,
@@ -52,6 +54,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         {
             this.dataTraceServices = dataTraceServices;
             this.logService = logService;
+            this.logstashService = logstashService;
             this.logstashService = logstashService;
             this.systemSettingServices = systemSettingServices;
         }
@@ -157,12 +160,38 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
 
                 if(transactionLogstash != null && transactionLogstash.Any())
                 {
-                    var processedTransID = logstashService.PushLogAsync(transactionLogstash);
+                    var processedTransID = logstashService.PushLog(transactionLogstash);
 
                     if (processedTransID > 0)
                     {
                         return systemSettingServices.UpdateDCSystemSettingByID(openSearchTransaction07SystemSettingID, processedTransID.ToString());                     
                     }                 
+                }              
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace SendTransactionLogsToLogstash execute exeption message: ");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool SendMBTransactionToLogstash(int batchSize)
+        {
+            try
+            {
+                var transactionLogstash = dataTraceServices.GetMBTransactionLogtash(batchSize);
+
+                if(transactionLogstash != null && transactionLogstash.Any())
+                {
+                    var processedTransID = logstashService.PushMBLog(transactionLogstash);
+
+                    if (processedTransID > 0)
+                    {
+                        return systemSettingServices.UpdateDCSystemSettingByID(openSearchMBTransaction07SystemSettingID, processedTransID.ToString());                     
+                    }
                 }              
             }
             catch (Exception ex)

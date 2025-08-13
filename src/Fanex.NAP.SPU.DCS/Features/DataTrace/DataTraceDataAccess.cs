@@ -36,6 +36,8 @@
 
         IEnumerable<TransactionLogstashModel> GetTransactionForLogtash(int batchSize);
 
+        IEnumerable<MBTransactionLogstashModel> GetMBTransactionLogtash(int batchSize);
+
         Task<IEnumerable<ReportMissingTransactionModel>> GetReportMissingTransaction(DateTime fromDate, DateTime toDate);
 
         Task<IEnumerable<ReportLoginTransactionBySubscriberModel>> GetReportLoginTransactionBySubscriber(DateTime fromDate, DateTime toDate);
@@ -262,6 +264,16 @@
             };
 
             return repository.Fetch<TransactionLogstashModel>(criteria);
+        }
+
+        public IEnumerable<MBTransactionLogstashModel> GetMBTransactionLogtash(int batchSize)
+        {
+            var criteria = new GetMBTransOpenSearchCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return repository.Fetch<MBTransactionLogstashModel>(criteria);
         }
         #endregion
     }

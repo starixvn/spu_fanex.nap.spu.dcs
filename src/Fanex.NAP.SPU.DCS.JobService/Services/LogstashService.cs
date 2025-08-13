@@ -1,58 +1,66 @@
-﻿using System.Net.Sockets;
-using System.Text;
-using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
-using Fanex.NAP.SPU.DCS.JobService.Models;
+﻿using Fanex.NAP.SPU.DCS.Features.DataTrace.Model;
 using Newtonsoft.Json;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
     public interface ILogstashService
     {
-        ulong PushLogAsync(IEnumerable<TransactionLogstashModel> transactions);
+        ulong PushLog(IEnumerable<TransactionLogstashModel> transactions);
+        ulong PushMBLog(IEnumerable<MBTransactionLogstashModel> transactions);
     }
-    public class LogstashService: ILogstashService
+
+    public class LogstashService : ILogstashService
     {
-        private readonly IAppSettings appSettings;
-        private readonly ILogService logService;
+        private readonly IAppSettings _appSettings;
+        private readonly ILogService _logService;
 
         public LogstashService(IAppSettings appSettings, ILogService logService)
         {
-            this.appSettings = appSettings;
-            this.logService = logService;
+            _appSettings = appSettings;
+            _logService = logService;
         }
-        public ulong PushLogAsync(IEnumerable<TransactionLogstashModel> transactions)
+
+        public ulong PushLog(IEnumerable<TransactionLogstashModel> transactions)
+            => PushLogInternal(transactions, "Transaction07");
+
+        public ulong PushMBLog(IEnumerable<MBTransactionLogstashModel> transactions)
+            => PushLogInternal(transactions, "MBTransaction07");
+
+        private ulong PushLogInternal<T>(IEnumerable<T> transactions, string tag)
+            where T : class
         {
             ulong processedTransID = 0;
-            using var client = new TcpClient(appSettings.LogstashTcpHostname, appSettings.LogstashTcpPort);
+
+            if (transactions == null)
+                return 0;
+
+            using var client = new TcpClient();
+            client.Connect(_appSettings.LogstashTcpHostname, _appSettings.LogstashTcpPort);
+
             using var stream = client.GetStream();
 
             foreach (var transaction in transactions)
             {
-                var logMessage = TransformLogMessage(transaction);
+                dynamic dyn = transaction;
+                dyn.SubscriberName = dyn.SubscriberName?.ToLower() ?? string.Empty;
 
-                string jsonLog = JsonConvert.SerializeObject(logMessage);
+                var logMessage = new
+                {
+                    Message = transaction,
+                    Tags = tag
+                };
 
-                byte[] data = Encoding.UTF8.GetBytes(jsonLog + "\n");
+                var json = JsonConvert.SerializeObject(logMessage);
+                var bytes = Encoding.UTF8.GetBytes(json + "\n");
 
-                stream.Write(data);
+                stream.Write(bytes, 0, bytes.Length);
 
-                processedTransID = Math.Max(processedTransID, transaction.TransID);
+                processedTransID = Math.Max(processedTransID, (ulong)dyn.TransID);
             }
 
             return processedTransID;
-        }
-
-        private LogstashModel TransformLogMessage(TransactionLogstashModel transaction)
-        {
-            transaction.SubscriberName = transaction.SubscriberName.ToLowerInvariant();
-
-            var logMessage = new LogstashModel
-            {
-                Message = transaction,
-                Tags = "Transaction07",
-            };
-
-            return logMessage;
         }
     }
 }

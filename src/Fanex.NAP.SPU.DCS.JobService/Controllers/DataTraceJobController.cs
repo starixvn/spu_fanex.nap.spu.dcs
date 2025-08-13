@@ -57,6 +57,12 @@
             return dataTraceJobService.SendTransactionToLogstash(batchSize);
         }
 
+        [HttpPost("sendmbtransactiontologstash")]
+        public bool SendMBTransactionToLogstash([FromForm] int batchSize = 5000)
+        {
+            return dataTraceJobService.SendMBTransactionToLogstash(batchSize);
+        }
+
         #region Report
 
         [HttpGet("report-missing-transaction")]

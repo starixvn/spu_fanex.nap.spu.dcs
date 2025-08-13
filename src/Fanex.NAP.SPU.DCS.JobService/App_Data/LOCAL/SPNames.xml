@@ -8,6 +8,7 @@
 		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_Device_UpdateMaxTransID" SpName="DCS_DC_Transform_Device_UpdateMaxTransID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_MBDevice_UpdateMaxMBTransID" SpName="DCS_DC_Transform_MBDevice_UpdateMaxMBTransID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
 		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
@@ -45,6 +46,7 @@
 
 		<Setting Key="DCS_DC_ArchiveData_MBLastAccessedDate_Update" SpName="DCS_DC_ArchiveData_MBLastAccessedDate_Update" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_OpenSearch_Transaction_Get" SpName="DCS_DC_OpenSearch_Transaction_Get" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService"/>
+		<Setting Key="DCS_DC_OpenSearch_MBTransaction_Get" SpName="DCS_DC_OpenSearch_MBTransaction_Get" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Insert" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_OpenSearch_TableDailyIDRange_Update" SpName="DCS_DC_OpenSearch_TableDailyIDRange_Update" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
 

@@ -32,6 +32,15 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             try
             {
                 await MBTransformDeviceAsync(numberOfTrans, numberOfBatch);
+
+                var updateResult = deviceService.UpdateMaxMBTransIDTransformDevice();
+                if (updateResult < 0)
+                {
+                    await logService.ErrorAsync(new Exception($"UpdateMaxMBTransIDTransformDevice return value: {updateResult}!"));
+
+                    return false;
+                }
+
                 return true;
             }
             catch (Exception ex)

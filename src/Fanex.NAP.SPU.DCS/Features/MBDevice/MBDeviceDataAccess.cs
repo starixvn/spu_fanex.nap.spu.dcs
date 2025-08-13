@@ -1,5 +1,6 @@
 ﻿using Fanex.Data;
 using Fanex.Data.Repository;
+using Fanex.NAP.SPU.DCS.Features.Devices.Criteria;
 using Fanex.NAP.SPU.DCS.Features.MBDevice.Criteria;
 using Fanex.NAP.SPU.DCS.Features.MBDevice.Entities;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
         IEnumerable<MBTransactionEntity> GetMBTransaction(int limitTotalRecord, int numberOfBatch);
 
         void InsertDevice(string transactionInfoJson);
+
+        int UpdateMaxMBTransIDTransformDevice();
     }
 
     public class MBDeviceDataAccess : IMBDeviceDataAccess
@@ -44,6 +47,13 @@ namespace Fanex.NAP.SPU.DCS.Features.MBDevice
             };
 
             repository.Execute(criteria);
+        }
+
+        public int UpdateMaxMBTransIDTransformDevice()
+        {
+            var criteria = new UpdateMaxMBTransIDTransformDeviceCriteria { };
+
+            return repository.Execute(criteria);
         }
     }
 }

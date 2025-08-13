@@ -299,7 +299,7 @@
 
             dataTraceServices.GetTransactionLogstash(1).Returns(transactionLogs);
 
-            logstashService.PushLogAsync(transactionLogs).Returns(maxProcessedTransID);
+            logstashService.PushLog(transactionLogs).Returns(maxProcessedTransID);
 
             // Act
             var result = service.SendTransactionToLogstash(1);
