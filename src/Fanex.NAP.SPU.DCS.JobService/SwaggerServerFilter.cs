@@ -2,7 +2,9 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 
-public class SwaggerServerFilter : IDocumentFilter
+namespace Fanex.NAP.SPU.DCS.JobService
+{
+    public class SwaggerServerFilter : IDocumentFilter
 {
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
@@ -11,4 +13,5 @@ public class SwaggerServerFilter : IDocumentFilter
             new OpenApiServer { Url = "/" }
         };
     }
+}
 }
