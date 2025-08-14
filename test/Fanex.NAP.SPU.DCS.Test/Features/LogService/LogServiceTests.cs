@@ -32,11 +32,25 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.LogService
         }
 
         [Fact]
-        public void Constructor_WithNullLogger_ThrowsArgumentNullException()
+        public void Constructor_WithNullLogger_CreatesInstance()
         {
+            // Act
+            var service = new LogService(null);
+
+            // Assert
+            Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void Error_WithNullLogger_ThrowsNullReferenceException()
+        {
+            // Arrange
+            var service = new LogService(null);
+            var exception = new Exception("Test exception");
+
             // Act & Assert
-            var exception = Record.Exception(() => new LogService(null));
-            Assert.IsType<ArgumentNullException>(exception);
+            var result = Record.Exception(() => service.Error(exception));
+            Assert.IsType<NullReferenceException>(result);
         }
 
         [Fact]
@@ -269,6 +283,76 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.LogService
             // Act & Assert - verify method signatures match interface
             service.Error(new Exception("Test"));
             Assert.True(true, "Method signatures are compatible");
+        }
+
+        [Fact]
+        public async Task ErrorAsync_WithNullLogger_ThrowsNullReferenceException()
+        {
+            // Arrange
+            var service = new LogService(null);
+            var exception = new Exception("Test exception");
+
+            // Act & Assert
+            var result = await Record.ExceptionAsync(async () => await service.ErrorAsync(exception));
+            Assert.IsType<NullReferenceException>(result);
+        }
+
+        [Fact]
+        public async Task InfoMessageAsync_WithNullLogger_ThrowsNullReferenceException()
+        {
+            // Arrange
+            var service = new LogService(null);
+            var infoMessage = "Test info";
+
+            // Act & Assert
+            var result = await Record.ExceptionAsync(async () => await service.InfoMessageAsync(infoMessage));
+            Assert.IsType<NullReferenceException>(result);
+        }
+
+        [Fact]
+        public async Task ErrorMessageAsync_WithNullLogger_ThrowsNullReferenceException()
+        {
+            // Arrange
+            var service = new LogService(null);
+            var errorMessage = "Test error";
+
+            // Act & Assert
+            var result = await Record.ExceptionAsync(async () => await service.ErrorMessageAsync(errorMessage));
+            Assert.IsType<NullReferenceException>(result);
+        }
+
+        [Fact]
+        public void Error_LogMessageContainsAllSections()
+        {
+            // Arrange
+            var exception = new Exception("Test exception with details");
+
+            // Act
+            logService.Error(exception);
+
+            // Assert
+            logger.Received(1).Error(Arg.Is<string>(msg => 
+                msg.Contains("Test exception with details") &&
+                msg.Contains("DATABASE INFO") &&
+                msg.Contains("SERVER INFO") &&
+                msg.Contains("EXCEPTION INFO")));
+        }
+
+        [Fact]
+        public async Task ErrorAsync_LogMessageContainsAllSections()
+        {
+            // Arrange
+            var exception = new Exception("Test async exception with details");
+
+            // Act
+            await logService.ErrorAsync(exception);
+
+            // Assert
+            await logger.Received(1).ErrorAsync(Arg.Is<string>(msg => 
+                msg.Contains("Test async exception with details") &&
+                msg.Contains("DATABASE INFO") &&
+                msg.Contains("SERVER INFO") &&
+                msg.Contains("EXCEPTION INFO")));
         }
     }
 }

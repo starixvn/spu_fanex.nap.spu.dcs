@@ -716,19 +716,21 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         #region Error Handling Tests
 
         [Fact]
-        public async Task SummaryBetTransaction_WhenServiceThrowsException_ReturnsFalse()
+        public async Task SummaryBetTransaction_WhenServiceThrowsException_ThrowsException()
         {
             // Arrange
             var fromDate = DateTime.Now.AddDays(-7);
             var toDate = DateTime.Now;
             var batchSize = 25000;
-            _mockDataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate, batchSize).Returns(Task.FromException<bool>(new Exception("Test exception")));
+            var exception = new Exception("Test exception");
+            _mockDataTraceJobService.SummaryBetTransactionAsync(fromDate, toDate, batchSize).Returns(Task.FromException<bool>(exception));
 
-            // Act
-            var result = await _controller.SummaryBetTransaction(fromDate, toDate, batchSize);
+            // Act & Assert
+            var result = await Assert.ThrowsAsync<Exception>(() => 
+                _controller.SummaryBetTransaction(fromDate, toDate, batchSize));
 
-            // Assert
-            Assert.False(result);
+            Assert.Equal("Test exception", result.Message);
+            await _mockDataTraceJobService.Received(1).SummaryBetTransactionAsync(fromDate, toDate, batchSize);
         }
 
         [Fact]
