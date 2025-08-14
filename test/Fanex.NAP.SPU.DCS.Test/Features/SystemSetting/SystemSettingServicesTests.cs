@@ -1,7 +1,5 @@
-﻿
-namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
+﻿namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
 {
-    using System.Threading.Tasks;
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using NSubstitute;
@@ -23,16 +21,35 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.SystemSetting
         {
             // Arrange
             var systemSettingID = fixture.Create<int>();
-
             var systemSettingValue = fixture.Create<string>();
+
+            // Setup mock to return a positive value (indicating successful update)
+            dataAccess.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue).Returns(1);
 
             // Act
             var result = systemSettingServices.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
 
             // Assert
             dataAccess.Received(1).UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
-
             Assert.True(result);
+        }
+
+        [Fact]
+        public void UpdateDCSystemSettingByID_WhenUpdateFails_ReturnsFalse()
+        {
+            // Arrange
+            var systemSettingID = fixture.Create<int>();
+            var systemSettingValue = fixture.Create<string>();
+
+            // Setup mock to return 0 (indicating failed update)
+            dataAccess.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue).Returns(0);
+
+            // Act
+            var result = systemSettingServices.UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
+
+            // Assert
+            dataAccess.Received(1).UpdateDCSystemSettingByID(systemSettingID, systemSettingValue);
+            Assert.False(result);
         }
     }
 }

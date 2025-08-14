@@ -250,7 +250,7 @@
             var expectedSettingKey = "DCS_DC_OpenSearch_Transaction_Get";
 
             repository
-                .FetchAsync<TransactionLogstashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))
+                .Fetch<TransactionLogstashModel>(Arg.Do<GetTranPackageCriteria>(x => criteria = x))
                 .Returns(expectedTransactions);
 
             // Act

@@ -7,3 +7,6 @@
 /.vs/Fanex.NAP.SPU.DCS/v16/TestStore/
 /.vs/*
 *.coverage
+/coveragereport/*
+/test/Fanex.NAP.SPU.DCS.Test/coveragereport/*
+/test/Fanex.NAP.SPU.DCS.Test/TestResults/*

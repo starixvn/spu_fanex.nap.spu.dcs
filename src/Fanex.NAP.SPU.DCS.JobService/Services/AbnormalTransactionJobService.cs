@@ -1,5 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Services
 {
+    using System;
+    using System.Threading.Tasks;
     using Fanex.NAP.SPU.DCS.Features.AbnormalTransaction;
 
     public interface IAbnormalTransactionJobService
@@ -16,12 +18,13 @@
 
         public AbnormalTransactionJobService(ILogService logService, IAppSettings appSettings, IAbnormalTransactionServices abnormalTransactionJobServices)
         {
-            _logService = logService;
-
-            _abnormalTransactionServices = abnormalTransactionJobServices;
+            _logService = logService ?? throw new ArgumentNullException(nameof(logService));
+            _abnormalTransactionServices = abnormalTransactionJobServices ?? throw new ArgumentNullException(nameof(abnormalTransactionJobServices));
+            
+            if (appSettings == null)
+                throw new ArgumentNullException(nameof(appSettings));
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
-
             _ignorePushData = appSettings.AbnormalTransactionIgnorePushData;
         }
 
