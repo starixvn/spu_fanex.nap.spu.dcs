@@ -22,7 +22,9 @@
             _abnormalTransactionServices = abnormalTransactionJobServices ?? throw new ArgumentNullException(nameof(abnormalTransactionJobServices));
             
             if (appSettings == null)
+            {
                 throw new ArgumentNullException(nameof(appSettings));
+            }
 
             _abnormalTransactionUrl = appSettings.AbnormalTransactionUrl;
             _ignorePushData = appSettings.AbnormalTransactionIgnorePushData;

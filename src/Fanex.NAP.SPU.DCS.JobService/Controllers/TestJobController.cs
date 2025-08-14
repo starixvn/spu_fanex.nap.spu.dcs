@@ -1,7 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
     using Fanex.NAP.SPU.DCS.JobService.Services;
-    using Microsoft.AspNetCore.Authorization;
 
     [ApiController]
     [Route("api/testjob")]

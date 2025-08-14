@@ -1,6 +1,5 @@
 ﻿namespace Fanex.NAP.SPU.DCS.JobService.Controllers
 {
-    using Fanex.NAP.SPU.DCS.Features.Common;
     using Fanex.NAP.SPU.DCS.Features.SystemSetting;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using UAParser.FormFactor.Models;

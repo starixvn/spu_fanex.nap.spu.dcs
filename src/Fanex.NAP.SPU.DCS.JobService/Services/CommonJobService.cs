@@ -9,10 +9,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
         bool UpdateIDRangeFPFingerPrint(DateTime date, ulong minID, ulong maxID);
     }
 
-    public class CommonJobService : ICommonJobService
+    public class CommonJobService : ICommonJobService 
     {
-        public readonly ICommonServices commonServices;
-        public readonly ILogService logService;
+        private readonly ICommonServices commonServices;
+        private readonly ILogService logService;
 
         private const string DatabaseName = "DCS_DataCenter";
         private const string FingerPrintTable = "FP_FingerPrint";

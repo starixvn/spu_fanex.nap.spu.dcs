@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace Fanex.NAP.SPU.DCS.Features.SystemSetting
 {
     public interface ISystemSettingServices

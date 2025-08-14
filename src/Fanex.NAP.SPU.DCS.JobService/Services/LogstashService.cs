@@ -14,12 +14,10 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
     public class LogstashService : ILogstashService
     {
         private readonly IAppSettings _appSettings;
-        private readonly ILogService _logService;
 
         public LogstashService(IAppSettings appSettings, ILogService logService)
         {
             _appSettings = appSettings;
-            _logService = logService;
         }
 
         public ulong PushLog(IEnumerable<TransactionLogstashModel> transactions)
@@ -34,7 +32,9 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             ulong processedTransID = 0;
 
             if (transactions == null)
+            {
                 return 0;
+            }
 
             using var client = new TcpClient();
             client.Connect(_appSettings.LogstashTcpHostname, _appSettings.LogstashTcpPort);

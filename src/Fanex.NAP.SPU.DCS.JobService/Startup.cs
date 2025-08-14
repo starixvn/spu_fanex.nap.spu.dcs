@@ -91,7 +91,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
             });
         }
 
-        private void FanexDataConfig(IAppSettings appSettings)
+        private void FanexDataConfig()
         {
             var resourcePath = Configuration["StoredProcedurePath"];
 
