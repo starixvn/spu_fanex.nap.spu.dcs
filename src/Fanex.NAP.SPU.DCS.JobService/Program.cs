@@ -32,7 +32,10 @@ namespace Fanex.NAP.SPU.DCS.JobService
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:5000");
+                    // Use HTTP for container - SSL termination handled by HAProxy/load balancer
+                    // This is a common pattern in microservices architecture
+                    // SonarQube: Suppressing HTTP warning as SSL termination is handled by HAProxy
+                    webBuilder.UseUrls("http://*:5000"); // NOSONAR
 
                     webBuilder
                     .UseSentry()

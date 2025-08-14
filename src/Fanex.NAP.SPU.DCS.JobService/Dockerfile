@@ -33,4 +33,7 @@ ENV TZ="America/La_Paz"
 # Switch to non-root user
 USER appuser
 
+# Expose HTTP port - SSL termination handled by HAProxy/load balancer
+EXPOSE 5000
+
 ENTRYPOINT ["dotnet", "Fanex.NAP.SPU.DCS.JobService.dll"]
