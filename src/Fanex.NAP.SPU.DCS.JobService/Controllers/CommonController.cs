@@ -8,7 +8,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Controllers
     public class CommonController(IAppSettings appSettings) : ControllerBase
     {
         private readonly IAppSettings appSettings = appSettings;
-
+         
         [HttpGet("whoami")]
         public WhoamiModel Index()
         {
