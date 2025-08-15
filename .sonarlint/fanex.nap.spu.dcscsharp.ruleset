@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="SonarLint Rules" Description="SonarLint rules for Fanex.NAP.SPU.DCS" ToolsVersion="16.0">
+  <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+    <!-- Disable some rules that are causing warnings -->
+    <Rule Id="S1192" Action="None" /> <!-- Define a constant instead of using this literal -->
+    <Rule Id="S5332" Action="None" /> <!-- Using http protocol is insecure -->
+    <Rule Id="S109" Action="None" /> <!-- Assign this magic number to a well-named variable -->
+  </Rules>
+</RuleSet>

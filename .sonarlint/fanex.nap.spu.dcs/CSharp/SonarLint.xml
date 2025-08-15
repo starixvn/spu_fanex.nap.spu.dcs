@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput>
+  <Settings>
+    <Setting>
+      <Key>sonar.cs.roslyn.reportIssues</Key>
+      <Value>true</Value>
+    </Setting>
+  </Settings>
+</AnalysisInput>

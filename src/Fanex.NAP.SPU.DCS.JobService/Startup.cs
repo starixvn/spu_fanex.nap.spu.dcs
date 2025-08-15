@@ -48,7 +48,7 @@ namespace Fanex.NAP.SPU.DCS.JobService
 
             services.RegisterService();
 
-            FanexDataConfig(appSettings);
+            FanexDataConfig();
 
             RegisterLogging(appSettings);
 
