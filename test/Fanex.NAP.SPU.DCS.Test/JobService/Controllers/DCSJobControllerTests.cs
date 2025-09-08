@@ -364,6 +364,55 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
 
         #endregion
 
+        #region TransformRawFingerprintQueue Tests
+
+        [Fact]
+        public void TransformRawFingerprintQueue_WithValidBatchSize_ReturnsTrue()
+        {
+            // Arrange
+            var batchSize = 1000;
+            _mockTransactionJobServices.TransactionJobService.ProcessRawFingerprintQueue(batchSize).Returns(true);
+
+            // Act
+            var result = _controller.TransformRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.True(result);
+            _mockTransactionJobServices.TransactionJobService.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        [Fact]
+        public void TransformRawFingerprintQueue_WithZeroBatchSize_ReturnsFalse()
+        {
+            // Arrange
+            var batchSize = 0;
+            _mockTransactionJobServices.TransactionJobService.ProcessRawFingerprintQueue(batchSize).Returns(false);
+
+            // Act
+            var result = _controller.TransformRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.False(result);
+            _mockTransactionJobServices.TransactionJobService.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        [Fact]
+        public void TransformRawFingerprintQueue_WithNegativeBatchSize_ReturnsFalse()
+        {
+            // Arrange
+            var batchSize = -1;
+            _mockTransactionJobServices.TransactionJobService.ProcessRawFingerprintQueue(batchSize).Returns(false);
+
+            // Act
+            var result = _controller.TransformRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.False(result);
+            _mockTransactionJobServices.TransactionJobService.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        #endregion
+
         #region Mobile App Tests
 
         [Fact]

@@ -71,6 +71,8 @@
             {
                 BatchSize = batchSize
             };
+
+            repository.Execute(criteria);
         }
     }
 }

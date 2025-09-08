@@ -79,5 +79,34 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 
             Assert.Same(expectedResult, transactionServices);
         }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WhenCalled_ShouldCallDataAccessAndReturnSelf()
+        {
+            // Arrange
+            var batchSize = 1000;
+
+            // Act
+            var result = transactionServices.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.Same(result, transactionServices);
+            transactionDataAccess.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(-1)]
+        public void ProcessRawFingerprintQueue_WithDifferentBatchSizes_ShouldCallDataAccess(int batchSize)
+        {
+            // Act
+            var result = transactionServices.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.Same(result, transactionServices);
+            transactionDataAccess.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
     }
 }

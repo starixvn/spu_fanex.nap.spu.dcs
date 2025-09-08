@@ -70,6 +70,77 @@
             await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
         }
 
+        [Fact]
+        public void ProcessRawFingerprintQueue_WhenCalled_ShouldReturnTrueAndCallTransactionService()
+        {
+            // Arrange
+            var batchSize = 1000;
+            var service = GetService();
+
+            transactionService.ProcessRawFingerprintQueue(Arg.Any<int>()).Returns(transactionService);
+
+            // Act
+            var result = service.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.True(result);
+            transactionService.Received(1).ProcessRawFingerprintQueue(batchSize);
+            logService.DidNotReceiveWithAnyArgs().Error(Arg.Any<Exception>());
+        }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WhenThrowException_ShouldReturnFalseAndLogError()
+        {
+            // Arrange
+            var batchSize = 1000;
+            var service = GetService();
+            var exception = new Exception("Test exception");
+
+            transactionService.ProcessRawFingerprintQueue(Arg.Any<int>()).Throws(exception);
+
+            // Act
+            var result = service.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.False(result);
+            transactionService.Received(1).ProcessRawFingerprintQueue(batchSize);
+            logService.Received(1).Error(exception);
+        }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WithZeroBatchSize_ShouldCallTransactionService()
+        {
+            // Arrange
+            var batchSize = 0;
+            var service = GetService();
+
+            transactionService.ProcessRawFingerprintQueue(Arg.Any<int>()).Returns(transactionService);
+
+            // Act
+            var result = service.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.True(result);
+            transactionService.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WithNegativeBatchSize_ShouldCallTransactionService()
+        {
+            // Arrange
+            var batchSize = -1;
+            var service = GetService();
+
+            transactionService.ProcessRawFingerprintQueue(Arg.Any<int>()).Returns(transactionService);
+
+            // Act
+            var result = service.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.True(result);
+            transactionService.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
         public TransactionJobService GetService()
         {
 
