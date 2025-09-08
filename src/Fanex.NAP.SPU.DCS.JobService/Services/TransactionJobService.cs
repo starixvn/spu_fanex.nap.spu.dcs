@@ -5,6 +5,8 @@
     public interface ITransactionJobService
     {
         Task<bool> Execute(int numberOfTrans, int numberOfBatch, bool isTransformExtra);
+
+        bool ProcessRawFingerprintQueue(int batchSize);
     }
 
     public class TransactionJobService : ITransactionJobService
@@ -48,6 +50,22 @@
                     return true;
                 }
             }
+        }
+
+        public bool ProcessRawFingerprintQueue(int batchSize)
+        {
+            try
+            {
+                this.transactionService.ProcessRawFingerprintQueue(batchSize);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logService.Error(ex);
+                return false;
+            }
+
+            return true;
         }
 
         private async Task JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)

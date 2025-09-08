@@ -59,6 +59,12 @@
             return await deviceJobService.Execute(size, numberOfBatch, false);
         }
 
+        [HttpPost("transformrawfingerprintqueue")]
+        public bool TransformRawFingerprintQueue([FromForm] int batchSize)
+        {
+            return transactionJobServices.TransactionJobService.ProcessRawFingerprintQueue(batchSize);
+        }
+
         [HttpPost("deviceevolution")]
         public async Task<bool> DeviceEvolution([FromForm] int batchSize)
         {

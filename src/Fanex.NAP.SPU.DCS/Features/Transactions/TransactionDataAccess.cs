@@ -13,6 +13,8 @@
         void InserUserAgent(long fromId, long toId, bool isReadyDbExtra);
 
         void InsertTransaction(long fromId, long toId, bool isReadyDbExtra);
+
+        void ProcessRawFingerprintQueue(int batchSize);
     }
     public class TransactionDataAccess : ITransactionDataAccess
     {
@@ -61,6 +63,14 @@
             };
 
             repository.Execute(criteria);
+        }
+
+        public void ProcessRawFingerprintQueue(int batchSize)
+        {
+            var criteria = new ProcessRawFingerprintQueueCriteria
+            {
+                BatchSize = batchSize
+            };
         }
     }
 }

@@ -11,6 +11,8 @@
         ITransactionServices UserAgentProcessing(long fromId, long toId, bool isReadyDbExtra);
 
         ITransactionServices TransactionProcessing(long fromId, long toId, bool isReadyDbExtra);
+
+        ITransactionServices ProcessRawFingerprintQueue(int batchSize);
     }
 
     public class TransactionServices : ITransactionServices
@@ -39,6 +41,10 @@
             return this;
         }
 
-
+        public ITransactionServices ProcessRawFingerprintQueue(int batchSize)
+        {
+            this.transactionDataAccess.ProcessRawFingerprintQueue(batchSize);
+            return this;
+        }
     }
 }

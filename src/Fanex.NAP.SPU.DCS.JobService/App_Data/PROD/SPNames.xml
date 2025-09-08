@@ -13,6 +13,7 @@
 		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
 		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_RawFingerprintQueue_Process" SpName="DCS_DC_Transform_RawFingerprintQueue_Process_xtest" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
 
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
