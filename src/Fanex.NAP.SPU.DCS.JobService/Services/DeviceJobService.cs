@@ -44,7 +44,6 @@
                     return false;
                 }
 
-                await deviceService.InsertFPDeviceMappingAsync(size * numberOfBatch, isReadyDbExtra);
                 var transformResult = await TransformDevice(size, numberOfBatch, isReadyDbExtra);
 
                 if (transformResult)

@@ -107,7 +107,7 @@
         }
 
         [Fact]
-        public async Task TransformDevice_WhenSizeAndNumberOfBatchAreGreaterThanZero_ShouldCallInsertFPDeviceMappingAndTransformDevice()
+        public async Task TransformDevice_WhenSizeAndNumberOfBatchAreGreaterThanZero_ShouldCallTransformDevice()
         {
             // Arrange
             var deviceJobService = GetService(); 
@@ -124,7 +124,7 @@
             var result = await deviceJobService.Execute(size, numberOfBatch, isExtra);
 
             // Assert
-            await deviceService.Received(1).InsertFPDeviceMappingAsync(size * numberOfBatch, isExtra);
+            await deviceService.Received(1).GetStagingTransIdForDeviceAsync(size, numberOfBatch, isExtra);
             foreach (var group in stagingTransIds.GroupBy(x => x.BatchId))
             {
                 await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)), isExtra);
@@ -138,8 +138,7 @@
             // Arrange
             var deviceJobService = GetService();
 
-
-            deviceService.When(x => x.InsertFPDeviceMappingAsync(Arg.Any<int>(), Arg.Any<bool>()))
+            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()))
                          .Do(x => { throw new Exception("Test exception"); });
 
             // Act
