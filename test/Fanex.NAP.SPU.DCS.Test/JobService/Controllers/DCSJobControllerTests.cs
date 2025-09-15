@@ -58,14 +58,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         {
             // Arrange
             var size = 1000;
-            _mockUserAgentJobService.Execute(size, false).Returns(true);
+            _mockUserAgentJobService.Execute(size).Returns(true);
 
             // Act
             var result = await _controller.UserAgent(size);
 
             // Assert
             Assert.True(result);
-            await _mockUserAgentJobService.Received(1).Execute(size, false);
+            await _mockUserAgentJobService.Received(1).Execute(size);
         }
 
         [Fact]
@@ -73,14 +73,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         {
             // Arrange
             var size = 0;
-            _mockUserAgentJobService.Execute(size, false).Returns(false);
+            _mockUserAgentJobService.Execute(size).Returns(false);
 
             // Act
             var result = await _controller.UserAgent(size);
 
             // Assert
             Assert.False(result);
-            await _mockUserAgentJobService.Received(1).Execute(size, false);
+            await _mockUserAgentJobService.Received(1).Execute(size);
         }
 
         #endregion
@@ -129,14 +129,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
             // Arrange
             var size = 1000;
             var numberOfBatch = 5;
-            _mockTransactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false).Returns(true);
+            _mockTransactionJobServices.TransactionJobService.Execute(size, numberOfBatch).Returns(true);
 
             // Act
             var result = await _controller.TransformTransaction(size, numberOfBatch);
 
             // Assert
             Assert.True(result);
-            await _mockTransactionJobServices.TransactionJobService.Received(1).Execute(size, numberOfBatch, false);
+            await _mockTransactionJobServices.TransactionJobService.Received(1).Execute(size, numberOfBatch);
         }
 
         [Fact]
@@ -145,14 +145,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
             // Arrange
             var size = 0;
             var numberOfBatch = 0;
-            _mockTransactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false).Returns(false);
+            _mockTransactionJobServices.TransactionJobService.Execute(size, numberOfBatch).Returns(false);
 
             // Act
             var result = await _controller.TransformTransaction(size, numberOfBatch);
 
             // Assert
             Assert.False(result);
-            await _mockTransactionJobServices.TransactionJobService.Received(1).Execute(size, numberOfBatch, false);
+            await _mockTransactionJobServices.TransactionJobService.Received(1).Execute(size, numberOfBatch);
         }
 
         #endregion
@@ -165,14 +165,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
             // Arrange
             var size = 1000;
             var numberOfBatch = 5;
-            _mockDeviceJobService.Execute(size, numberOfBatch, false).Returns(true);
+            _mockDeviceJobService.Execute(size, numberOfBatch).Returns(true);
 
             // Act
             var result = await _controller.TransformDevice(size, numberOfBatch);
 
             // Assert
             Assert.True(result);
-            await _mockDeviceJobService.Received(1).Execute(size, numberOfBatch, false);
+            await _mockDeviceJobService.Received(1).Execute(size, numberOfBatch);
         }
 
         #endregion
@@ -184,14 +184,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         {
             // Arrange
             var batchSize = 1000;
-            _mockDeviceJobService.DeviceEvolution(batchSize, false).Returns(true);
+            _mockDeviceJobService.DeviceEvolution(batchSize).Returns(true);
 
             // Act
             var result = await _controller.DeviceEvolution(batchSize);
 
             // Assert
             Assert.True(result);
-            await _mockDeviceJobService.Received(1).DeviceEvolution(batchSize, false);
+            await _mockDeviceJobService.Received(1).DeviceEvolution(batchSize);
         }
 
         #endregion
@@ -240,14 +240,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         {
             // Arrange
             var batchSize = 1000;
-            _mockArchiveJobService.Execute(batchSize, false).Returns(true);
+            _mockArchiveJobService.Execute(batchSize).Returns(true);
 
             // Act
             var result = await _controller.UpdateModifiedDate(batchSize);
 
             // Assert
             Assert.True(result);
-            await _mockArchiveJobService.Received(1).Execute(batchSize, false);
+            await _mockArchiveJobService.Received(1).Execute(batchSize);
         }
 
         #endregion
@@ -295,14 +295,14 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
         {
             // Arrange
             var retentionDays = 30;
-            _mockArchiveJobService.DeleteBotComponent(retentionDays, false).Returns(true);
+            _mockArchiveJobService.DeleteBotComponent(retentionDays).Returns(true);
 
             // Act
             var result = await _controller.DeleteBotComponent(retentionDays);
 
             // Assert
             Assert.True(result);
-            await _mockArchiveJobService.Received(1).DeleteBotComponent(retentionDays, false);
+            await _mockArchiveJobService.Received(1).DeleteBotComponent(retentionDays);
         }
 
         #endregion

@@ -31,17 +31,17 @@
 
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
-            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Returns(rawTrans);
-            transactionService.UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(transactionService);
-            transactionService.TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(transactionService);
+            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(rawTrans);
+            transactionService.UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>()).Returns(transactionService);
+            transactionService.TransactionProcessing(Arg.Any<long>(), Arg.Any<long>()).Returns(transactionService);
 
             // Act
-            var result = await service.Execute(1, 1, true);
+            var result = await service.Execute(1, 1);
 
             // Assert
             Assert.True(result);
-            transactionService.Received(3).UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
-            transactionService.Received(3).TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
+            transactionService.Received(3).UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>());
+            transactionService.Received(3).TransactionProcessing(Arg.Any<long>(), Arg.Any<long>());
 
             await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
@@ -57,15 +57,15 @@
 
             appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
-            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()).Throws(new Exception("Test exception"));
+            transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Throws(new Exception("Test exception"));
 
             // Act
-            var result = await service.Execute(1, 1, true);
+            var result = await service.Execute(1, 1);
 
             // Assert
             Assert.False(result);
-            transactionService.DidNotReceiveWithAnyArgs().UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
-            transactionService.DidNotReceiveWithAnyArgs().TransactionProcessing(Arg.Any<long>(), Arg.Any<long>(), Arg.Any<bool>());
+            transactionService.DidNotReceiveWithAnyArgs().UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>());
+            transactionService.DidNotReceiveWithAnyArgs().TransactionProcessing(Arg.Any<long>(), Arg.Any<long>());
 
             await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
         }

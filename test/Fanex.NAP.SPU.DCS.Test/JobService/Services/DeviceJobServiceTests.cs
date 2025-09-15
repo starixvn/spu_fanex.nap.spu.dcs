@@ -32,15 +32,15 @@
             var stagingTransIds = GetStagingTrans();
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
 
             // Act
-            var result = await deviceJobService.Execute(1, 1, isExtra);
+            var result = await deviceJobService.Execute(1, 1);
 
             // Assert
             foreach (var group in stagingTransIds.GroupBy(x => x.BatchId))
             {
-                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)), isExtra);
+                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)));
             }
             Assert.True(result);
         }
@@ -51,11 +51,11 @@
             //Arrange
             var deviceJobService = GetService();
 
-            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(1, 1, isExtra))
+            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(1, 1))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             //Act
-            var result = await deviceJobService.Execute(1, 1, false);
+            var result = await deviceJobService.Execute(1, 1);
 
             //Assert
             await logService.Received().ErrorAsync(Arg.Any<Exception>());
@@ -92,13 +92,13 @@
             };
             var deviceJobService = GetService();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
 
-            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>(), isExtra))
+            deviceService.When(x => x.TransformDeviceInsertAsync(Arg.Any<IEnumerable<StagingTransId>>()))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             //Act
-            var result = await deviceJobService.Execute(1, 1, false);
+            var result = await deviceJobService.Execute(1, 1);
 
             //Assert
             await logService.Received(3).ErrorAsync(Arg.Any<Exception>());
@@ -118,16 +118,16 @@
 
             var stagingTransIds = GetStagingTrans();
 
-            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), isExtra).Returns(stagingTransIds);
+            deviceService.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()).Returns(stagingTransIds);
 
             // Act
-            var result = await deviceJobService.Execute(size, numberOfBatch, isExtra);
+            var result = await deviceJobService.Execute(size, numberOfBatch);
 
             // Assert
-            await deviceService.Received(1).GetStagingTransIdForDeviceAsync(size, numberOfBatch, isExtra);
+            await deviceService.Received(1).GetStagingTransIdForDeviceAsync(size, numberOfBatch);
             foreach (var group in stagingTransIds.GroupBy(x => x.BatchId))
             {
-                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)), isExtra);
+                await deviceService.Received(1).TransformDeviceInsertAsync(Arg.Is<IEnumerable<StagingTransId>>(transIds => transIds.SequenceEqual(group)));
             }
             Assert.True(result);
         }
@@ -138,11 +138,11 @@
             // Arrange
             var deviceJobService = GetService();
 
-            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<bool>()))
+            deviceService.When(x => x.GetStagingTransIdForDeviceAsync(Arg.Any<int>(), Arg.Any<int>()))
                          .Do(x => { throw new Exception("Test exception"); });
 
             // Act
-            var result = await deviceJobService.Execute(1, 1, isExtra);
+            var result = await deviceJobService.Execute(1, 1);
 
             // Assert
             await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "Test exception"));
@@ -165,14 +165,14 @@
 
             var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
 
-            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>()).Returns(resultDeviceEvolution);
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(batchSize, isExtra);
+            var result = await deviceJobService.DeviceEvolution(batchSize);
 
             // Assert
-            await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize, isExtra);
-            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isExtra);
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(batchSize);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(deviceEvolutionJson);
             Assert.False(result);
         }
 
@@ -183,7 +183,7 @@
             var deviceJobService = GetService();
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(0, isExtra);
+            var result = await deviceJobService.DeviceEvolution(0);
 
             // Assert
             await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "DeviceEvolution BatchSize = 0!"));
@@ -196,11 +196,11 @@
             // Arrange
             var deviceJobService = GetService();
 
-            deviceService.When(x => x.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()))
+            deviceService.When(x => x.GetFPDeviceEvolutionAsync(Arg.Any<int>()))
                          .Do(x => { throw new Exception("Test exception"); });
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+            var result = await deviceJobService.DeviceEvolution(1);
 
             // Assert
             await logService.Received(1).ErrorAsync(Arg.Is<Exception>(ex => ex.Message == "Test exception"));
@@ -219,10 +219,10 @@
 
             var resultDeviceEvolution = (dataEvolution, dataEvolutionAttribute);
 
-            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>()).Returns(resultDeviceEvolution);
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(1, true);
+            var result = await deviceJobService.DeviceEvolution(1);
 
             // Assert
             Assert.False(result);
@@ -236,14 +236,14 @@
 
             var resultDeviceEvolution = (null as IEnumerable<DeviceEvolutionEntity>, fixture.CreateMany<DeviceEvolutionEntity>());
 
-            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>()).Returns(resultDeviceEvolution);
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+            var result = await deviceJobService.DeviceEvolution(1);
 
             // Assert
-            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1, isExtra);
-            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>(), isExtra);
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>());
             Assert.True(result);
         }
 
@@ -255,14 +255,14 @@
 
             var resultDeviceEvolution = (Enumerable.Empty<DeviceEvolutionEntity>(), fixture.CreateMany<DeviceEvolutionEntity>());
 
-            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>(), Arg.Any<bool>()).Returns(resultDeviceEvolution);
+            deviceService.GetFPDeviceEvolutionAsync(Arg.Any<int>()).Returns(resultDeviceEvolution);
 
             // Act
-            var result = await deviceJobService.DeviceEvolution(1, isExtra);
+            var result = await deviceJobService.DeviceEvolution(1);
 
             // Assert
-            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1, isExtra);
-            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>(), isExtra);
+            await deviceService.Received(1).GetFPDeviceEvolutionAsync(1);
+            await deviceService.DidNotReceive().InsertFPDeviceEvolutionAsync(Arg.Any<string>());
             Assert.True(result);
         }
 

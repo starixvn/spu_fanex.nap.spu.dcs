@@ -8,12 +8,9 @@ namespace Fanex.NAP.SPU.DCS.Features.ArchiveData.Criteria
         [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
-        [SpParam(Ignored = true)]
-        public bool IsReadyDbExtra { get; set; }
-
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "DCS_ET_ArchiveData_ModifiedDate_Update" : "DCS_DC_ArchiveData_ModifiedDate_Update";
+            return "DCS_DC_ArchiveData_ModifiedDate_Update";
         }
 
         public override bool IsValid()

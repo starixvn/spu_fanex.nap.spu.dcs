@@ -9,9 +9,9 @@
 
     public interface IUserAgentDataAccess
     {
-        IEnumerable<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra);
+        IEnumerable<UserAgentEntity> GetUserAgent(int size);
 
-        DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra);
+        DataResult UpdateUserAgent(string userAgentJson);
     }
 
     public class UserAgentDataAccess : IUserAgentDataAccess
@@ -23,12 +23,11 @@
             this.repository = repository ?? new DynamicRepository();
         }
 
-        public IEnumerable<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
+        public IEnumerable<UserAgentEntity> GetUserAgent(int size)
         {
             var criteria = new GetUserAgentCriteria
             {
-                Size = size,
-                IsReadyDbExtra = isReadyDbExtra
+                Size = size
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -37,12 +36,11 @@
             }
         }
 
-        public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
+        public DataResult UpdateUserAgent(string userAgentJson)
         {
             var criteria = new UpdateUserAgentCriteria
             {
-                UserAgentJson = userAgentJson,
-                IsReadyDbExtra = isReadyDbExtra
+                UserAgentJson = userAgentJson
             };
 
             var errCode = repository.Execute(criteria);

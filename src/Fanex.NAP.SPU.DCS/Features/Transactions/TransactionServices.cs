@@ -6,11 +6,11 @@
     public interface ITransactionServices
     {
 
-        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra);
+        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch);
 
-        ITransactionServices UserAgentProcessing(long fromId, long toId, bool isReadyDbExtra);
+        ITransactionServices UserAgentProcessing(long fromId, long toId);
 
-        ITransactionServices TransactionProcessing(long fromId, long toId, bool isReadyDbExtra);
+        ITransactionServices TransactionProcessing(long fromId, long toId);
 
         ITransactionServices ProcessRawFingerprintQueue(int batchSize);
     }
@@ -24,20 +24,20 @@
             this.transactionDataAccess = transactionDataAccess;
         }
 
-        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
+        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch)
         {
-            return this.transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch, isReadyDbExtra);
+            return this.transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch);
         }
 
-        public ITransactionServices TransactionProcessing(long fromId, long toId, bool isReadyDbExtra)
+        public ITransactionServices TransactionProcessing(long fromId, long toId)
         {
-            this.transactionDataAccess.InsertTransaction(fromId, toId, isReadyDbExtra);
+            this.transactionDataAccess.InsertTransaction(fromId, toId);
             return this;
         }
 
-        public ITransactionServices UserAgentProcessing(long fromId, long toId, bool isReadyDbExtra)
+        public ITransactionServices UserAgentProcessing(long fromId, long toId)
         {
-            this.transactionDataAccess.InserUserAgent(fromId, toId, isReadyDbExtra);
+            this.transactionDataAccess.InserUserAgent(fromId, toId);
             return this;
         }
 

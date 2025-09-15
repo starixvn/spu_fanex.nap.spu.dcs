@@ -8,12 +8,9 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices.Criteria
         [SpParam(SqlParamName = "ip_BatchSize", AllowNull = true)]
         public int BatchSize { get; set; }
 
-        [SpParam(Ignored = true)]
-        public bool IsReadyDbExtra { get; set; }
-
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "" : "DCS_DC_Transform_FP_DeviceEvolutionGet";
+            return "DCS_DC_Transform_FP_DeviceEvolutionGet";
         }
 
         public override bool IsValid() => true;

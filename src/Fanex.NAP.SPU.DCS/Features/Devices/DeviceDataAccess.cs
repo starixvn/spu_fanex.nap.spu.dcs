@@ -9,15 +9,15 @@
 
     public interface IDeviceDataAccess
     {
-        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch);
 
-        Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra);
+        Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize);
 
-        Task TransformDeviceInsertAsync(string transIDs, bool isReadyDbExtra);
+        Task TransformDeviceInsertAsync(string transIDs);
 
-        Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra);
+        Task InsertFPDeviceMappingAsync(int batchSize);
 
-        Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra);
+        Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson);
 
         int UpdateMaxTransIDTransformDevice();
     }
@@ -31,57 +31,52 @@
             this.repository = repository ?? new DynamicRepository();
         }
 
-        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch)
         {
             var criteria = new GetDeviceStagingTransactionPackageCriteria
             {
                 Size = size,
-                NoOfBatch = noOfBatch,
-                IsReadyDbExtra = isReadyDbExtra
+                NoOfBatch = noOfBatch
             };
 
             return await repository.FetchAsync<StagingTransId>(criteria);
         }
 
-        public async Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra)
+        public async Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize)
         {
             var criteria = new GetFPDeviceEvolutionCriteria
             {
-                BatchSize = batchSize,
-                IsReadyDbExtra = isReadyDbExtra
+                BatchSize = batchSize
             };
 
             return await repository.FetchMultipleAsync<DeviceEvolutionEntity, DeviceEvolutionEntity>(criteria);
         }
 
-        public async Task TransformDeviceInsertAsync(string transIDs, bool isReadyDbExtra)
+        public async Task TransformDeviceInsertAsync(string transIDs)
         {
             var criteria = new TransformDeviceInsertCriteria
             {
-                TransIDs = transIDs,
-                IsReadyDbExtra = isReadyDbExtra
+                TransIDs = transIDs
             };
 
             await repository.ExecuteAsync(criteria);
         }
 
-        public async Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra)
+        public async Task InsertFPDeviceMappingAsync(int batchSize)
         {
             var criteria = new InsertFPDeviceMappingCriteria
             {
-                BatchSize = batchSize,
-                IsReadyDbExtra = isTransformExtra
+                BatchSize = batchSize
             };
 
             await repository.ExecuteAsync(criteria);
         }
 
-        public async Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra)
+        public async Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson)
         {
             var criteria = new InsertFPDeviceEvolutionCriteria
             {
-                DeviceEvolutionJson = deviceEvolutionJson,
-                IsReadyDbExtra = isTransformExtra
+                DeviceEvolutionJson = deviceEvolutionJson
             };
 
             await repository.ExecuteAsync(criteria);

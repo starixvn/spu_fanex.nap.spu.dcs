@@ -28,12 +28,10 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 
             var toId = fixture.Create<long>();
 
-            bool isReadyDbExtra = true;
-
             var criteria = fixture.Create<InsertTransactionCriteria>();
 
             // Act
-            transactionDataAccess.InsertTransaction(fromId, toId, isReadyDbExtra);
+            transactionDataAccess.InsertTransaction(fromId, toId);
 
             // Assert
             var isValid = criteria.IsInvalid();
@@ -41,8 +39,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
             repository.Received(1).Execute(Arg.Is<InsertTransactionCriteria>(c =>
                 c.FromStagingTransId == fromId &&
                 c.ToStagingTransId == toId &&
-                c.IsReadyDbExtra == isReadyDbExtra &&
-                c.GetSettingKey() == "DCS_ET_Transform_Transaction_Insert"));
+                c.GetSettingKey() == "DCS_DC_Transform_Transaction_Insert"));
         }
 
         [Fact]
@@ -53,12 +50,10 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 
             var toId = fixture.Create<long>();
 
-            bool isReadyDbExtra = true;
-
             var criteria = fixture.Create<InsertUserAgentCriteria>();
 
             // Act
-            transactionDataAccess.InserUserAgent(fromId, toId, isReadyDbExtra);
+            transactionDataAccess.InserUserAgent(fromId, toId);
 
             // Assert
             var isValid = criteria.IsInvalid();
@@ -66,8 +61,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
             repository.Received(1).Execute(Arg.Is<InsertUserAgentCriteria>(c =>
                 c.FromStagingTransId == fromId &&
                 c.ToStagingTransId == toId &&
-                c.IsReadyDbExtra == isReadyDbExtra &&
-                c.GetSettingKey() == "DCS_ET_Transform_UserAgent_Insert"));
+                c.GetSettingKey() == "DCS_DC_Transform_UserAgent_Insert"));
         }
 
         [Fact]

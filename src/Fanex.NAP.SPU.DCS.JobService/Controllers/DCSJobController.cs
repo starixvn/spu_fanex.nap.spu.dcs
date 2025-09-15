@@ -38,7 +38,7 @@
         [HttpPost("useragent")]
         public async Task<bool> UserAgent([FromForm] int size)
         {
-            return await userAgentJobService.Execute(size, false);
+            return await userAgentJobService.Execute(size);
         }
 
         [HttpGet("ConvertUserAgent")]
@@ -50,13 +50,13 @@
         [HttpPost("transformtransaction")]
         public async Task<bool> TransformTransaction([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch, false);
+            return await transactionJobServices.TransactionJobService.Execute(size, numberOfBatch);
         }
 
         [HttpPost("transformdevice")]
         public async Task<bool> TransformDevice([FromForm] int size, [FromForm] int numberOfBatch)
         {
-            return await deviceJobService.Execute(size, numberOfBatch, false);
+            return await deviceJobService.Execute(size, numberOfBatch);
         }
 
         [HttpPost("transformrawfingerprintqueue")]
@@ -68,7 +68,7 @@
         [HttpPost("deviceevolution")]
         public async Task<bool> DeviceEvolution([FromForm] int batchSize)
         {
-            return await deviceJobService.DeviceEvolution(batchSize, false);
+            return await deviceJobService.DeviceEvolution(batchSize);
         }
 
         [HttpPost("sumtransaction")]
@@ -86,7 +86,7 @@
         [HttpPost("updatemodifieddate")]
         public async Task<bool> UpdateModifiedDate([FromForm] int batchSize)
         {
-            return await archiveJobService.Execute(batchSize, false);
+            return await archiveJobService.Execute(batchSize);
         }
 
         [HttpPost("updatedcsystemsettingbyid")]
@@ -98,7 +98,7 @@
         [HttpPost("deletebotcomponent")]
         public async Task<bool> DeleteBotComponent([FromForm] int retentionDays)
         {
-            return await archiveJobService.DeleteBotComponent(retentionDays, false);
+            return await archiveJobService.DeleteBotComponent(retentionDays);
         }
 
         [HttpPost("insertidrangefpfingerprint")]

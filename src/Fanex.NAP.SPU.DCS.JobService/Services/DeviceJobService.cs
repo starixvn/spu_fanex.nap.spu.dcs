@@ -7,9 +7,9 @@
 
     public interface IDeviceJobService
     {
-        Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra);
+        Task<bool> Execute(int size, int numberOfBatch);
 
-        Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra);
+        Task<bool> DeviceEvolution(int batchSize);
     }
 
     public class DeviceJobService : IDeviceJobService
@@ -34,7 +34,7 @@
             httpClient.Timeout = TimeSpan.FromSeconds(10);
         }
 
-        public async Task<bool> Execute(int size, int numberOfBatch, bool isReadyDbExtra)
+        public async Task<bool> Execute(int size, int numberOfBatch)
         {
             try
             {
@@ -44,7 +44,7 @@
                     return false;
                 }
 
-                var transformResult = await TransformDevice(size, numberOfBatch, isReadyDbExtra);
+                var transformResult = await TransformDevice(size, numberOfBatch);
 
                 if (transformResult)
                 {
@@ -67,7 +67,7 @@
             return true;
         }
 
-        public async Task<bool> DeviceEvolution(int batchSize, bool isReadyDbExtra)
+        public async Task<bool> DeviceEvolution(int batchSize)
         {
             try
             {
@@ -77,7 +77,7 @@
                     return await Task.FromResult(false);
                 }
 
-                var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
+                var resultDeviceEvolution = await deviceService.GetFPDeviceEvolutionAsync(batchSize);
                 var dataEvolution = resultDeviceEvolution.Item1;
                 var dataEvolutionAttribute = resultDeviceEvolution.Item2;
 
@@ -87,7 +87,7 @@
                     if (listInsert.Any())
                     {
                         var deviceEvolutionJson = JsonSerializer.Serialize(listInsert);
-                        await deviceService.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isReadyDbExtra);
+                        await deviceService.InsertFPDeviceEvolutionAsync(deviceEvolutionJson);
                     }
                 }
             }
@@ -165,9 +165,9 @@
             return 0;
         }
 
-        private async Task<bool> TransformDevice(int size, int numberOfBatch, bool isReadyDbExtra)
+        private async Task<bool> TransformDevice(int size, int numberOfBatch)
         {
-            var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch, isReadyDbExtra);
+            var stagingTransIds = await deviceService.GetStagingTransIdForDeviceAsync(size, numberOfBatch);
             if (stagingTransIds == null || !stagingTransIds.Any())
             {
                 return false;
@@ -182,7 +182,7 @@
                 {
                     try
                     {
-                        await deviceService.TransformDeviceInsertAsync(trans, isReadyDbExtra);
+                        await deviceService.TransformDeviceInsertAsync(trans);
                     }
                     catch (Exception ex)
                     {

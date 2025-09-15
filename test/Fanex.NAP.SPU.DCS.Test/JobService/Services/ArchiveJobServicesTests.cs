@@ -21,14 +21,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int batchSize = 10;
-            bool isTransformExtra = true;
 
             // Act
-            var result = await archiveJobServices.Execute(batchSize, isTransformExtra);
+            var result = await archiveJobServices.Execute(batchSize);
 
             // Assert
             Assert.True(result);
-            archiveDataService.Received(1).UpdateModifiedDate(batchSize, isTransformExtra);
+            archiveDataService.Received(1).UpdateModifiedDate(batchSize);
             await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
 
@@ -39,17 +38,16 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int batchSize = 10;
-            bool isTransformExtra = true;
 
-            archiveDataService.When(x => x.UpdateModifiedDate(batchSize, isTransformExtra))
+            archiveDataService.When(x => x.UpdateModifiedDate(batchSize))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             // Act
-            var result = await archiveJobServices.Execute(batchSize, isTransformExtra);
+            var result = await archiveJobServices.Execute(batchSize);
 
             // Assert
             Assert.False(result);
-            archiveDataService.Received().UpdateModifiedDate(batchSize, isTransformExtra);
+            archiveDataService.Received().UpdateModifiedDate(batchSize);
             await logService.Received().ErrorAsync(Arg.Any<Exception>());
         }
 
@@ -60,15 +58,14 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int invalidBatchSize = 0;
-            bool isTransformExtra = true;
 
             // Act
-            var result = await archiveJobServices.Execute(invalidBatchSize, isTransformExtra);
+            var result = await archiveJobServices.Execute(invalidBatchSize);
 
             // Assert
             Assert.False(result);
             await logService.Received(1).ErrorAsync(Arg.Any<Exception>());
-            archiveDataService.DidNotReceiveWithAnyArgs().UpdateModifiedDate(Arg.Any<int>(), Arg.Any<bool>());
+            archiveDataService.DidNotReceiveWithAnyArgs().UpdateModifiedDate(Arg.Any<int>());
         }
 
         [Fact]
@@ -78,10 +75,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int invalidRetentionDays = -1;
-            bool isTransformExtra = true;
 
             // Act
-            var result = await archiveJobServices.DeleteBotComponent(invalidRetentionDays, isTransformExtra);
+            var result = await archiveJobServices.DeleteBotComponent(invalidRetentionDays);
 
             // Assert
             Assert.False(result);
@@ -94,14 +90,13 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int retentionDays = 1;
-            bool isTransformExtra = true;
 
             // Act
-            var result = await archiveJobServices.DeleteBotComponent(retentionDays, isTransformExtra);
+            var result = await archiveJobServices.DeleteBotComponent(retentionDays);
 
             // Assert
             Assert.True(result);
-            archiveDataService.Received().DeleteBotComponent(retentionDays, isTransformExtra);
+            archiveDataService.Received().DeleteBotComponent(retentionDays);
         }
 
         [Fact]
@@ -111,13 +106,12 @@ namespace Fanex.NAP.SPU.DCS.Tests.JobService.Services
             var archiveJobServices = GetService();
 
             int retentionDays = 1;
-            bool isTransformExtra = true;
 
-            archiveDataService.When(x => x.DeleteBotComponent(retentionDays, isTransformExtra))
+            archiveDataService.When(x => x.DeleteBotComponent(retentionDays))
                             .Do(x => { throw new Exception("Sql exception"); });
 
             // Act
-            var result = await archiveJobServices.DeleteBotComponent(retentionDays, isTransformExtra);
+            var result = await archiveJobServices.DeleteBotComponent(retentionDays);
 
             // Assert
             Assert.False(result);

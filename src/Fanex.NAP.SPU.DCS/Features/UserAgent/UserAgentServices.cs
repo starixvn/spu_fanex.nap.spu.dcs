@@ -14,9 +14,9 @@
 
     public interface IUserAgentServices
     {
-        List<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra);
+        List<UserAgentEntity> GetUserAgent(int size);
 
-        DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra);
+        DataResult UpdateUserAgent(string userAgentJson);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
@@ -35,16 +35,16 @@
             this.logService = logService;
         }
 
-        public List<UserAgentEntity> GetUserAgent(int size, bool isReadyDbExtra)
+        public List<UserAgentEntity> GetUserAgent(int size)
         {
-            return dataAccess.GetUserAgent(size, isReadyDbExtra).ToList();
+            return dataAccess.GetUserAgent(size).ToList();
         }
 
-        public DataResult UpdateUserAgent(string userAgentJson, bool isReadyDbExtra)
+        public DataResult UpdateUserAgent(string userAgentJson)
         {
             if (!string.IsNullOrWhiteSpace(userAgentJson))
             {
-                return dataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+                return dataAccess.UpdateUserAgent(userAgentJson);
             }
 
             return new DataResult

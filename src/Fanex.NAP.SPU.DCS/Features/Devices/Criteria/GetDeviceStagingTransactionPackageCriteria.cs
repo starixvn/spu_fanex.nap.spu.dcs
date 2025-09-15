@@ -11,12 +11,9 @@ namespace Fanex.NAP.SPU.DCS.Features.Devices
         [SpParam(SqlParamName = "ip_NoOfBatch", AllowNull = true)]
         public int NoOfBatch { get; set; }
 
-        [SpParam(Ignored = true)]
-        public bool IsReadyDbExtra { get; set; }
-
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "DCS_ET_Transform_Device_GetPackage" : "DCS_DC_Transform_Device_GetPackage";
+            return "DCS_DC_Transform_Device_GetPackage";
         }
 
         public override bool IsValid() => true;
