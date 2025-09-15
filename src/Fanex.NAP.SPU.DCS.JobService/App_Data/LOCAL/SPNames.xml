@@ -33,9 +33,6 @@
 		<Setting Key="DCS_DC_ArchiveData_BotComponent_Delete" SpName="DCS_DC_ArchiveData_BotComponent_Delete" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
 		<Setting Key="DCS_DC_Transform_FP_DeviceMappingInsert" SpName="DCS_DC_Transform_FP_DeviceMappingInsert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
 
-		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionGet" SpName="DCS_DC_Transform_FP_DeviceEvolutionGet" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService"/>
-		<Setting Key="DCS_DC_Transform_FP_DeviceEvolutionInsert" SpName="DCS_DC_Transform_FP_DeviceEvolutionInsert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
-
 		<Setting Key="DCS_DC_SystemSetting_GetParameterByID" SpName="DCS_DC_SystemSetting_GetParameterByID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService"/>
 		<Setting Key="DCS_DC_SystemSetting_UpdateParameterByID" SpName="DCS_DC_SystemSetting_UpdateParameterByID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"/>
 

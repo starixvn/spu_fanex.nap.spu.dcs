@@ -15,7 +15,6 @@
     {
         private ILogService logService;
         private ITransactionServices transactionService;
-        private IAppSettings appSettings;
 
         private readonly Fixture fixture = new Fixture();
 
@@ -26,10 +25,6 @@
             var rawTrans = fixture.CreateMany<RawTransactionEntity>();
 
             var service = GetService();
-
-            var appSettings = Substitute.For<IAppSettings>();
-
-            appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
             transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(rawTrans);
             transactionService.UserAgentProcessing(Arg.Any<long>(), Arg.Any<long>()).Returns(transactionService);
@@ -52,10 +47,6 @@
             // Arrange
             var rawTrans = fixture.CreateMany<RawTransactionEntity>();
             var service = GetService();
-
-            var appSettings = Substitute.For<IAppSettings>();
-
-            appSettings.GetValue<bool>("IsReadyDbExtra").Returns(true);
 
             transactionService.GetRawTransaction(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Throws(new Exception("Test exception"));
 

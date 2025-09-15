@@ -177,25 +177,6 @@ namespace Fanex.NAP.SPU.DCS.Test.JobService.Controllers
 
         #endregion
 
-        #region DeviceEvolution Tests
-
-        [Fact]
-        public async Task DeviceEvolution_WithValidBatchSize_ReturnsTrue()
-        {
-            // Arrange
-            var batchSize = 1000;
-            _mockDeviceJobService.DeviceEvolution(batchSize).Returns(true);
-
-            // Act
-            var result = await _controller.DeviceEvolution(batchSize);
-
-            // Assert
-            Assert.True(result);
-            await _mockDeviceJobService.Received(1).DeviceEvolution(batchSize);
-        }
-
-        #endregion
-
         #region SumTransaction Tests
 
         [Fact]

@@ -65,12 +65,6 @@
             return transactionJobServices.TransactionJobService.ProcessRawFingerprintQueue(batchSize);
         }
 
-        [HttpPost("deviceevolution")]
-        public async Task<bool> DeviceEvolution([FromForm] int batchSize)
-        {
-            return await deviceJobService.DeviceEvolution(batchSize);
-        }
-
         [HttpPost("sumtransaction")]
         public async Task<bool> SumTransaction()
         {
