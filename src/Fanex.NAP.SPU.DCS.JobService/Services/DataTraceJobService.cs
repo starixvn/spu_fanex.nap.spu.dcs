@@ -20,6 +20,8 @@
 
         Task<bool> CookDataLoginTransaction(int batchSize);
 
+        Task<bool> CookMBDataLoginTransaction(int batchSize);
+
         bool SendTransactionToLogstash(int batchSize);
 
         bool SendMBTransactionToLogstash(int batchSize);
@@ -147,6 +149,29 @@
             catch (Exception ex)
             {
                 HandleException(ex, "DCS - DataTrace CookDataLoginTransaction execute exeption message: ");
+
+                return false;
+            }
+        }
+
+        public async Task<bool> CookMBDataLoginTransaction(int batchSize)
+        {
+            try
+            {
+                if (batchSize > 0)
+                {
+                    await dataTraceServices.CookMBDataLoginTransaction(batchSize);
+
+                    return true;
+                }
+
+                await logService.ErrorMessageAsync("DCS - DataTrace CookMBDataLoginTransaction has batchSize = 0!");
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "DCS - DataTrace CookMBDataLoginTransaction execute exeption message: ");
 
                 return false;
             }

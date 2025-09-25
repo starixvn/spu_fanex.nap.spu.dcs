@@ -24,6 +24,8 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
+        Task<int> CookMBDataLoginTransaction(int batchSize);
+
         IEnumerable<TransactionLogstashModel> GetTransactionLogstash(int batchSize);
 
         IEnumerable<MBTransactionLogstashModel> GetMBTransactionLogtash(int batchSize);
@@ -347,6 +349,11 @@
         public async Task<int> CookDataLoginTransaction(int batchSize)
         {
             return await dataAccess.CookDataLoginTransaction(batchSize);
+        }
+
+        public async Task<int> CookMBDataLoginTransaction(int batchSize)
+        {
+            return await dataAccess.CookMBDataLoginTransaction(batchSize);
         }
 
         #region Report
