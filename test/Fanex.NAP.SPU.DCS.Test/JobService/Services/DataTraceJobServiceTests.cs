@@ -545,6 +545,104 @@
         }
 
         [Fact]
+        public async Task CookMBDataLoginTransaction_SuccessfulExecution_ReturnsTrue()
+        {
+            // Arrange
+            const int batchSize = 5000;
+            dataTraceServices.CookMBDataLoginTransaction(batchSize).Returns(Task.FromResult(10)); // Return number of processed records
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.True(result);
+            await dataTraceServices.Received(1).CookMBDataLoginTransaction(batchSize);
+            await logService.DidNotReceiveWithAnyArgs().ErrorMessageAsync(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithZeroBatchSize_ReturnsFalseAndLogsError()
+        {
+            // Arrange
+            const int batchSize = 0;
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.False(result);
+            await dataTraceServices.DidNotReceive().CookMBDataLoginTransaction(Arg.Any<int>());
+            await logService.Received(1).ErrorMessageAsync("DCS - DataTrace CookMBDataLoginTransaction has batchSize = 0!");
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithNegativeBatchSize_ReturnsFalseAndLogsError()
+        {
+            // Arrange
+            const int batchSize = -100;
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.False(result);
+            await dataTraceServices.DidNotReceive().CookMBDataLoginTransaction(Arg.Any<int>());
+            await logService.Received(1).ErrorMessageAsync("DCS - DataTrace CookMBDataLoginTransaction has batchSize = 0!");
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WhenExceptionThrown_ReturnsFalseAndHandlesException()
+        {
+            // Arrange
+            const int batchSize = 1000;
+            var expectedException = new Exception("Database connection failed");
+            dataTraceServices.CookMBDataLoginTransaction(batchSize).Throws(expectedException);
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.False(result);
+            await dataTraceServices.Received(1).CookMBDataLoginTransaction(batchSize);
+            await logService.Received(1).ErrorMessageAsync(Arg.Is<string>(msg => 
+                msg.Contains("DCS - DataTrace CookMBDataLoginTransaction execute exeption message:")));
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithValidBatchSize_CallsDataTraceServicesOnce()
+        {
+            // Arrange
+            const int batchSize = 2500;
+            dataTraceServices.CookMBDataLoginTransaction(batchSize).Returns(Task.FromResult(25));
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.True(result);
+            await dataTraceServices.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(5000)]
+        [InlineData(10000)]
+        public async Task CookMBDataLoginTransaction_WithVariousBatchSizes_ReturnsTrue(int batchSize)
+        {
+            // Arrange
+            dataTraceServices.CookMBDataLoginTransaction(batchSize).Returns(Task.FromResult(batchSize / 10));
+
+            // Act
+            var result = await service.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.True(result);
+            await dataTraceServices.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
         public async Task GetReportMissingTransaction_WhenCalledWithEmptyData_ShouldReturnEmptyList()
         {
             // Arrange

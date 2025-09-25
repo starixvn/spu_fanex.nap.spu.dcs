@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "<default>",
+        "projectKey": "Fanex.NAP.SPU.DCS"
+    }
+}
