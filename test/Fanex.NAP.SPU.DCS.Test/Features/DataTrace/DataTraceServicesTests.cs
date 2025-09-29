@@ -595,5 +595,126 @@
             Assert.Null(actual);
             await dataAccess.Received(1).GetReportLoginTransactionByFlagged(Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
+
+        [Fact]
+        public async Task CookDataLoginTransaction_WhenCalled_ShouldCallDataAccessAndReturnResult()
+        {
+            // Arrange
+            const int batchSize = 1000;
+            const int expectedResult = 50;
+
+            dataAccess.CookDataLoginTransaction(batchSize).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceServices.CookDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            await dataAccess.Received(1).CookDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WhenCalled_ShouldCallDataAccessAndReturnResult()
+        {
+            // Arrange
+            const int batchSize = 5000;
+            const int expectedResult = 25;
+
+            dataAccess.CookMBDataLoginTransaction(batchSize).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceServices.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            await dataAccess.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithZeroBatchSize_ShouldCallDataAccessWithZero()
+        {
+            // Arrange
+            const int batchSize = 0;
+            const int expectedResult = 0;
+
+            dataAccess.CookMBDataLoginTransaction(batchSize).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceServices.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            await dataAccess.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithNegativeBatchSize_ShouldCallDataAccessWithNegativeValue()
+        {
+            // Arrange
+            const int batchSize = -100;
+            const int expectedResult = 0;
+
+            dataAccess.CookMBDataLoginTransaction(batchSize).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceServices.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            await dataAccess.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(100, 10)]
+        [InlineData(1000, 50)]
+        [InlineData(5000, 250)]
+        [InlineData(10000, 500)]
+        public async Task CookMBDataLoginTransaction_WithVariousBatchSizes_ShouldReturnExpectedResults(int batchSize, int expectedResult)
+        {
+            // Arrange
+            dataAccess.CookMBDataLoginTransaction(batchSize).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceServices.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            await dataAccess.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WhenDataAccessThrowsException_ShouldPropagateException()
+        {
+            // Arrange
+            const int batchSize = 1000;
+            var expectedException = new InvalidOperationException("Database error");
+
+            dataAccess.When(x => x.CookMBDataLoginTransaction(batchSize)).Do(x => throw expectedException);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                dataTraceServices.CookMBDataLoginTransaction(batchSize));
+            
+            Assert.Equal("Database error", exception.Message);
+            await dataAccess.Received(1).CookMBDataLoginTransaction(batchSize);
+        }
+
+        [Fact]
+        public async Task CookDataLoginTransaction_WhenDataAccessThrowsException_ShouldPropagateException()
+        {
+            // Arrange
+            const int batchSize = 2000;
+            var expectedException = new InvalidOperationException("Connection timeout");
+
+            dataAccess.When(x => x.CookDataLoginTransaction(batchSize)).Do(x => throw expectedException);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                dataTraceServices.CookDataLoginTransaction(batchSize));
+            
+            Assert.Equal("Connection timeout", exception.Message);
+            await dataAccess.Received(1).CookDataLoginTransaction(batchSize);
+        }
     }
 }

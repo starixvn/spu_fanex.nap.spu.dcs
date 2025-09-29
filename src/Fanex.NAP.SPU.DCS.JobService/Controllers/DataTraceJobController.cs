@@ -51,6 +51,12 @@
             return await dataTraceJobService.CookDataLoginTransaction(batchSize);
         }
 
+        [HttpPost("cookmbdatalogintransaction")]
+        public async Task<bool> CookMBDataLoginTransaction([FromForm] int batchSize = 5000)
+        {
+            return await dataTraceJobService.CookMBDataLoginTransaction(batchSize);
+        }
+
         [HttpPost("sendtransactiontologstash")]
         public bool SendTransactionToLogstash([FromForm] int batchSize = 5000)
         {

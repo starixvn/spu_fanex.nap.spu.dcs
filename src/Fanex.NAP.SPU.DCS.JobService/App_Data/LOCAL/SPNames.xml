@@ -5,14 +5,14 @@
 		<Setting Key="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" SpName="DCS_DC_Transform_UserAgent_GetNullBrowserOSList" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_UserAgent_UpdateOSBrowser" SpName="DCS_DC_Transform_UserAgent_UpdateOSBrowser" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
-		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_GetPackage" SpName="DCS_DC_Transform_Device_GetPackage_xtest" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Device_Insert" SpName="DCS_DC_Transform_Device_Insert_xtest" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_Device_UpdateMaxTransID" SpName="DCS_DC_Transform_Device_UpdateMaxTransID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 		<Setting Key="DCS_DC_Transform_MBDevice_UpdateMaxMBTransID" SpName="DCS_DC_Transform_MBDevice_UpdateMaxMBTransID" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
 
 		<Setting Key="DCS_DC_Transform_UserAgent_Insert" SpName="DCS_DC_Transform_UserAgent_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
-		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
-		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_RawTrans_GetPackage" SpName="DCS_DC_Transform_RawTrans_GetPackage_xtest" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600"/>
+		<Setting Key="DCS_DC_Transform_Transaction_Insert" SpName="DCS_DC_Transform_Transaction_Insert_xtest" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin"  Timeout="600"/>
 
 		<Setting Key="DCS_DC_SumTransaction_Get" SpName="DCS_DC_SumTransaction_Get" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsService" Timeout="600" />
 		<Setting Key="DCS_DC_SumTransaction_Update" SpName="DCS_DC_SumTransaction_Update" DbName="DCSMain_WEB_LAYER.DCS_DataCenter.ctsServiceAdmin" Timeout="600" />
@@ -69,6 +69,7 @@
 		<Setting Key="DCS_DT_SystemSetting_GetParameterByID" SpName="DCS_DT_SystemSetting_GetParameterByID" DbName="DCSMain_WEB_LAYER.DCS_DataTrace.ctsService"/>
 		<Setting Key="DCS_DT_SystemSetting_UpdateParameterByID" SpName="DCS_DT_SystemSetting_UpdateParameterByID" DbName="DCSMain_WEB_LAYER.DCS_DataTrace.ctsServiceAdmin"/>
 		<Setting Key="DCS_DT_Summary_LoginTransaction_CookData" SpName="DCS_DT_Summary_LoginTransaction_CookData" DbName="DCSMain_WEB_LAYER.DCS_DataTrace.ctsServiceAdmin"/>
+		<Setting Key="DCS_DT_Summary_MBLoginTransaction_CookData" SpName="DCS_DT_Summary_MBLoginTransaction_CookData" DbName="DCSMain_WEB_LAYER.DCS_DataTrace.ctsServiceAdmin"/>
 	</Function>
 
 	<Function Name="MSSQL">

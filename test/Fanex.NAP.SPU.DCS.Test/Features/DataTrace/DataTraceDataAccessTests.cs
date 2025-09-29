@@ -409,6 +409,83 @@
             Assert.Equal(expectedSettingKey, settingKey);
         }
 
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WhenCall_ReturnExactData()
+        {
+            // Arrange
+            var criteria = fixture.Create<CookMBDataLoginTransactionCriteria>();
+
+            var expectedSettingKey = "DCS_DT_Summary_MBLoginTransaction_CookData";
+
+            repository.ExecuteAsync(Arg.Do<CookMBDataLoginTransactionCriteria>(x => criteria = x)).Returns(5);
+
+            // Act
+            var actual = await dataTraceDataAccess.CookMBDataLoginTransaction(1000);
+
+            // Assert
+            var settingKey = criteria.GetSettingKey();
+            var isValid = criteria.IsInvalid();
+
+            Assert.Equal(5, actual);
+            Assert.Equal(expectedSettingKey, settingKey);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithZeroBatchSize_ShouldCallRepositoryWithZero()
+        {
+            // Arrange
+            var criteria = fixture.Create<CookMBDataLoginTransactionCriteria>();
+
+            repository.ExecuteAsync(Arg.Do<CookMBDataLoginTransactionCriteria>(x => criteria = x)).Returns(0);
+
+            // Act
+            var actual = await dataTraceDataAccess.CookMBDataLoginTransaction(0);
+
+            // Assert
+            Assert.Equal(0, actual);
+            Assert.Equal(0, criteria.BatchSize);
+        }
+
+        [Fact]
+        public async Task CookMBDataLoginTransaction_WithLargeBatchSize_ShouldCallRepositoryWithCorrectBatchSize()
+        {
+            // Arrange
+            const int largeBatchSize = 50000;
+            var criteria = fixture.Create<CookMBDataLoginTransactionCriteria>();
+
+            repository.ExecuteAsync(Arg.Do<CookMBDataLoginTransactionCriteria>(x => criteria = x)).Returns(100);
+
+            // Act
+            var actual = await dataTraceDataAccess.CookMBDataLoginTransaction(largeBatchSize);
+
+            // Assert
+            Assert.Equal(100, actual);
+            Assert.Equal(largeBatchSize, criteria.BatchSize);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(5000)]
+        [InlineData(10000)]
+        public async Task CookMBDataLoginTransaction_WithVariousBatchSizes_ShouldReturnCorrectResult(int batchSize)
+        {
+            // Arrange
+            var criteria = fixture.Create<CookMBDataLoginTransactionCriteria>();
+            var expectedResult = batchSize / 100; // Simulate some processed records
+
+            repository.ExecuteAsync(Arg.Do<CookMBDataLoginTransactionCriteria>(x => criteria = x)).Returns(expectedResult);
+
+            // Act
+            var actual = await dataTraceDataAccess.CookMBDataLoginTransaction(batchSize);
+
+            // Assert
+            Assert.Equal(expectedResult, actual);
+            Assert.Equal(batchSize, criteria.BatchSize);
+            Assert.True(criteria.IsValid());
+        }
+
 
     }
 }

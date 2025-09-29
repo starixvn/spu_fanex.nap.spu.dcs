@@ -34,6 +34,8 @@
 
         Task<int> CookDataLoginTransaction(int batchSize);
 
+        Task<int> CookMBDataLoginTransaction(int batchSize);
+
         IEnumerable<TransactionLogstashModel> GetTransactionForLogtash(int batchSize);
 
         IEnumerable<MBTransactionLogstashModel> GetMBTransactionLogtash(int batchSize);
@@ -182,6 +184,16 @@
         public async Task<int> CookDataLoginTransaction(int batchSize)
         {
             var criteria = new CookDataLoginTransactionCriteria
+            {
+                BatchSize = batchSize
+            };
+
+            return await repository.ExecuteAsync(criteria);
+        }
+
+        public async Task<int> CookMBDataLoginTransaction(int batchSize)
+        {
+            var criteria = new CookMBDataLoginTransactionCriteria
             {
                 BatchSize = batchSize
             };
