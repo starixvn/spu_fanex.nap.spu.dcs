@@ -3,7 +3,6 @@
     using AutoFixture;
     using Fanex.NAP.SPU.DCS.Features.UserAgent;
     using Fanex.NAP.SPU.DCS.Features.UserAgent.Entities;
-    using Fanex.NAP.SPU.DCS.JobService;
     using Fanex.NAP.SPU.DCS.JobService.Services;
     using Fanex.NAP.SPU.DCS.Shares.Models;
     using NSubstitute;
@@ -18,9 +17,8 @@
     {
         private ILogService logService;
         private IUserAgentServices userAgentService;
-        private IAppSettings appSettings;
 
-        private readonly Fixture fixture = new Fixture();
+        private readonly Fixture fixture = new();
 
         [Fact]
         public async Task Execute_WithNegativeSize_ReturnsFalse()
@@ -29,7 +27,7 @@
             var service = GetService();
 
             // Act
-            var result = await service.Execute(-1, false);
+            var result = await service.Execute(-1);
 
             // Assert
             Assert.False(result);
@@ -41,15 +39,15 @@
             // Arrange
             var service = GetService();
 
-            userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<UserAgentEntity>());
+            userAgentService.GetUserAgent(Arg.Any<int>()).Returns(new List<UserAgentEntity>());
 
             // Act
-            var result = await service.Execute(10, false);
+            var result = await service.Execute(10);
 
             // Assert
             Assert.True(result);
             userAgentService.DidNotReceiveWithAnyArgs().TransformUserAgent(Arg.Any<List<UserAgentEntity>>());
-            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>(), Arg.Any<bool>());
+            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>());
         }
 
         [Fact]
@@ -61,17 +59,17 @@
 
             var service = GetService();
 
-            userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Returns(userAgents);
+            userAgentService.GetUserAgent(Arg.Any<int>()).Returns(userAgents);
 
             userAgentService.TransformUserAgent(userAgents).Returns(transformUserAgent);
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = await service.Execute(1);
 
             // Assert
             Assert.True(result);
 
-            userAgentService.Received().UpdateUserAgent(Arg.Any<string>(), Arg.Any<bool>());
+            userAgentService.Received().UpdateUserAgent(Arg.Any<string>());
             await logService.DidNotReceiveWithAnyArgs().ErrorAsync(Arg.Any<Exception>());
         }
 
@@ -82,17 +80,17 @@
 
             var service = GetService();
 
-            userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Throws(new Exception("Simulate Exception"));
+            userAgentService.GetUserAgent(Arg.Any<int>()).Throws(new Exception("Simulate Exception"));
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = await service.Execute(1);
 
             // Assert
             Assert.False(result);
 
             await logService.Received().ErrorAsync(Arg.Any<Exception>());
             userAgentService.DidNotReceiveWithAnyArgs().TransformUserAgent(Arg.Any<List<UserAgentEntity>>());
-            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>(), Arg.Any<bool>());
+            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>());
         }
 
         [Fact]
@@ -106,18 +104,18 @@
 
             var service = GetService();
 
-            userAgentService.GetUserAgent(Arg.Any<int>(), Arg.Any<bool>()).Returns(userAgents);
+            userAgentService.GetUserAgent(Arg.Any<int>()).Returns(userAgents);
 
             userAgentService.TransformUserAgent(userAgents).Throws(new Exception("Simulate Exception"));
 
             // Act
-            var result = await service.Execute(1, true);
+            var result = await service.Execute(1);
 
             // Assert
             Assert.False(result);
 
             await logService.Received().ErrorAsync(Arg.Any<Exception>());
-            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>(), Arg.Any<bool>());
+            userAgentService.DidNotReceiveWithAnyArgs().UpdateUserAgent(Arg.Any<string>());
         }
 
         [Fact]
@@ -142,9 +140,8 @@
         {
             logService = Substitute.For<ILogService>();
             userAgentService = Substitute.For<IUserAgentServices>();
-            appSettings = Substitute.For<IAppSettings>();
 
-            return new UserAgentJobService(logService, userAgentService, appSettings);
+            return new UserAgentJobService(logService, userAgentService);
         }
     }
 }

@@ -4,7 +4,9 @@
 
     public interface ITransactionJobService
     {
-        Task<bool> Execute(int numberOfTrans, int numberOfBatch, bool isTransformExtra);
+        Task<bool> Execute(int numberOfTrans, int numberOfBatch);
+
+        bool ProcessRawFingerprintQueue(int batchSize);
     }
 
     public class TransactionJobService : ITransactionJobService
@@ -24,13 +26,13 @@
             };
         }
 
-        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
+        public async Task<bool> Execute(int numberOfTrans, int numberOfBatch)
         {
             try
             {
                 if (numberOfTrans > 0 && numberOfBatch > 0)
                 {
-                    await JobRun(numberOfTrans, numberOfBatch, isTransformExtra);
+                    await JobRun(numberOfTrans, numberOfBatch);
                 }
 
                 return true;
@@ -50,14 +52,30 @@
             }
         }
 
-        private async Task JobRun(int numberOfTrans, int numberOfBatch, bool isTransformExtra)
+        public bool ProcessRawFingerprintQueue(int batchSize)
         {
-            await TransformTransaction(numberOfTrans, numberOfBatch, isTransformExtra);
+            try
+            {
+                this.transactionService.ProcessRawFingerprintQueue(batchSize);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logService.Error(ex);
+                return false;
+            }
+
+            return true;
         }
 
-        private async Task TransformTransaction(int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
+        private async Task JobRun(int numberOfTrans, int numberOfBatch)
         {
-            var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch, isReadyDbExtra);
+            await TransformTransaction(numberOfTrans, numberOfBatch);
+        }
+
+        private async Task TransformTransaction(int numberOfTrans, int numberOfBatch)
+        {
+            var rawTrans = this.transactionService.GetRawTransaction(0, numberOfTrans, numberOfBatch);
 
             var tasks = new List<Task>();
             foreach (var trans in rawTrans)
@@ -67,8 +85,8 @@
                     var task = Task.Run(() =>
                     {
                         this.transactionService
-                               .UserAgentProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra)
-                               .TransactionProcessing(trans.MinTransId, trans.MaxTransId, isReadyDbExtra);
+                               .UserAgentProcessing(trans.MinTransId, trans.MaxTransId)
+                               .TransactionProcessing(trans.MinTransId, trans.MaxTransId);
                     });
 
                     await Task.Delay(DelayTimeMilliseconds);

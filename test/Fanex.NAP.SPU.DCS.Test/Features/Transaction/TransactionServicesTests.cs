@@ -25,7 +25,6 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         [InlineData(0, 2, 2)]
         public void GetRawTransaction_ReturnListRawTrans(int isProcessed, int numberOfTrans, int numberOfBatch)
         {
-            var isReadyDbExtra = false;
             var result = new List<RawTransactionEntity> {
                 new RawTransactionEntity
                 {
@@ -49,9 +48,9 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
                 }
             };
 
-            transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch, isReadyDbExtra).Returns(result);
+            transactionDataAccess.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch).Returns(result);
 
-            var expectedResult = transactionServices.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch, isReadyDbExtra);
+            var expectedResult = transactionServices.GetRawTransaction(isProcessed, numberOfTrans, numberOfBatch);
 
             expectedResult.Should().BeEquivalentTo(result);
         }
@@ -61,9 +60,8 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         {
             var fromId = 1;
             var toId = 2;
-            var isReadyDbExtra = true;
 
-            var expectedResult = transactionServices.TransactionProcessing(fromId, toId, isReadyDbExtra);
+            var expectedResult = transactionServices.TransactionProcessing(fromId, toId);
 
             Assert.Same(expectedResult, transactionServices);
         }
@@ -73,11 +71,39 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
         {
             var fromId = 1;
             var toId = 2;
-            var isReadyDbExtra = true;
 
-            var expectedResult = transactionServices.UserAgentProcessing(fromId, toId, isReadyDbExtra);
+            var expectedResult = transactionServices.UserAgentProcessing(fromId, toId);
 
             Assert.Same(expectedResult, transactionServices);
+        }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WhenCalled_ShouldCallDataAccessAndReturnSelf()
+        {
+            // Arrange
+            var batchSize = 1000;
+
+            // Act
+            var result = transactionServices.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.Same(result, transactionServices);
+            transactionDataAccess.Received(1).ProcessRawFingerprintQueue(batchSize);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(-1)]
+        public void ProcessRawFingerprintQueue_WithDifferentBatchSizes_ShouldCallDataAccess(int batchSize)
+        {
+            // Act
+            var result = transactionServices.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            Assert.Same(result, transactionServices);
+            transactionDataAccess.Received(1).ProcessRawFingerprintQueue(batchSize);
         }
     }
 }

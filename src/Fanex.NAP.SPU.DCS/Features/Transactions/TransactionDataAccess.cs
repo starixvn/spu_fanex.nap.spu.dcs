@@ -8,11 +8,13 @@
 
     public interface ITransactionDataAccess
     {
-        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra);
+        IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch);
 
-        void InserUserAgent(long fromId, long toId, bool isReadyDbExtra);
+        void InserUserAgent(long fromId, long toId);
 
-        void InsertTransaction(long fromId, long toId, bool isReadyDbExtra);
+        void InsertTransaction(long fromId, long toId);
+
+        void ProcessRawFingerprintQueue(int batchSize);
     }
     public class TransactionDataAccess : ITransactionDataAccess
     {
@@ -23,14 +25,13 @@
             this.repository = repository ?? new DynamicRepository();
         }
 
-        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch, bool isReadyDbExtra)
+        public IEnumerable<RawTransactionEntity> GetRawTransaction(int isProcessed, int numberOfTrans, int numberOfBatch)
         {
             var criteria = new GetRawTransactionCriteria
             {
                 IsProcessed = isProcessed,
                 NumberOfTickets = numberOfTrans,
-                NumberOfBatch = numberOfBatch,
-                IsReadyDbExtra = isReadyDbExtra
+                NumberOfBatch = numberOfBatch
             };
 
             using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
@@ -39,25 +40,33 @@
             }
         }
 
-        public void InsertTransaction(long fromId, long toId, bool isReadyDbExtra)
+        public void InsertTransaction(long fromId, long toId)
         {
             var criteria = new InsertTransactionCriteria
             {
                 FromStagingTransId = fromId,
-                ToStagingTransId = toId,
-                IsReadyDbExtra = isReadyDbExtra
+                ToStagingTransId = toId
             };
 
             repository.Execute(criteria);
         }
 
-        public void InserUserAgent(long fromId, long toId, bool isReadyDbExtra)
+        public void InserUserAgent(long fromId, long toId)
         {
             var criteria = new InsertUserAgentCriteria
             {
                 FromStagingTransId = fromId,
-                ToStagingTransId = toId,
-                IsReadyDbExtra = isReadyDbExtra
+                ToStagingTransId = toId
+            };
+
+            repository.Execute(criteria);
+        }
+
+        public void ProcessRawFingerprintQueue(int batchSize)
+        {
+            var criteria = new ProcessRawFingerprintQueueCriteria
+            {
+                BatchSize = batchSize
             };
 
             repository.Execute(criteria);

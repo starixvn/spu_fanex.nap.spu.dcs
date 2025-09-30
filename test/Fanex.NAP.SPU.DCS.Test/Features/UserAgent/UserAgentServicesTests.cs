@@ -29,7 +29,6 @@
         [Fact]
         public void GetUserAgent_WhenCalled_ReturnUserAgentList()
         {
-            var isReadyDbExtra = false;
             var userAgentEntities = new List<UserAgentEntity> {
                 new UserAgentEntity
                 {
@@ -45,8 +44,8 @@
                 }
             };
 
-            userAgentDataAccess.GetUserAgent(100, isReadyDbExtra).Returns(userAgentEntities);
-            var result = userAgentService.GetUserAgent(100, isReadyDbExtra);
+            userAgentDataAccess.GetUserAgent(100).Returns(userAgentEntities);
+            var result = userAgentService.GetUserAgent(100);
 
             result.Should().BeEquivalentTo(userAgentEntities);
         }
@@ -55,15 +54,14 @@
         [InlineData("xyz")]
         public void UpdateUserAgent_WhenSuccess_ReturnDataResult(string userAgentJson)
         {
-            var isReadyDbExtra = false;
             var expectedResut = new DataResult
             {
                 ErrorCode = 0,
                 ErrorMessage = string.Empty
             };
 
-            userAgentDataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra).Returns(expectedResut);
-            var result = userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+            userAgentDataAccess.UpdateUserAgent(userAgentJson).Returns(expectedResut);
+            var result = userAgentService.UpdateUserAgent(userAgentJson);
 
             result.ErrorCode.Should().Be(0);
         }
@@ -73,15 +71,14 @@
         [InlineData(null)]
         public void UpdateUserAgent_WhenFail_ReturnDataResult(string userAgentJson)
         {
-            var isReadyDbExtra = false;
             var expectedResut = new DataResult
             {
                 ErrorCode = -1,
                 ErrorMessage = "Parameter is empty"
             };
 
-            userAgentDataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra).Returns(expectedResut);
-            var result = userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+            userAgentDataAccess.UpdateUserAgent(userAgentJson).Returns(expectedResut);
+            var result = userAgentService.UpdateUserAgent(userAgentJson);
 
             result.ErrorCode.Should().Be(-1);
         }

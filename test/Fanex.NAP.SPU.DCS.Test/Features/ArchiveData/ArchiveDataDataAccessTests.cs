@@ -22,9 +22,8 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
         }
 
         [Theory]
-        [InlineData(true, "DCS_ET_ArchiveData_ModifiedDate_Update")]
-        [InlineData(false, "DCS_DC_ArchiveData_ModifiedDate_Update")]
-        public void UpdateModifiedDate_WhenCalled_ExecutesWithCorrectCriteria(bool isTransformExtra, string expectedSettingKey)
+        [InlineData("DCS_DC_ArchiveData_ModifiedDate_Update")]
+        public void UpdateModifiedDate_WhenCalled_ExecutesWithCorrectCriteria(string expectedSettingKey)
         {
             // Arrange
             int batchSize = 10;
@@ -33,14 +32,14 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
             repository.Execute(Arg.Do<UpdateModifiedDateCriteria>(x => criteria = x));
 
             // Act
-            archiveDataDataAccess.UpdateModifiedDate(batchSize, isTransformExtra);
+            archiveDataDataAccess.UpdateModifiedDate(batchSize);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
             var isValid = criteria.IsInvalid();
 
             repository.Received(1).Execute(Arg.Is<UpdateModifiedDateCriteria>(x =>
-                x.BatchSize == batchSize && x.IsReadyDbExtra == isTransformExtra));
+                x.BatchSize == batchSize));
             Assert.Equal(expectedSettingKey, settingKey);
         }
 
@@ -70,9 +69,8 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
         }
 
         [Theory]
-        [InlineData(true, "DCS_ET_ArchiveData_BotComponent_Delete")]
-        [InlineData(false, "DCS_DC_ArchiveData_BotComponent_Delete")]
-        public void DeleteBotComponent_WhenCall_ReturnExactData(bool isTransformExtra, string expectedSettingKey)
+        [InlineData("DCS_DC_ArchiveData_BotComponent_Delete")]
+        public void DeleteBotComponent_WhenCall_ReturnExactData(string expectedSettingKey)
         {
             // Arrange
             int retentionDays = 30;
@@ -81,14 +79,14 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
             repository.Execute(Arg.Do<DeleteBotComponentCriteria>(x => criteria = x));
 
             // Act
-            archiveDataDataAccess.DeleteBotComponent(retentionDays, isTransformExtra);
+            archiveDataDataAccess.DeleteBotComponent(retentionDays);
 
             // Assert
             var settingKey = criteria.GetSettingKey();
             var isValid = criteria.IsInvalid();
 
             repository.Received(1).Execute(Arg.Is<DeleteBotComponentCriteria>(x =>
-                x.RetentionDays == retentionDays && x.IsReadyDbExtra == isTransformExtra));
+                x.RetentionDays == retentionDays));
 
             Assert.Equal(expectedSettingKey, settingKey);
         }

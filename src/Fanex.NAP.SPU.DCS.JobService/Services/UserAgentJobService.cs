@@ -5,30 +5,22 @@
 
     public interface IUserAgentJobService
     {
-        Task<bool> Execute(int size, bool isTransformExtra);
+        Task<bool> Execute(int size);
 
         ClientInfo ConvertUserAgent(string userAgent);
 
     }
-    public class UserAgentJobService : IUserAgentJobService
+    public class UserAgentJobService(ILogService logService, IUserAgentServices userAgentService) : IUserAgentJobService
     {
-        private readonly ILogService logService;
-        private readonly IUserAgentServices userAgentService;
-        private readonly IAppSettings appSettings;
-
-        public UserAgentJobService(ILogService logService, IUserAgentServices userAgentService, IAppSettings appSettings)
-        {
-            this.logService = logService;
-            this.userAgentService = userAgentService;
-            this.appSettings = appSettings;
-        }
+        private readonly ILogService logService = logService;
+        private readonly IUserAgentServices userAgentService = userAgentService;
 
         public ClientInfo ConvertUserAgent(string userAgent)
         {
             return this.userAgentService.ConvertUserAgent(userAgent);
         }
 
-        public async Task<bool> Execute(int size, bool isTransformExtra)
+        public async Task<bool> Execute(int size)
         {
             try
             {
@@ -37,9 +29,7 @@
                     return false;
                 }
 
-                var isReadyDbExtra = isTransformExtra && appSettings.IsReadyDbExtra;
-
-                var userAgents = userAgentService.GetUserAgent(size, isReadyDbExtra);
+                var userAgents = userAgentService.GetUserAgent(size);
 
                 if (userAgents != null && userAgents.Any())
                 {
@@ -49,7 +39,7 @@
                     {
                         var userAgentJson = JsonSerializer.Serialize(transformUserAgent);
 
-                        userAgentService.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+                        userAgentService.UpdateUserAgent(userAgentJson);
                     }
                 }
             }

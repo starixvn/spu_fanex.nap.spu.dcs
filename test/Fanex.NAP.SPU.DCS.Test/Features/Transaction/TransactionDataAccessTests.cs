@@ -28,12 +28,10 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 
             var toId = fixture.Create<long>();
 
-            bool isReadyDbExtra = true;
-
             var criteria = fixture.Create<InsertTransactionCriteria>();
 
             // Act
-            transactionDataAccess.InsertTransaction(fromId, toId, isReadyDbExtra);
+            transactionDataAccess.InsertTransaction(fromId, toId);
 
             // Assert
             var isValid = criteria.IsInvalid();
@@ -41,8 +39,7 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
             repository.Received(1).Execute(Arg.Is<InsertTransactionCriteria>(c =>
                 c.FromStagingTransId == fromId &&
                 c.ToStagingTransId == toId &&
-                c.IsReadyDbExtra == isReadyDbExtra &&
-                c.GetSettingKey() == "DCS_ET_Transform_Transaction_Insert"));
+                c.GetSettingKey() == "DCS_DC_Transform_Transaction_Insert"));
         }
 
         [Fact]
@@ -53,12 +50,10 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
 
             var toId = fixture.Create<long>();
 
-            bool isReadyDbExtra = true;
-
             var criteria = fixture.Create<InsertUserAgentCriteria>();
 
             // Act
-            transactionDataAccess.InserUserAgent(fromId, toId, isReadyDbExtra);
+            transactionDataAccess.InserUserAgent(fromId, toId);
 
             // Assert
             var isValid = criteria.IsInvalid();
@@ -66,8 +61,38 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.Transaction
             repository.Received(1).Execute(Arg.Is<InsertUserAgentCriteria>(c =>
                 c.FromStagingTransId == fromId &&
                 c.ToStagingTransId == toId &&
-                c.IsReadyDbExtra == isReadyDbExtra &&
-                c.GetSettingKey() == "DCS_ET_Transform_UserAgent_Insert"));
+                c.GetSettingKey() == "DCS_DC_Transform_UserAgent_Insert"));
+        }
+
+        [Fact]
+        public void ProcessRawFingerprintQueue_WhenCalled_ExecutesWithCorrectCriteria()
+        {
+            // Arrange
+            var batchSize = fixture.Create<int>();
+
+            // Act
+            transactionDataAccess.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            repository.Received(1).Execute(Arg.Is<ProcessRawFingerprintQueueCriteria>(c =>
+                c.BatchSize == batchSize &&
+                c.GetSettingKey() == "DCS_DC_Transform_RawFingerprintQueue_Process"));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(-1)]
+        public void ProcessRawFingerprintQueue_WithDifferentBatchSizes_ExecutesWithCorrectCriteria(int batchSize)
+        {
+            // Act
+            transactionDataAccess.ProcessRawFingerprintQueue(batchSize);
+
+            // Assert
+            repository.Received(1).Execute(Arg.Is<ProcessRawFingerprintQueueCriteria>(c =>
+                c.BatchSize == batchSize &&
+                c.GetSettingKey() == "DCS_DC_Transform_RawFingerprintQueue_Process"));
         }
     }
 }

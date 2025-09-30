@@ -8,15 +8,9 @@
     public interface IDeviceServices
     {
 
-        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra);
+        Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch);
 
-        Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra);
-
-        Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra);
-
-        Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra);
-
-        Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra);
+        Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId);
 
         int UpdateMaxTransIDTransformDevice();
     }
@@ -30,41 +24,21 @@
             this.deviceDataAcess = deviceDataAcess;
         }
 
-        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch, bool isReadyDbExtra)
+        public async Task<IEnumerable<StagingTransId>> GetStagingTransIdForDeviceAsync(int size, int noOfBatch)
         {
             if (size != 0 && noOfBatch != 0)
             {
-                return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch, isReadyDbExtra);
+                return await deviceDataAcess.GetStagingTransIdForDeviceAsync(size, noOfBatch);
             }
 
             return new List<StagingTransId>();
         }
 
-        public async Task<(IEnumerable<DeviceEvolutionEntity>, IEnumerable<DeviceEvolutionEntity>)> GetFPDeviceEvolutionAsync(int batchSize, bool isReadyDbExtra)
-        {
-            if (batchSize > 0)
-            {
-                return await deviceDataAcess.GetFPDeviceEvolutionAsync(batchSize, isReadyDbExtra);
-            }
-
-            return (new List<DeviceEvolutionEntity>(), new List<DeviceEvolutionEntity>());
-        }
-
-        public async Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId, bool isReadyDbExtra)
+        public async Task TransformDeviceInsertAsync(IEnumerable<StagingTransId> stagingTransId)
         {
             string transIDs = string.Join(",", stagingTransId.Select(t => t.TransId.ToString()));
 
-            await deviceDataAcess.TransformDeviceInsertAsync(transIDs, isReadyDbExtra);
-        }
-
-        public async Task InsertFPDeviceMappingAsync(int batchSize, bool isTransformExtra)
-        {
-            await deviceDataAcess.InsertFPDeviceMappingAsync(batchSize, isTransformExtra);
-        }
-
-        public async Task InsertFPDeviceEvolutionAsync(string deviceEvolutionJson, bool isTransformExtra)
-        {
-            await deviceDataAcess.InsertFPDeviceEvolutionAsync(deviceEvolutionJson, isTransformExtra);
+            await deviceDataAcess.TransformDeviceInsertAsync(transIDs);
         }
 
         public int UpdateMaxTransIDTransformDevice()

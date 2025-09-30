@@ -26,18 +26,15 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.UserAgent
             // Arrange
             var userAgentJson = fixture.Create<string>();
 
-            bool isReadyDbExtra = true;
-
             repository.Execute(Arg.Any<UpdateUserAgentCriteria>()).Returns(0);
 
             // Act
-            var result = userAgentDataAccess.UpdateUserAgent(userAgentJson, isReadyDbExtra);
+            var result = userAgentDataAccess.UpdateUserAgent(userAgentJson);
 
             // Assert
             repository.Received(1).Execute(Arg.Is<UpdateUserAgentCriteria>(c =>
                 c.UserAgentJson == userAgentJson &&
-                c.IsReadyDbExtra == isReadyDbExtra &&
-                c.GetSettingKey() == "DCS_ET_Transform_UserAgent_UpdateOSBrowser"));
+                c.GetSettingKey() == "DCS_DC_Transform_UserAgent_UpdateOSBrowser"));
             Assert.Equal(0, result.ErrorCode);
         }
     }

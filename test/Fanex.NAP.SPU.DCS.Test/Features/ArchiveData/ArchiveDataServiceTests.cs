@@ -21,13 +21,12 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
         {
             // Arrange
             int batchSize = 10;
-            bool isTransformExtra = true;
 
             // Act
-            archiveDataService.UpdateModifiedDate(batchSize, isTransformExtra);
+            archiveDataService.UpdateModifiedDate(batchSize);
 
             // Assert
-            archiveDataAccess.Received(1).UpdateModifiedDate(batchSize, isTransformExtra);
+            archiveDataAccess.Received(1).UpdateModifiedDate(batchSize);
         }
 
         [Fact]
@@ -48,13 +47,12 @@ namespace Fanex.NAP.SPU.DCS.Tests.Features.ArchiveData
         {
             // Arrange
             int retentionDays = 30;
-            bool isTransformExtra = true;
 
             // Act
-            archiveDataService.DeleteBotComponent(retentionDays, isTransformExtra);
+            archiveDataService.DeleteBotComponent(retentionDays);
 
             // Assert
-            archiveDataAccess.Received(1).DeleteBotComponent(retentionDays, isTransformExtra);
+            archiveDataAccess.Received(1).DeleteBotComponent(retentionDays);
         }
     }
 

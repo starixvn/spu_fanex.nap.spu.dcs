@@ -11,12 +11,9 @@
         [SpParam(SqlParamName = "ip_ToTransID", AllowNull = true)]
         public long ToStagingTransId { get; set; }
 
-        [SpParam(Ignored = true)]
-        public bool IsReadyDbExtra { get; set; }
-
         public override string GetSettingKey()
         {
-            return IsReadyDbExtra ? "DCS_ET_Transform_UserAgent_Insert" : "DCS_DC_Transform_UserAgent_Insert";
+            return "DCS_DC_Transform_UserAgent_Insert";
         }
 
         public override bool IsValid()

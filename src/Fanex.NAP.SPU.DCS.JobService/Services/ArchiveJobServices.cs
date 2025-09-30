@@ -4,11 +4,11 @@
 
     public interface IArchiveJobServices
     {
-        Task<bool> Execute(int batchSize, bool isTransformExtra);
+        Task<bool> Execute(int batchSize);
 
         Task<bool> UpdateMBLastAccessedDate(int batchSize);
 
-        Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra);
+        Task<bool> DeleteBotComponent(int retentionDays);
 
     }
 
@@ -23,13 +23,13 @@
             this.logService = logService;
         }
 
-        public Task<bool> Execute(int batchSize, bool isTransformExtra)
+        public Task<bool> Execute(int batchSize)
         {
             try
             {
                 if (batchSize > 0)
                 {
-                    archiveDataService.UpdateModifiedDate(batchSize, isTransformExtra);
+                    archiveDataService.UpdateModifiedDate(batchSize);
                 }
                 else
                 {
@@ -69,13 +69,13 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteBotComponent(int retentionDays, bool isTransformExtra)
+        public Task<bool> DeleteBotComponent(int retentionDays)
         {
             try
             {
                 if (retentionDays >= 0)
                 {
-                    archiveDataService.DeleteBotComponent(retentionDays, isTransformExtra);
+                    archiveDataService.DeleteBotComponent(retentionDays);
                 }
                 else
                 {

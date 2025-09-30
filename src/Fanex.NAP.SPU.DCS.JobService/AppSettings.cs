@@ -19,8 +19,6 @@
 
         string TelegramGroupIDMonitorTransaction { get; }
 
-        bool IsReadyDbExtra { get; }
-
         string RatioUrl { get; }
 
         string ELKUrl { get; }
@@ -47,7 +45,6 @@
         private readonly bool abnormalTransactionIgnorePushData;
         private readonly string telegramProxy;
         private readonly string telegramGroupIDMonitorTransaction;
-        private readonly bool isReadyDbExtra;
         private readonly string ratioUrl;
         private readonly string elkUrl;
         private readonly string logstashTcpHostname;
@@ -72,8 +69,6 @@
 
             telegramGroupIDMonitorTransaction = GetValue<string>("Telegram:GroupID:MonitorTransaction");
 
-            isReadyDbExtra = GetValue<bool>("IsReadyDbExtra");
-
             ratioUrl = GetValue<string>("RatioUrl");
 
             elkUrl = GetValue<string>("ELK:Url");
@@ -97,8 +92,6 @@
         public string TelegramProxy => telegramProxy;
 
         public string TelegramGroupIDMonitorTransaction => telegramGroupIDMonitorTransaction;
-
-        public bool IsReadyDbExtra => isReadyDbExtra;
 
         public string RatioUrl => ratioUrl;       
 
