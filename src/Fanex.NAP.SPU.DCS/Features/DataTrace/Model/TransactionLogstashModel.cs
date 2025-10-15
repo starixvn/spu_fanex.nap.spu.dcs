@@ -60,7 +60,7 @@ namespace Fanex.NAP.SPU.DCS.Features.DataTrace.Model
 
         public ulong FPPatternID02 { get; set; }
 
-        public bool TransFlow { get; set; }
+        public int TransFlow { get; set; }
 
         public int ActivatorVersionID { get; set; }
 
