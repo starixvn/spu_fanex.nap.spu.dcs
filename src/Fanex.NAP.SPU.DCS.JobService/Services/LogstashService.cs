@@ -45,6 +45,7 @@ namespace Fanex.NAP.SPU.DCS.JobService.Services
             {
                 dynamic dyn = transaction;
                 dyn.SubscriberName = dyn.SubscriberName?.ToLower() ?? string.Empty;
+                dyn.LoginName = dyn.LoginName?.ToLower() ?? string.Empty;
 
                 var logMessage = new
                 {
